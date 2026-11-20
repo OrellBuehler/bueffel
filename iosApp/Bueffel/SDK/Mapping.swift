@@ -50,7 +50,7 @@ enum Mapping {
             randomOrder: d.randomOrder,
             sections: d.sections.map { section($0) },
             typeCounts: typeCounts(d.typeCounts),
-            practice: d.practiceFilters.map { practiceKind($0) }
+            practice: d.practiceFilters.map { practiceKind(normalized($0)) }
         )
     }
 
@@ -111,17 +111,23 @@ enum Mapping {
         counts.map { TypeCountInfo(kind: itemKind($0.type), count: Int($0.count)) }
     }
 
-    // SKIE turns Kotlin enums into Swift enums with lowerCamelCase cases. ItemStatus.NEW is the
-    // `default` branch on purpose: `new` collides with NSObject and SKIE may rename it.
+    // SKIE turns Kotlin enums into Swift enums with lowerCamelCase cases, but enums inside a Kotlin
+    // List can keep the Kotlin class (`NOT_JSON`) because SKIE does not swap enums in generics. Names
+    // that are not a single word are therefore compared as text without case or underscores, which
+    // both spellings share. ItemStatus.NEW is the `default` branch on purpose: `new` collides with
+    // NSObject and SKIE renames it to `theNew`.
+    static func normalized(_ value: Any) -> String {
+        String(describing: value).replacingOccurrences(of: "_", with: "").lowercased()
+    }
+
     static func itemKind(_ type: ItemType) -> ItemKind {
         switch type {
         case .card: return .card
         case .choice: return .choice
         case .text: return .text
         case .cloze: return .cloze
-        case .trueFalse: return .trueFalse
         case .order: return .order
-        default: return .open
+        default: return normalized(type) == "truefalse" ? .trueFalse : .open
         }
     }
 
@@ -134,11 +140,11 @@ enum Mapping {
         }
     }
 
-    static func practiceKind(_ filter: PracticeFilter) -> PracticeKind {
-        switch filter {
-        case .flashcards: return .flashcards
-        case .quiz: return .quiz
-        case .typing: return .typing
+    static func practiceKind(_ name: String) -> PracticeKind {
+        switch name {
+        case "flashcards": return .flashcards
+        case "quiz": return .quiz
+        case "typing": return .typing
         default: return .all
         }
     }

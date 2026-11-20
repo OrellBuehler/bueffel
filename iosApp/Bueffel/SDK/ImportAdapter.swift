@@ -84,23 +84,23 @@ enum ImportAdapter {
     }
 
     static func issueKind(_ code: ImportErrorCode) -> ImportIssueKind {
-        switch code {
-        case .notJson, .notAnObject, .notAPack: return .notAPack
-        case .versionTooNew: return .versionTooNew
-        case .versionInvalid, .idInvalid, .titleInvalid: return .invalidPack
-        case .itemsMissing, .noValidItems: return .noItems
-        case .tooLarge, .tooManyItems: return .tooLarge
-        case .revisionDowngrade: return .revisionDowngrade
-        case .unknownSample: return .unknownSample
-        case .storageError: return .storage
+        switch Mapping.normalized(code) {
+        case "notjson", "notanobject", "notapack": return .notAPack
+        case "versiontoonew": return .versionTooNew
+        case "versioninvalid", "idinvalid", "titleinvalid": return .invalidPack
+        case "itemsmissing", "novaliditems": return .noItems
+        case "toolarge", "toomanyitems": return .tooLarge
+        case "revisiondowngrade": return .revisionDowngrade
+        case "unknownsample": return .unknownSample
+        case "storageerror": return .storage
         default: return .other
         }
     }
 
     static func warningKind(_ code: ImportWarningCode) -> ImportWarningKind {
-        switch code {
-        case .itemUnknownType: return .unknownType
-        case .moreWarnings: return .more
+        switch Mapping.normalized(code) {
+        case "itemunknowntype": return .unknownType
+        case "morewarnings": return .more
         default: return .other
         }
     }

@@ -195,7 +195,7 @@ private struct ActivityBarsCard: View {
     }
 
     private func bar(_ day: DayActivityInfo) -> some View {
-        let ratio = Double(day.reviews) / Double(peak)
+        let ratio = CGFloat(day.reviews) / CGFloat(peak)
         let reached = goal > 0 && day.reviews >= goal
         let weekday = day.date.formatted(.dateTime.weekday(.wide).day().month())
         let accessibilityText = weekday + ": " + L10n.plural("stats.reviews.count", day.reviews)

@@ -247,7 +247,7 @@ try await session.selfGrade(grade: .good)
 session.next()
 ```
 
-Notes for Swift: `List<T>` arrives as `[T]` (no public API uses `List<Int>`/`List<Boolean>`, so there is no `KotlinInt` boxing; ids are `[String]`); `Long` is `Int64`, `Int` is `Int32`; nullable properties are optionals; sealed class case names derive from the subclass name (check Xcode's completion for the exact spelling, e.g. `.flipExercise`); a Kotlin property called `type` is `type`. Rich text is an array of spans:
+Notes for Swift: `List<T>` arrives as `[T]` (no public API uses `List<Int>`/`List<Boolean>`, so there is no `KotlinInt` boxing; ids are `[String]`); `Long` is `Int64`, `Int` is `Int32`; nullable properties are optionals; sealed class case names derive from the subclass name (check Xcode's completion for the exact spelling, e.g. `.flipExercise`); a Kotlin property called `type` is `type`; an enum inside a `List` (`PackDetail.practiceFilters`) may arrive as the Kotlin class `__PracticeFilter` instead of the Swift enum, because SKIE does not swap enums in generics (`toSwiftEnum()` converts it; `Mapping` matches it by name). Rich text is an array of spans:
 
 ```swift
 func attributed(_ text: RichText) -> AttributedString {
