@@ -27,8 +27,10 @@ import androidx.compose.material.icons.rounded.Lightbulb
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
@@ -204,7 +206,7 @@ private fun ActiveSession(
                 SlimProgressBar(
                     progress = (position - 1).toFloat() / total.coerceAtLeast(1),
                     height = 10.dp,
-                    trackColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                    trackColor = MaterialTheme.colorScheme.surfaceContainerHighest,
                     color = barColor,
                 )
             }
@@ -238,8 +240,15 @@ private fun HintButton(
 ) {
     Box(Modifier.height(48.dp)) {
         AnimatedVisibility(visible, enter = fadeIn(), exit = fadeOut()) {
-            IconButton(onClick = onClick) {
-                Icon(Icons.Rounded.Lightbulb, stringResource(R.string.study_hint_cd), tint = MaterialTheme.colorScheme.tertiary)
+            FilledTonalIconButton(
+                onClick = onClick,
+                colors =
+                    IconButtonDefaults.filledTonalIconButtonColors(
+                        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                    ),
+            ) {
+                Icon(Icons.Rounded.Lightbulb, stringResource(R.string.study_hint_cd))
             }
         }
     }

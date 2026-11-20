@@ -1,6 +1,5 @@
 package ch.orellbuehler.bueffel.ui.study
 
-import android.provider.Settings
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
@@ -36,7 +35,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.rotate
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -46,6 +44,7 @@ import ch.orellbuehler.bueffel.study.SessionMode
 import ch.orellbuehler.bueffel.ui.components.Mascot
 import ch.orellbuehler.bueffel.ui.components.MascotMood
 import ch.orellbuehler.bueffel.ui.components.ProgressRing
+import ch.orellbuehler.bueffel.ui.components.rememberReduceMotion
 import ch.orellbuehler.bueffel.ui.theme.Amber
 import ch.orellbuehler.bueffel.ui.theme.PackPalette
 import ch.orellbuehler.bueffel.ui.theme.Violet
@@ -75,11 +74,7 @@ fun FinishedScreen(
     val scheme = MaterialTheme.colorScheme
     val success = MaterialTheme.bueffel
     val accuracy = summary.accuracy.toFloat()
-    val context = LocalContext.current
-    val reduceMotion =
-        remember {
-            Settings.Global.getFloat(context.contentResolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1f) == 0f
-        }
+    val reduceMotion = rememberReduceMotion()
     val totalSeconds = (summary.durationMs / 1000).toInt().coerceAtLeast(1)
     val durationText =
         if (totalSeconds < 60) {

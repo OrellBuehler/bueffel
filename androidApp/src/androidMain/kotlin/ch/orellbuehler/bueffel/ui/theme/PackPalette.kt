@@ -5,8 +5,6 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.luminance
-import androidx.compose.ui.graphics.toArgb
-import androidx.core.graphics.ColorUtils
 
 @Immutable
 class PackPalette(
@@ -55,9 +53,34 @@ fun ensureContrast(
     return result
 }
 
+private val hexPattern = Regex("^#[0-9a-fA-F]{6}$")
+
 fun parseHexColor(hex: String?): Color? {
-    if (hex == null) return null
-    return runCatching { Color(android.graphics.Color.parseColor(hex)) }.getOrNull()
+    if (hex == null || !hexPattern.matches(hex)) return null
+    return Color(0xFF000000L or hex.substring(1).toLong(16))
+}
+
+private fun shiftHue(
+    color: Color,
+    degrees: Float,
+    lightnessDelta: Float,
+): Color {
+    val max = maxOf(color.red, color.green, color.blue)
+    val min = minOf(color.red, color.green, color.blue)
+    val delta = max - min
+    var lightness = (max + min) / 2f
+    val saturation = if (delta == 0f) 0f else delta / (1f - kotlin.math.abs(2f * lightness - 1f))
+    var hue =
+        when {
+            delta == 0f -> 0f
+            max == color.red -> 60f * (((color.green - color.blue) / delta) % 6f)
+            max == color.green -> 60f * ((color.blue - color.red) / delta + 2f)
+            else -> 60f * ((color.red - color.green) / delta + 4f)
+        }
+    if (hue < 0f) hue += 360f
+    hue = (hue + degrees) % 360f
+    lightness = (lightness + lightnessDelta).coerceIn(0.12f, 0.9f)
+    return Color.hsl(hue, saturation.coerceIn(0f, 1f), lightness)
 }
 
 fun packPalette(
@@ -69,11 +92,7 @@ fun packPalette(
     val base = if (dark) scheme.surfaceContainerHigh else scheme.surfaceContainerLowest
     val container = lerp(base, accent, if (dark) 0.24f else 0.14f)
     val heroStart = if (dark) lerp(accent, scheme.surface, 0.2f) else accent
-    val hsl = FloatArray(3)
-    ColorUtils.colorToHSL(heroStart.toArgb(), hsl)
-    hsl[0] = (hsl[0] + 14f) % 360f
-    hsl[2] = (hsl[2] - 0.08f).coerceIn(0.12f, 0.9f)
-    val heroEnd = Color(ColorUtils.HSLToColor(hsl))
+    val heroEnd = shiftHue(heroStart, 14f, -0.08f)
     return PackPalette(
         accent = accent,
         onAccent = bestOn(accent),

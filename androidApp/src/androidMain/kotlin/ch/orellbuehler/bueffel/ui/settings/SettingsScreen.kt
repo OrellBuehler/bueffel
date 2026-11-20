@@ -1,7 +1,6 @@
 package ch.orellbuehler.bueffel.ui.settings
 
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -41,6 +40,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ch.orellbuehler.bueffel.R
 import ch.orellbuehler.bueffel.store.AppSettings
@@ -208,7 +208,7 @@ private fun AboutCard() {
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(12.dp))
                 .clickable(role = Role.Button) {
-                    runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(FORMAT_URL))) }
+                    runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, FORMAT_URL.toUri())) }
                 },
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp),

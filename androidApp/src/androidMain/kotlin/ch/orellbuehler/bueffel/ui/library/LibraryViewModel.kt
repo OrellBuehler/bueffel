@@ -6,9 +6,11 @@ import ch.orellbuehler.bueffel.BueffelSdk
 import ch.orellbuehler.bueffel.store.PackSummary
 import ch.orellbuehler.bueffel.store.SamplePack
 import ch.orellbuehler.bueffel.store.Stats
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 
 data class LibraryState(
@@ -29,10 +31,12 @@ fun pickContinuePack(packs: List<PackSummary>): PackSummary? {
 }
 
 class LibraryViewModel(
-    sdk: BueffelSdk,
+    private val sdk: BueffelSdk,
 ) : ViewModel() {
+    private val samples by lazy { sdk.samplePacks() }
+
     val state: StateFlow<LibraryState> =
         combine(sdk.observePacks(), sdk.observeStats(7)) { packs, stats ->
-            LibraryState(loaded = true, packs = packs, stats = stats, samples = sdk.samplePacks())
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), LibraryState())
+            LibraryState(loaded = true, packs = packs, stats = stats, samples = samples)
+        }.flowOn(Dispatchers.Default).stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), LibraryState())
 }

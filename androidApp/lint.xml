@@ -3,4 +3,9 @@
     <!-- All user-facing Compose UI text must go through stringResource(...) /
          strings.xml so it can be translated (en/de). -->
     <issue id="HardcodedText" severity="error" />
+
+    <!-- The German strings use Swiss spelling (ss instead of the eszett). -->
+    <issue id="Typos">
+        <ignore path="**/values-de/strings.xml" />
+    </issue>
 </lint>

@@ -1,8 +1,12 @@
 package ch.orellbuehler.bueffel.ui.pack
 
 import android.content.Intent
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,8 +20,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -50,7 +57,9 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -64,11 +73,13 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ch.orellbuehler.bueffel.R
 import ch.orellbuehler.bueffel.data.PACK_MIME_TYPE
@@ -82,6 +93,7 @@ import ch.orellbuehler.bueffel.study.SessionMode
 import ch.orellbuehler.bueffel.study.SessionPreview
 import ch.orellbuehler.bueffel.ui.components.PackIconTile
 import ch.orellbuehler.bueffel.ui.components.SlimProgressBar
+import ch.orellbuehler.bueffel.ui.theme.Ink
 import ch.orellbuehler.bueffel.ui.theme.PackPalette
 import ch.orellbuehler.bueffel.ui.theme.bueffel
 import ch.orellbuehler.bueffel.ui.theme.isDark
@@ -144,69 +156,89 @@ private fun PackDetailContent(
             }
         }
 
+    val listState = rememberLazyListState()
+    val heroVisible by remember { derivedStateOf { listState.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset < 120 } }
+    StatusBarIcons(light = if (heroVisible) palette.onHero == Ink else !dark)
+
     Scaffold(
         containerColor = scheme.background,
         contentWindowInsets = WindowInsets(0),
         snackbarHost = { SnackbarHost(snackbar, Modifier.navigationBarsPadding()) },
     ) { padding ->
-        LazyColumn(
-            Modifier.fillMaxSize().padding(padding),
-            contentPadding =
-                androidx.compose.foundation.layout
-                    .PaddingValues(bottom = 32.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp),
-        ) {
-            item {
-                Hero(
-                    detail = detail,
-                    palette = palette,
-                    onBack = onBack,
-                    onShare = {
-                        scope.launch {
-                            val json = viewModel.exportJson()
-                            if (json == null) {
-                                snackbar.showSnackbar(exportFailed)
-                            } else {
-                                val uri = writePackForSharing(context, summary.title, json)
-                                val send =
-                                    Intent(Intent.ACTION_SEND)
-                                        .setType(PACK_MIME_TYPE)
-                                        .putExtra(Intent.EXTRA_STREAM, uri)
-                                        .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                                context.startActivity(Intent.createChooser(send, summary.title))
-                            }
-                        }
-                    },
-                    onSave = { saveLauncher.launch(packFileName(summary.title)) },
-                    onReset = { confirm = Confirm.Reset },
-                    onDelete = { confirm = Confirm.Delete },
-                )
-            }
-            item { StatRow(detail, Modifier.padding(horizontal = 16.dp)) }
-            item {
-                LearnBlock(state.learn, onLearn = {
-                    onStudy(SessionMode.LEARN, null, PracticeFilter.ALL)
-                }, modifier = Modifier.padding(horizontal = 16.dp))
-            }
-            item {
-                PracticeBlock(
-                    detail,
-                    onPractice = { onStudy(SessionMode.PRACTICE, null, it) },
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                )
-            }
-            if (detail.sections.size > 1 || detail.sections.any { !it.isUngrouped }) {
+        Box(Modifier.fillMaxSize().padding(padding)) {
+            LazyColumn(
+                Modifier.fillMaxSize(),
+                state = listState,
+                contentPadding =
+                    androidx.compose.foundation.layout
+                        .PaddingValues(bottom = 32.dp),
+                verticalArrangement = Arrangement.spacedBy(20.dp),
+            ) {
                 item {
-                    SectionsBlock(
-                        detail.sections,
-                        palette,
-                        onSection = { onStudy(SessionMode.LEARN, it.id, PracticeFilter.ALL) },
+                    Hero(
+                        detail = detail,
+                        palette = palette,
+                        onBack = onBack,
+                        onShare = {
+                            scope.launch {
+                                val json = viewModel.exportJson()
+                                if (json == null) {
+                                    snackbar.showSnackbar(exportFailed)
+                                } else {
+                                    val uri = writePackForSharing(context, summary.title, json)
+                                    val send =
+                                        Intent(Intent.ACTION_SEND)
+                                            .setType(PACK_MIME_TYPE)
+                                            .putExtra(Intent.EXTRA_STREAM, uri)
+                                            .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                    context.startActivity(Intent.createChooser(send, summary.title))
+                                }
+                            }
+                        },
+                        onSave = { saveLauncher.launch(packFileName(summary.title)) },
+                        onReset = { confirm = Confirm.Reset },
+                        onDelete = { confirm = Confirm.Delete },
+                    )
+                }
+                item { StatRow(detail, Modifier.padding(horizontal = 16.dp)) }
+                item {
+                    LearnBlock(state.learn, onLearn = {
+                        onStudy(SessionMode.LEARN, null, PracticeFilter.ALL)
+                    }, modifier = Modifier.padding(horizontal = 16.dp))
+                }
+                item {
+                    PracticeBlock(
+                        detail,
+                        onPractice = { onStudy(SessionMode.PRACTICE, null, it) },
                         modifier = Modifier.padding(horizontal = 16.dp),
                     )
                 }
+                if (detail.sections.size > 1 || detail.sections.any { !it.isUngrouped }) {
+                    item {
+                        SectionsBlock(
+                            detail.sections,
+                            palette,
+                            onSection = { onStudy(SessionMode.LEARN, it.id, PracticeFilter.ALL) },
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                        )
+                    }
+                }
+                item { BrowseRow(summary.itemCount, onBrowse, Modifier.padding(horizontal = 16.dp)) }
+                if (hasAbout(detail)) item { AboutBlock(detail, Modifier.padding(horizontal = 16.dp)) }
             }
-            item { BrowseRow(summary.itemCount, onBrowse, Modifier.padding(horizontal = 16.dp)) }
-            if (hasAbout(detail)) item { AboutBlock(detail, Modifier.padding(horizontal = 16.dp)) }
+            AnimatedVisibility(
+                visible = !heroVisible,
+                modifier = Modifier.align(Alignment.TopCenter),
+                enter = fadeIn(),
+                exit = fadeOut(),
+            ) {
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .windowInsetsTopHeight(WindowInsets.statusBars)
+                        .background(scheme.background.copy(alpha = 0.94f)),
+                )
+            }
         }
     }
 
@@ -240,6 +272,23 @@ private fun PackDetailContent(
                 },
                 dismissButton = { TextButton(onClick = { confirm = Confirm.None }) { Text(stringResource(R.string.action_cancel)) } },
             )
+    }
+}
+
+@Composable
+private fun StatusBarIcons(light: Boolean) {
+    val view = LocalView.current
+    val activity = LocalActivity.current
+    DisposableEffect(light) {
+        val window = activity?.window
+        if (window == null) {
+            onDispose { }
+        } else {
+            val controller = WindowCompat.getInsetsController(window, view)
+            val previous = controller.isAppearanceLightStatusBars
+            controller.isAppearanceLightStatusBars = light
+            onDispose { controller.isAppearanceLightStatusBars = previous }
+        }
     }
 }
 

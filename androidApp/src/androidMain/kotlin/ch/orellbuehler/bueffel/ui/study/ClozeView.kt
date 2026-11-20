@@ -64,12 +64,14 @@ sealed interface ClozeToken {
 fun clozeTokens(text: RichText): List<ClozeToken> {
     val tokens = ArrayList<ClozeToken>()
     var current = ArrayList<TextSpan>()
-    var currentHasSpace = false
+    var hasWord = false
+    var hasTrailingSpace = false
 
     fun flush() {
         if (current.isNotEmpty()) tokens += ClozeToken.Word(RichText(current))
         current = ArrayList()
-        currentHasSpace = false
+        hasWord = false
+        hasTrailingSpace = false
     }
 
     fun append(
@@ -97,15 +99,16 @@ fun clozeTokens(text: RichText): List<ClozeToken> {
                 }
                 ch.isWhitespace() -> {
                     buffer.append(ch)
-                    currentHasSpace = true
+                    if (hasWord) hasTrailingSpace = true
                 }
                 else -> {
-                    if (currentHasSpace) {
+                    if (hasTrailingSpace) {
                         append(span, buffer.toString())
                         buffer.clear()
                         flush()
                     }
                     buffer.append(ch)
+                    hasWord = true
                 }
             }
         }

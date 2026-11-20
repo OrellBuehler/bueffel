@@ -81,15 +81,15 @@ fun OnboardingScreen(
         HorizontalPager(pager, Modifier.weight(1f)) { page ->
             when (page) {
                 0 ->
-                    PageFrame(R.string.onb1_title, R.string.onb1_body) {
+                    PageFrame(R.string.onb1_title, R.string.onb1_body, artFirst = true) {
                         Box(
                             Modifier
-                                .size(220.dp)
+                                .size(248.dp)
                                 .clip(CircleShape)
                                 .background(Brush.linearGradient(listOf(Violet.copy(alpha = 0.16f), Amber.copy(alpha = 0.22f)))),
                             contentAlignment = Alignment.Center,
                         ) {
-                            Mascot(size = 150.dp, mood = MascotMood.Idle)
+                            Mascot(size = 176.dp, mood = MascotMood.Idle)
                         }
                     }
                 1 ->
@@ -103,9 +103,14 @@ fun OnboardingScreen(
                     }
                 else ->
                     PageFrame(R.string.onb3_title, R.string.onb3_body) {
-                        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             importViewModel.samples.forEach { sample ->
-                                SampleRow(sample, installed = sample.id in installed, onAdd = { importViewModel.addSample(sample.id) })
+                                SampleRow(
+                                    sample,
+                                    installed = sample.id in installed,
+                                    onAdd = { importViewModel.addSample(sample.id) },
+                                    compact = true,
+                                )
                             }
                         }
                     }
@@ -149,6 +154,7 @@ fun OnboardingScreen(
 private fun PageFrame(
     title: Int,
     body: Int,
+    artFirst: Boolean = false,
     art: @Composable () -> Unit,
 ) {
     Column(
@@ -160,7 +166,7 @@ private fun PageFrame(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(20.dp, Alignment.CenterVertically),
     ) {
-        art()
+        if (artFirst) art()
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Text(stringResource(title), style = MaterialTheme.typography.headlineMedium, textAlign = TextAlign.Center)
             Text(
@@ -170,6 +176,7 @@ private fun PageFrame(
                 textAlign = TextAlign.Center,
             )
         }
+        if (!artFirst) art()
     }
 }
 

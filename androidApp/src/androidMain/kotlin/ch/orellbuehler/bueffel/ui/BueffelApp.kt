@@ -48,6 +48,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -161,6 +162,7 @@ private fun AppNavigation(
     importViewModel: ImportViewModel,
 ) {
     val context = LocalContext.current
+    val resources = LocalResources.current
     val app = context.applicationContext as BueffelApplication
     val sdk = app.sdk
     val nav = rememberNavController()
@@ -181,7 +183,7 @@ private fun AppNavigation(
                         val outcome =
                             snackbar.showSnackbar(
                                 message =
-                                    context.getString(
+                                    resources.getString(
                                         if (result.isUpdate) R.string.snackbar_updated else R.string.snackbar_added,
                                         result.title,
                                     ),
@@ -194,7 +196,7 @@ private fun AppNavigation(
                         if (onAddScreen) nav.popBackStack()
                         nav.navigate(route)
                         snackbar.showSnackbar(
-                            context.getString(if (result.isUpdate) R.string.snackbar_updated else R.string.snackbar_added, result.title),
+                            resources.getString(if (result.isUpdate) R.string.snackbar_updated else R.string.snackbar_added, result.title),
                         )
                     }
                 }

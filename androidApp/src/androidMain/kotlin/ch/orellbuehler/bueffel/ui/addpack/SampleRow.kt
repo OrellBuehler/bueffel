@@ -35,6 +35,7 @@ fun SampleRow(
     installed: Boolean,
     onAdd: () -> Unit,
     modifier: Modifier = Modifier,
+    compact: Boolean = false,
 ) {
     val scheme = MaterialTheme.colorScheme
     val dark = MaterialTheme.isDark
@@ -45,11 +46,11 @@ fun SampleRow(
         colors = CardDefaults.cardColors(containerColor = palette.container, contentColor = palette.onContainer),
     ) {
         Row(
-            Modifier.padding(14.dp),
+            Modifier.padding(if (compact) 10.dp else 14.dp),
             horizontalArrangement = Arrangement.spacedBy(14.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            PackIconTile(sample.icon, palette, size = 48.dp)
+            PackIconTile(sample.icon, palette, size = if (compact) 42.dp else 48.dp)
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(sample.title, style = MaterialTheme.typography.titleSmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 Text(

@@ -4,6 +4,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -37,6 +38,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -57,7 +59,6 @@ import ch.orellbuehler.bueffel.ui.components.bottomContentPadding
 import ch.orellbuehler.bueffel.ui.theme.Amber
 import ch.orellbuehler.bueffel.ui.theme.bueffel
 import java.time.LocalDate
-import java.util.Locale
 import kotlin.math.roundToInt
 import java.time.format.TextStyle as DateTextStyle
 
@@ -268,7 +269,7 @@ private fun WeekChart(
     val scheme = MaterialTheme.colorScheme
     val success = MaterialTheme.bueffel.success
     val labelColor = scheme.onSurfaceVariant
-    val locale = Locale.getDefault()
+    val locale = LocalLocale.current.platformLocale
     val labels =
         remember(week, locale) {
             week.map { LocalDate.ofEpochDay(it.epochDay.toLong()).dayOfWeek.getDisplayName(DateTextStyle.SHORT, locale) }
@@ -342,24 +343,28 @@ private fun HeatmapChart(heatmap: Heatmap) {
     val total = heatmap.columns.sumOf { column -> column.sumOf { it?.day?.reviews ?: 0 } }
     val description = stringResource(R.string.stats_heatmap_description, heatmap.columns.size, total)
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Canvas(
-            Modifier
-                .fillMaxWidth()
-                .height(heatmapHeight(heatmap.columns.size))
-                .semantics { contentDescription = description },
-        ) {
+        BoxWithConstraints(Modifier.fillMaxWidth()) {
             val columns = heatmap.columns.size
-            val gap = 4.dp.toPx()
-            val cell = (size.width - gap * (columns - 1)) / columns
-            heatmap.columns.forEachIndexed { x, column ->
-                column.forEachIndexed { y, cellData ->
-                    if (cellData != null) {
-                        drawRoundRect(
-                            colors[cellData.level],
-                            Offset(x * (cell + gap), y * (cell + gap)),
-                            Size(cell, cell),
-                            CornerRadius(cell * 0.28f),
-                        )
+            val gap = 4.dp
+            val cell = (maxWidth - gap * (columns - 1)) / columns
+            Canvas(
+                Modifier
+                    .fillMaxWidth()
+                    .height(cell * 7 + gap * 6)
+                    .semantics { contentDescription = description },
+            ) {
+                val gapPx = gap.toPx()
+                val cellPx = cell.toPx()
+                heatmap.columns.forEachIndexed { x, column ->
+                    column.forEachIndexed { y, cellData ->
+                        if (cellData != null) {
+                            drawRoundRect(
+                                colors[cellData.level],
+                                Offset(x * (cellPx + gapPx), y * (cellPx + gapPx)),
+                                Size(cellPx, cellPx),
+                                CornerRadius(cellPx * 0.28f),
+                            )
+                        }
                     }
                 }
             }
@@ -370,12 +375,4 @@ private fun HeatmapChart(heatmap: Heatmap) {
             Text(stringResource(R.string.stats_more), style = MaterialTheme.typography.labelSmall, color = scheme.onSurfaceVariant)
         }
     }
-}
-
-@Composable
-private fun heatmapHeight(columns: Int): androidx.compose.ui.unit.Dp {
-    val widthDp = androidx.compose.ui.platform.LocalConfiguration.current.screenWidthDp - 32 - 40
-    val gap = 4
-    val cell = (widthDp - gap * (columns - 1)).toFloat() / columns
-    return (cell * 7 + gap * 6).dp
 }

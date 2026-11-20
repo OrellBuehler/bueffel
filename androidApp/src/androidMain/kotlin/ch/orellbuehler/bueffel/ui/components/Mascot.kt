@@ -44,10 +44,11 @@ fun Mascot(
     bodyColor: Color = Violet,
     animated: Boolean = true,
 ) {
+    val animate = animated && !rememberReduceMotion()
     val horns = remember { PathParser().parsePathString(HORNS).toPath() }
     val transition = rememberInfiniteTransition(label = "mascot")
     val blink =
-        if (animated && mood == MascotMood.Idle) {
+        if (animate && mood == MascotMood.Idle) {
             transition
                 .animateFloat(
                     initialValue = 1f,
@@ -70,7 +71,7 @@ fun Mascot(
             1f
         }
     val bob =
-        if (animated) {
+        if (animate) {
             transition
                 .animateFloat(
                     initialValue = 0f,
