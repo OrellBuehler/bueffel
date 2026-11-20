@@ -228,6 +228,7 @@
     <string name="stats_activity">Activity</string>
     <string name="stats_this_week">Last 7 days</string>
     <string name="stats_last_weeks">Last %1$d weeks</string>
+    <string name="stats_goal_line">Goal: %1$d</string>
     <string name="stats_less">Less</string>
     <string name="stats_more">More</string>
     <string name="stats_empty_hint">Study a little each day and your activity shows up here.</string>

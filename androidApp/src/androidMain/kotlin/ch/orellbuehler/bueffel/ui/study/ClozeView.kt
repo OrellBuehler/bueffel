@@ -131,7 +131,7 @@ fun ClozeView(
     val keyboard = LocalSoftwareKeyboardController.current
     val first = remember { FocusRequester() }
     LaunchedEffect(feedback == null) {
-        if (feedback == null) first.requestFocus() else keyboard?.hide()
+        if (feedback == null) runCatching { first.requestFocus() } else keyboard?.hide()
     }
     val style = MaterialTheme.typography.titleLarge
     val scheme = MaterialTheme.colorScheme

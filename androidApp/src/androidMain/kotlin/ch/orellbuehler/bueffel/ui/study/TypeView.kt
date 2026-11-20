@@ -45,7 +45,7 @@ fun TypeView(
     val focus = remember { FocusRequester() }
     val keyboard = LocalSoftwareKeyboardController.current
     LaunchedEffect(feedback == null) {
-        if (feedback == null) focus.requestFocus() else keyboard?.hide()
+        if (feedback == null) runCatching { focus.requestFocus() } else keyboard?.hide()
     }
     val success = MaterialTheme.bueffel
     val scheme = MaterialTheme.colorScheme

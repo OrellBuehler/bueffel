@@ -120,7 +120,7 @@
     <string name="practice_all">Gemischt</string>
     <string name="practice_flashcards">Karteikarten</string>
     <string name="practice_quiz">Quiz</string>
-    <string name="practice_typing">Tippen</string>
+    <string name="practice_typing">Eintippen</string>
     <string name="detail_sections">Abschnitte</string>
     <string name="section_ungrouped">Weitere</string>
     <string name="detail_browse">Alle Einträge ansehen</string>
@@ -228,6 +228,7 @@
     <string name="stats_activity">Aktivität</string>
     <string name="stats_this_week">Letzte 7 Tage</string>
     <string name="stats_last_weeks">Letzte %1$d Wochen</string>
+    <string name="stats_goal_line">Ziel: %1$d</string>
     <string name="stats_less">Weniger</string>
     <string name="stats_more">Mehr</string>
     <string name="stats_empty_hint">Lerne jeden Tag ein wenig, dann erscheint hier deine Aktivität.</string>

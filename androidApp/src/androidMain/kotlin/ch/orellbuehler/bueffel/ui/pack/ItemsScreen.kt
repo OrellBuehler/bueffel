@@ -235,7 +235,7 @@ private fun ItemSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor = scheme.surface,
+        containerColor = scheme.surfaceContainerLow,
     ) {
         Column(
             Modifier.navigationBarsPadding().padding(horizontal = 20.dp).padding(bottom = 20.dp),

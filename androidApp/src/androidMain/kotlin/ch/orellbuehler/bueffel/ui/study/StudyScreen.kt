@@ -194,6 +194,7 @@ private fun ActiveSession(
         }
     }
     val barColor = ensureContrast(palette.accent, MaterialTheme.colorScheme.background, 3f, MaterialTheme.colorScheme.onSurface)
+    val answeredForGood = feedback != null && feedback.correct && !feedback.willRepeat
     val progressDescription = stringResource(R.string.study_progress_cd, position, total)
     Column(Modifier.fillMaxSize().statusBarsPadding()) {
         Row(
@@ -204,7 +205,7 @@ private fun ActiveSession(
             IconButton(onClick = onClose) { Icon(Icons.Rounded.Close, stringResource(R.string.study_close_cd)) }
             Box(Modifier.weight(1f).semantics { contentDescription = progressDescription }) {
                 SlimProgressBar(
-                    progress = (position - 1).toFloat() / total.coerceAtLeast(1),
+                    progress = (if (answeredForGood) position else position - 1).toFloat() / total.coerceAtLeast(1),
                     height = 10.dp,
                     trackColor = MaterialTheme.colorScheme.surfaceContainerHighest,
                     color = barColor,

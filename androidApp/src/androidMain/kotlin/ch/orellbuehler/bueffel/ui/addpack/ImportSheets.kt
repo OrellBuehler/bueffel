@@ -38,6 +38,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,6 +49,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -64,6 +67,14 @@ import ch.orellbuehler.bueffel.ui.theme.packPalette
 @Composable
 fun ImportSheetHost(viewModel: ImportViewModel) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val keyboard = LocalSoftwareKeyboardController.current
+    val focus = LocalFocusManager.current
+    LaunchedEffect(state is ImportUiState.Idle) {
+        if (state !is ImportUiState.Idle) {
+            keyboard?.hide()
+            focus.clearFocus()
+        }
+    }
     when (val current = state) {
         ImportUiState.Idle -> Unit
         ImportUiState.Reading ->
@@ -92,7 +103,7 @@ private fun PreviewSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor = scheme.surface,
+        containerColor = scheme.surfaceContainerLow,
     ) {
         Column(
             Modifier
@@ -295,7 +306,7 @@ private fun ErrorSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor = scheme.surface,
+        containerColor = scheme.surfaceContainerLow,
     ) {
         Column(
             Modifier

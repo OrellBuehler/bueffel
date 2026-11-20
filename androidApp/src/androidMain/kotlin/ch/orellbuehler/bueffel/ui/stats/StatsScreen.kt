@@ -276,6 +276,7 @@ private fun WeekChart(
         }
     val description = week.indices.joinToString(", ") { "${labels[it]} ${week[it].reviews}" }
     val chartDescription = stringResource(R.string.stats_chart_description, description)
+    val goalLabel = stringResource(R.string.stats_goal_line, goal)
     val max = maxOf(week.maxOf { it.reviews }, goal, 1)
     val valueStyle = TextStyle(fontSize = 11.sp, color = labelColor)
     val dayStyle = TextStyle(fontSize = 11.sp, color = labelColor, textAlign = TextAlign.Center)
@@ -299,6 +300,8 @@ private fun WeekChart(
             strokeWidth = 1.dp.toPx(),
             pathEffect = PathEffect.dashPathEffect(floatArrayOf(8.dp.toPx(), 6.dp.toPx())),
         )
+        val goalLayout = measurer.measure(goalLabel, valueStyle)
+        drawText(goalLayout, topLeft = Offset(size.width - goalLayout.size.width, goalY - goalLayout.size.height - 2.dp.toPx()))
         week.forEachIndexed { index, day ->
             val left = slot * index + (slot - barWidth) / 2
             val height = if (day.reviews == 0) 4.dp.toPx() else (chartHeight * day.reviews / max).coerceAtLeast(6.dp.toPx())
