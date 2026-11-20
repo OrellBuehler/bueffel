@@ -1,0 +1,305 @@
+{
+  "$schema": "https://raw.githubusercontent.com/OrellBuehler/bueffel/main/format/bueffel-pack.schema.json",
+  "format": "bueffel-pack",
+  "version": 1,
+  "id": "com.github.orellbuehler.bueffel.examples.swiss-cantons",
+  "title": "Swiss Cantons and Their Capitals",
+  "description": "Learn the capital of each of the 26 Swiss cantons, region by region, then test yourself on a few facts about Switzerland's geography and history. Cards are asked as multiple choice and as typed answers.",
+  "language": "en",
+  "author": "Büffel project",
+  "license": "CC0-1.0",
+  "source": "https://github.com/OrellBuehler/bueffel",
+  "tags": ["geography", "switzerland", "cantons"],
+  "icon": "🇨🇭",
+  "color": "#D52B1E",
+  "revision": 1,
+  "created": "2026-11-20",
+  "updated": "2026-11-20",
+  "sections": [
+    {
+      "id": "central",
+      "title": "Central Switzerland",
+      "description": "The grouping of cantons into regions loosely follows the statistical regions of the Swiss Federal Statistical Office."
+    },
+    {"id": "eastern", "title": "Eastern Switzerland"},
+    {"id": "zurich-northwest", "title": "Zurich and northwestern Switzerland"},
+    {"id": "mittelland", "title": "Espace Mittelland", "description": "Bern, Fribourg, Solothurn, Neuchâtel and Jura."},
+    {"id": "lake-geneva-ticino", "title": "Lake Geneva region and Ticino"},
+    {"id": "facts", "title": "Beyond the capitals", "description": "Facts about size, population, languages and history."}
+  ],
+  "study": {"order": "sequential", "newPerSession": 6, "ignoreDiacritics": true, "exercises": {"card": ["choice", "type"]}},
+  "items": [
+    {
+      "id": "capital-lu",
+      "type": "card",
+      "section": "central",
+      "front": "Capital of canton **Lucerne** (LU)?",
+      "back": "Lucerne",
+      "alternatives": ["Luzern"]
+    },
+    {
+      "id": "capital-ur",
+      "type": "card",
+      "section": "central",
+      "front": "Capital of canton **Uri** (UR)?",
+      "back": "Altdorf",
+      "explanation": "According to legend, William Tell shot the apple from his son's head in Altdorf."
+    },
+    {
+      "id": "capital-sz",
+      "type": "card",
+      "section": "central",
+      "front": "Capital of canton **Schwyz** (SZ)?",
+      "back": "Schwyz",
+      "explanation": "The canton and its capital share a name, and the country is named after them."
+    },
+    {
+      "id": "capital-ow",
+      "type": "card",
+      "section": "central",
+      "front": "Capital of canton **Obwalden** (OW)?",
+      "back": "Sarnen",
+      "explanation": "Nidwalden's capital is Stans, Obwalden's is Sarnen."
+    },
+    {
+      "id": "capital-nw",
+      "type": "card",
+      "section": "central",
+      "front": "Capital of canton **Nidwalden** (NW)?",
+      "back": "Stans",
+      "explanation": "Obwalden's capital is Sarnen, Nidwalden's is Stans."
+    },
+    {"id": "capital-zg", "type": "card", "section": "central", "front": "Capital of canton **Zug** (ZG)?", "back": "Zug"},
+    {"id": "capital-gl", "type": "card", "section": "eastern", "front": "Capital of canton **Glarus** (GL)?", "back": "Glarus"},
+    {"id": "capital-sh", "type": "card", "section": "eastern", "front": "Capital of canton **Schaffhausen** (SH)?", "back": "Schaffhausen"},
+    {
+      "id": "capital-ar",
+      "type": "card",
+      "section": "eastern",
+      "front": "Capital of canton **Appenzell Ausserrhoden** (AR)?",
+      "back": "Herisau",
+      "explanation": "Herisau is the seat of government and parliament. The cantonal courts sit in Trogen."
+    },
+    {"id": "capital-ai", "type": "card", "section": "eastern", "front": "Capital of canton **Appenzell Innerrhoden** (AI)?", "back": "Appenzell"},
+    {
+      "id": "capital-sg",
+      "type": "card",
+      "section": "eastern",
+      "front": "Capital of canton **St. Gallen** (SG)?",
+      "back": "St. Gallen",
+      "alternatives": ["St Gallen", "Sankt Gallen", "Saint Gall"],
+      "explanation": "The abbey district of St. Gallen is a UNESCO World Heritage Site."
+    },
+    {
+      "id": "capital-gr",
+      "type": "card",
+      "section": "eastern",
+      "front": "Capital of canton **Graubünden (Grisons)** (GR)?",
+      "back": "Chur",
+      "alternatives": ["Coire"],
+      "explanation": "Graubünden is the largest canton by area."
+    },
+    {"id": "capital-tg", "type": "card", "section": "eastern", "front": "Capital of canton **Thurgau** (TG)?", "back": "Frauenfeld"},
+    {
+      "id": "capital-zh",
+      "type": "card",
+      "section": "zurich-northwest",
+      "front": "Capital of canton **Zurich** (ZH)?",
+      "back": "Zurich",
+      "alternatives": ["Zuerich"]
+    },
+    {
+      "id": "capital-bs",
+      "type": "card",
+      "section": "zurich-northwest",
+      "front": "Capital of canton **Basel-Stadt** (BS)?",
+      "back": "Basel",
+      "explanation": "Basel-Stadt is a city-canton consisting of the city of Basel and two neighbouring municipalities."
+    },
+    {
+      "id": "capital-bl",
+      "type": "card",
+      "section": "zurich-northwest",
+      "front": "Capital of canton **Basel-Landschaft** (BL)?",
+      "back": "Liestal",
+      "explanation": "Not Basel: Basel is the capital of the neighbouring half-canton Basel-Stadt."
+    },
+    {
+      "id": "capital-ag",
+      "type": "card",
+      "section": "zurich-northwest",
+      "front": "Capital of canton **Aargau** (AG)?",
+      "back": "Aarau",
+      "explanation": "Aarau lies on the river Aare."
+    },
+    {
+      "id": "capital-be",
+      "type": "card",
+      "section": "mittelland",
+      "front": "Capital of canton **Bern** (BE)?",
+      "back": "Bern",
+      "explanation": "Bern is also the seat of the federal government."
+    },
+    {
+      "id": "capital-fr",
+      "type": "card",
+      "section": "mittelland",
+      "front": "Capital of canton **Fribourg** (FR)?",
+      "back": "Fribourg",
+      "alternatives": ["Freiburg"],
+      "explanation": "A bilingual canton: French and German."
+    },
+    {
+      "id": "capital-so",
+      "type": "card",
+      "section": "mittelland",
+      "front": "Capital of canton **Solothurn** (SO)?",
+      "back": "Solothurn",
+      "alternatives": ["Soleure"]
+    },
+    {
+      "id": "capital-ne",
+      "type": "card",
+      "section": "mittelland",
+      "front": "Capital of canton **Neuchâtel** (NE)?",
+      "back": "Neuchâtel",
+      "alternatives": ["Neuenburg"]
+    },
+    {
+      "id": "capital-ju",
+      "type": "card",
+      "section": "mittelland",
+      "front": "Capital of canton **Jura** (JU)?",
+      "back": "Delémont",
+      "alternatives": ["Delsberg"],
+      "explanation": "Delémont became a cantonal capital when Jura was founded as a canton in 1979."
+    },
+    {
+      "id": "capital-vd",
+      "type": "card",
+      "section": "lake-geneva-ticino",
+      "front": "Capital of canton **Vaud** (VD)?",
+      "back": "Lausanne",
+      "explanation": "Lausanne is also the seat of the Swiss Federal Supreme Court."
+    },
+    {
+      "id": "capital-vs",
+      "type": "card",
+      "section": "lake-geneva-ticino",
+      "front": "Capital of canton **Valais** (VS)?",
+      "back": "Sion",
+      "alternatives": ["Sitten"]
+    },
+    {
+      "id": "capital-ge",
+      "type": "card",
+      "section": "lake-geneva-ticino",
+      "front": "Capital of canton **Geneva** (GE)?",
+      "back": "Geneva",
+      "alternatives": ["Genf", "Genève"]
+    },
+    {
+      "id": "capital-ti",
+      "type": "card",
+      "section": "lake-geneva-ticino",
+      "front": "Capital of canton **Ticino** (TI)?",
+      "back": "Bellinzona",
+      "explanation": "The three castles of Bellinzona are a UNESCO World Heritage Site."
+    },
+    {
+      "id": "canton-count",
+      "type": "text",
+      "section": "facts",
+      "question": "How many cantons does Switzerland have?",
+      "answers": ["26", "twenty-six", "twenty six"],
+      "explanation": "Twenty cantons and six half-cantons. Half-cantons send one instead of two members to the Council of States."
+    },
+    {
+      "id": "largest-canton",
+      "type": "choice",
+      "section": "facts",
+      "question": "Which canton is the largest by area?",
+      "options": [
+        {"text": "Graubünden", "correct": true, "explanation": "About 7,100 square kilometres."},
+        {"text": "Bern", "explanation": "About 5,960 square kilometres, the second largest."},
+        {"text": "Valais", "explanation": "About 5,220 square kilometres."},
+        {"text": "Vaud", "explanation": "About 3,210 square kilometres."}
+      ]
+    },
+    {
+      "id": "smallest-canton",
+      "type": "choice",
+      "section": "facts",
+      "question": "Which canton is the smallest by area?",
+      "options": [
+        {"text": "Basel-Stadt", "correct": true, "explanation": "About 37 square kilometres."},
+        {"text": "Appenzell Innerrhoden", "explanation": "About 173 square kilometres, the second smallest canton."},
+        {"text": "Zug", "explanation": "About 239 square kilometres."},
+        {"text": "Geneva", "explanation": "About 282 square kilometres."}
+      ]
+    },
+    {
+      "id": "most-populous-canton",
+      "type": "choice",
+      "section": "facts",
+      "question": "Which canton has the most inhabitants?",
+      "options": [
+        {"text": "Zurich", "correct": true, "explanation": "More than 1.5 million people live in the canton of Zurich."},
+        {"text": "Bern", "explanation": "Second place, with about one million inhabitants."},
+        {"text": "Vaud", "explanation": "Third place."},
+        {"text": "Aargau", "explanation": "Fourth place."}
+      ]
+    },
+    {
+      "id": "federal-city",
+      "type": "truefalse",
+      "section": "facts",
+      "statement": "The Swiss federal government sits in Bern, which officially holds the title \"federal city\" rather than \"capital\".",
+      "answer": true,
+      "explanation": "The federal constitution names no capital. Bern is the *Bundesstadt* (federal city)."
+    },
+    {
+      "id": "graubuenden-languages",
+      "type": "truefalse",
+      "section": "facts",
+      "statement": "Graubünden is the only Swiss canton with three official languages: German, Romansh and Italian.",
+      "answer": true
+    },
+    {
+      "id": "founding-cantons",
+      "type": "choice",
+      "section": "facts",
+      "question": "Which cantons formed the original Swiss Confederation in 1291? (Select all that apply.)",
+      "options": [
+        {"text": "Uri", "correct": true},
+        {"text": "Schwyz", "correct": true},
+        {"text": "Unterwalden (today Obwalden and Nidwalden)", "correct": true},
+        {"text": "Zurich"},
+        {"text": "Bern"},
+        {"text": "Lucerne"}
+      ],
+      "explanation": "The three \"forest cantons\" sealed their alliance in the Federal Charter of 1291, traditionally dated to 1 August, Switzerland's national day."
+    },
+    {
+      "id": "joining-order",
+      "type": "order",
+      "section": "facts",
+      "prompt": "Put these cantons in the order in which they joined the Swiss Confederation, earliest first.",
+      "sequence": ["Lucerne", "Zurich", "Bern", "Basel", "Geneva", "Jura"],
+      "explanation": "Lucerne 1332, Zurich 1351, Bern 1353, Basel 1501, Geneva 1815, Jura 1979."
+    },
+    {
+      "id": "jura-founded",
+      "type": "cloze",
+      "section": "facts",
+      "text": "The canton of {{Jura}} separated from Bern and became Switzerland's youngest canton in {{1979}}."
+    },
+    {
+      "id": "national-languages",
+      "type": "cloze",
+      "section": "facts",
+      "text": "Switzerland's four national languages are German, French, Italian and {{Romansh}}.",
+      "explanation": "Romansh is spoken mainly in the canton of Graubünden."
+    }
+  ]
+}

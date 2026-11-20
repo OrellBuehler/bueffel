@@ -1,0 +1,299 @@
+{
+  "$schema": "https://raw.githubusercontent.com/OrellBuehler/bueffel/main/format/bueffel-pack.schema.json",
+  "format": "bueffel-pack",
+  "version": 1,
+  "id": "com.github.orellbuehler.bueffel.examples.interview-prep-software-engineer",
+  "title": "Software Engineer Interview Prep",
+  "description": "Twenty questions for software engineering interviews. Mostly open questions with a checklist of key points to grade yourself against, plus a few flashcards and multiple-choice checks on fundamentals.",
+  "language": "en",
+  "author": "Büffel project",
+  "license": "CC0-1.0",
+  "source": "https://github.com/OrellBuehler/bueffel",
+  "tags": ["interview", "software-engineering", "career"],
+  "icon": "💼",
+  "color": "#0F766E",
+  "revision": 1,
+  "created": "2026-11-20",
+  "updated": "2026-11-20",
+  "sections": [
+    {"id": "behavioral", "title": "Behavioral questions", "description": "Answer these out loud, ideally with the STAR structure."},
+    {"id": "fundamentals", "title": "Computer science fundamentals"},
+    {"id": "web-data", "title": "Web and data"},
+    {"id": "system-design", "title": "System design"}
+  ],
+  "study": {"order": "random", "newPerSession": 5, "exercises": {"card": ["flip", "choice"]}},
+  "items": [
+    {
+      "id": "tell-me-about-yourself",
+      "type": "open",
+      "section": "behavioral",
+      "question": "Tell me about yourself.",
+      "answer": "Use a present, past, future structure and stay under two minutes: what you do now, the one or two experiences that led here, and why this role is the logical next step.",
+      "keyPoints": [
+        "Starts with your current role and focus",
+        "Highlights two or three relevant achievements instead of reciting the CV",
+        "Connects your background to this role and company",
+        "Ends with what you want to do next",
+        "Stays under two minutes"
+      ],
+      "hint": "Present, past, future."
+    },
+    {
+      "id": "conflict-with-teammate",
+      "type": "open",
+      "section": "behavioral",
+      "question": "Tell me about a time you disagreed with a teammate on a technical decision.",
+      "answer": "Set the scene briefly, describe both positions fairly, explain how the disagreement was resolved (data, a prototype, a decision owner) and what you learned. Finish with the outcome.",
+      "keyPoints": [
+        "Sets the scene concisely: situation and stakes",
+        "Presents the other person's view fairly",
+        "Shows how it was resolved with data, a prototype or a clear decision owner",
+        "Takes ownership of your own part",
+        "States the result and what you would do differently"
+      ],
+      "explanation": "Interviewers look for collaboration and judgement, not for who was right. Avoid blaming the teammate."
+    },
+    {
+      "id": "unclear-requirements",
+      "type": "open",
+      "section": "behavioral",
+      "question": "How do you handle a project with unclear or changing requirements?",
+      "answer": "Clarify what you can, make assumptions explicit, deliver in small increments to get feedback early, and keep the design flexible where uncertainty is greatest.",
+      "keyPoints": [
+        "Asks clarifying questions and identifies the real stakeholders",
+        "States assumptions explicitly and gets them confirmed",
+        "Delivers in small increments to get early feedback",
+        "Keeps the design flexible where requirements are most uncertain",
+        "Documents decisions so changes stay traceable"
+      ]
+    },
+    {
+      "id": "production-incident",
+      "type": "open",
+      "section": "behavioral",
+      "question": "Walk me through how you would handle a production incident.",
+      "answer": "Stabilise first, then diagnose. Roll back or mitigate, gather facts, test one hypothesis at a time, keep stakeholders informed, fix the root cause and finish with a blameless post-mortem.",
+      "keyPoints": [
+        "Restores service first: roll back, disable a feature flag or scale up",
+        "Gathers facts: alerts, dashboards, logs and recent deployments",
+        "Tests one hypothesis at a time",
+        "Communicates status regularly to stakeholders",
+        "Fixes the root cause and verifies the fix",
+        "Runs a blameless post-mortem with concrete action items"
+      ]
+    },
+    {
+      "id": "good-code-review",
+      "type": "open",
+      "section": "behavioral",
+      "question": "What makes a good code review?",
+      "answer": "Correctness and tests come first, then readability and risks. Feedback is specific, kind and actionable, changes are small and reviews are fast. Style nits are left to automated tools.",
+      "keyPoints": [
+        "Checks correctness, edge cases and tests first",
+        "Considers readability and maintainability",
+        "Looks for security and performance risks",
+        "Gives specific, kind and actionable feedback",
+        "Keeps changes small and reviews quickly",
+        "Leaves style nits to linters and formatters"
+      ]
+    },
+    {
+      "id": "star-method",
+      "type": "card",
+      "section": "behavioral",
+      "front": "STAR method",
+      "back": "Situation, Task, Action, Result",
+      "distractors": ["Strategy, Timeline, Analysis, Review", "Scope, Time, Assets, Risk", "Success, Target, Actions, Reflection"],
+      "explanation": "A structure for behavioral answers: set the **Situation** and your **Task**, describe the **Action** *you* took and finish with the **Result**. Spend most of the time on action and result."
+    },
+    {
+      "id": "processes-vs-threads",
+      "type": "open",
+      "section": "fundamentals",
+      "question": "Explain the difference between a process and a thread.",
+      "answer": "A process is an isolated program instance with its own address space. Threads live inside a process and share its memory, which makes them cheaper to create and switch but requires synchronisation.",
+      "keyPoints": [
+        "A process has its own address space and resources; threads share the memory of their process",
+        "Threads are cheaper to create and to context-switch",
+        "Shared memory needs synchronisation (locks) to avoid race conditions and deadlocks",
+        "A crashing process is isolated from others; a crashing thread can take down its whole process",
+        "Processes communicate through inter-process communication (pipes, sockets, shared memory)"
+      ]
+    },
+    {
+      "id": "testing-levels",
+      "type": "open",
+      "section": "fundamentals",
+      "question": "What is the difference between unit, integration and end-to-end tests, and how do you balance them?",
+      "answer": "Unit tests check small pieces of logic quickly, integration tests check that components work together, end-to-end tests exercise the whole system like a user. Aim for many unit tests, fewer integration tests and few end-to-end tests.",
+      "keyPoints": [
+        "Unit tests: fast and isolated, check one piece of logic",
+        "Integration tests: check that components such as the database or other services work together",
+        "End-to-end tests: exercise the whole system like a user; slowest and most brittle",
+        "Test pyramid: many unit tests, fewer integration tests, few end-to-end tests",
+        "Test behaviour, not implementation details"
+      ]
+    },
+    {
+      "id": "binary-search-complexity",
+      "type": "card",
+      "section": "fundamentals",
+      "front": "Time complexity of binary search on a sorted array",
+      "back": "O(log n)",
+      "alternatives": ["O(logn)", "O(log(n))", "log n"],
+      "distractors": ["O(n)", "O(n log n)", "O(1)"],
+      "exercises": ["flip", "choice", "type"],
+      "explanation": "Each step halves the remaining range, so n elements need about log2(n) steps."
+    },
+    {
+      "id": "hash-table-lookup",
+      "type": "card",
+      "section": "fundamentals",
+      "front": "Average time to look up a key in a hash table",
+      "back": "O(1)",
+      "alternatives": ["constant", "constant time"],
+      "distractors": ["O(log n)", "O(n)", "O(n log n)"],
+      "explanation": "Constant time on average. The worst case degrades to O(n) when many keys collide."
+    },
+    {
+      "id": "quicksort-worst-case",
+      "type": "card",
+      "section": "fundamentals",
+      "front": "Worst-case time complexity of quicksort",
+      "back": "O(n²)",
+      "alternatives": ["O(n^2)", "O(n2)", "n^2", "quadratic"],
+      "distractors": ["O(n log n)", "O(n)", "O(log n)"],
+      "explanation": "Happens with consistently bad pivots, for example a naive first-element pivot on an already sorted array. The average case is O(n log n)."
+    },
+    {
+      "id": "acid-odd-one-out",
+      "type": "choice",
+      "section": "fundamentals",
+      "question": "Which of these is NOT one of the ACID properties of database transactions?",
+      "options": [
+        {"text": "Atomicity", "explanation": "A transaction is all or nothing."},
+        {"text": "Consistency", "explanation": "A transaction moves the database from one valid state to another."},
+        {"text": "Isolation", "explanation": "Concurrent transactions do not see each other's intermediate state."},
+        {"text": "Availability", "correct": true, "explanation": "Availability is part of the CAP theorem. The D in ACID stands for Durability."}
+      ]
+    },
+    {
+      "id": "solid-principles",
+      "type": "choice",
+      "section": "fundamentals",
+      "question": "Which of these are SOLID principles? (Select all that apply.)",
+      "options": [
+        {"text": "Single responsibility principle", "correct": true},
+        {"text": "Open/closed principle", "correct": true},
+        {"text": "Liskov substitution principle", "correct": true},
+        {"text": "Don't repeat yourself (DRY)", "explanation": "A valuable guideline, but not part of the SOLID acronym."},
+        {"text": "Keep it simple (KISS)", "explanation": "Also a valuable guideline, but not part of SOLID."}
+      ],
+      "explanation": "SOLID stands for Single responsibility, Open/closed, Liskov substitution, Interface segregation and Dependency inversion."
+    },
+    {
+      "id": "url-in-browser",
+      "type": "open",
+      "section": "web-data",
+      "question": "What happens when you type a URL into the browser and press Enter?",
+      "answer": "The browser resolves the hostname via DNS, opens a TCP connection and negotiates TLS, sends an HTTP request, receives the response and renders the page while loading further resources.",
+      "keyPoints": [
+        "URL is parsed; caches and HSTS are checked",
+        "DNS resolves the hostname to an IP address",
+        "A TCP connection is opened (three-way handshake); with HTTP/3 QUIC over UDP is used instead",
+        "A TLS handshake secures the connection for HTTPS",
+        "The browser sends the HTTP request; the server (often behind a load balancer) responds",
+        "The browser parses HTML, CSS and JavaScript, fetches sub-resources and renders the page"
+      ]
+    },
+    {
+      "id": "database-indexes",
+      "type": "open",
+      "section": "web-data",
+      "question": "What is a database index and what are its trade-offs?",
+      "answer": "An index is an additional data structure, usually a B-tree, that lets the database find rows without scanning the whole table. It speeds up reads but costs storage and slows down writes.",
+      "keyPoints": [
+        "An auxiliary structure (commonly a B-tree) that avoids full table scans",
+        "Speeds up lookups, range filters, sorting and joins",
+        "Costs extra storage",
+        "Slows down inserts, updates and deletes because the index must be maintained",
+        "In composite indexes the column order matters (leftmost prefix)",
+        "Check real queries with the query planner (EXPLAIN) instead of indexing everything"
+      ]
+    },
+    {
+      "id": "sql-vs-nosql",
+      "type": "open",
+      "section": "web-data",
+      "question": "When would you choose a relational database over a NoSQL store, and vice versa?",
+      "answer": "Choose relational for structured, related data that needs transactions and ad-hoc queries. Choose NoSQL when the schema is flexible or when you need horizontal scale for simple access patterns. Many systems use both.",
+      "keyPoints": [
+        "Relational: structured data, relationships, joins and strong ACID transactions",
+        "Relational: enforced schema and flexible ad-hoc queries with SQL",
+        "NoSQL: flexible or evolving schema and denormalised data models",
+        "NoSQL: horizontal scaling and very high throughput for simple access patterns",
+        "The choice follows access patterns and consistency needs, not fashion",
+        "Many systems combine both"
+      ]
+    },
+    {
+      "id": "http-429",
+      "type": "choice",
+      "section": "web-data",
+      "question": "Which HTTP status code means \"Too Many Requests\"?",
+      "options": [
+        {"text": "401", "explanation": "Unauthorized: credentials are missing or invalid."},
+        {"text": "403", "explanation": "Forbidden: the client is known but not allowed."},
+        {
+          "text": "429",
+          "correct": true,
+          "explanation": "The client sent too many requests in a given time. The response often carries a Retry-After header."
+        },
+        {"text": "503", "explanation": "Service Unavailable: the server is overloaded or down for maintenance."}
+      ]
+    },
+    {
+      "id": "idempotency",
+      "type": "open",
+      "section": "web-data",
+      "question": "What does it mean for an API operation to be idempotent, and why does it matter?",
+      "answer": "An idempotent operation has the same effect whether it is performed once or many times. It makes retries after timeouts safe. GET, PUT and DELETE are idempotent by definition, POST is not.",
+      "keyPoints": [
+        "Repeating the call has the same effect as calling it once",
+        "Makes retries after timeouts or network failures safe",
+        "GET, PUT and DELETE are idempotent by HTTP semantics; POST is not",
+        "Implemented with idempotency keys, upserts or unique constraints"
+      ]
+    },
+    {
+      "id": "design-url-shortener",
+      "type": "open",
+      "section": "system-design",
+      "question": "How would you design a URL shortening service?",
+      "answer": "Clarify requirements first, then generate unique short keys (for example base62 of a unique ID), store the mapping in a key-value store, redirect with HTTP 301 or 302, cache hot keys because reads dominate, and scale by sharding and replication.",
+      "keyPoints": [
+        "Clarifies requirements: create and resolve links, optional expiry and custom aliases, read-heavy traffic",
+        "Generates unique short keys, for example base62 of a counter or ID range, or a hash with collision handling",
+        "Stores the key to URL mapping in a key-value store or an indexed table",
+        "Redirects with 301 (cacheable, permanent) or 302 (temporary, lets you count clicks)",
+        "Caches hot keys (cache or CDN) because reads far outnumber writes",
+        "Scales with sharding by key, replication, rate limiting and abuse protection"
+      ],
+      "explanation": "Practise saying the requirements and trade-offs out loud; the interviewer cares more about reasoning than the final diagram."
+    },
+    {
+      "id": "cap-theorem",
+      "type": "open",
+      "section": "system-design",
+      "question": "Explain the CAP theorem.",
+      "answer": "In a distributed data store you cannot have consistency, availability and partition tolerance all at once. Because network partitions happen, a system must choose between consistency and availability while a partition lasts.",
+      "keyPoints": [
+        "Consistency: every read sees the most recent write",
+        "Availability: every request to a working node gets a response",
+        "Partition tolerance: the system keeps working when messages between nodes are lost or delayed",
+        "Partitions cannot be ruled out, so the real choice is consistency versus availability during a partition",
+        "Examples: ZooKeeper and etcd favour consistency; Dynamo-style stores favour availability"
+      ]
+    }
+  ]
+}
