@@ -1,0 +1,10 @@
+CREATE TABLE setting (
+    name TEXT NOT NULL PRIMARY KEY,
+    content TEXT NOT NULL
+);
+
+selectSettings:
+SELECT name, content FROM setting;
+
+upsertSetting:
+INSERT OR REPLACE INTO setting (name, content) VALUES (?, ?);

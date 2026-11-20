@@ -1,0 +1,108 @@
+CREATE TABLE pack (
+    id TEXT NOT NULL PRIMARY KEY,
+    title TEXT NOT NULL,
+    description TEXT,
+    language TEXT,
+    author TEXT,
+    license TEXT,
+    source TEXT,
+    tags TEXT NOT NULL,
+    icon TEXT,
+    color TEXT,
+    revision INTEGER,
+    created TEXT,
+    updated TEXT,
+    study_order TEXT NOT NULL,
+    new_per_session INTEGER NOT NULL,
+    reversible INTEGER NOT NULL,
+    ignore_diacritics INTEGER NOT NULL,
+    card_exercises TEXT,
+    item_count INTEGER NOT NULL,
+    imported_at INTEGER NOT NULL,
+    updated_at INTEGER NOT NULL
+);
+
+CREATE TABLE pack_source (
+    pack_id TEXT NOT NULL PRIMARY KEY,
+    json TEXT NOT NULL
+);
+
+CREATE TABLE section (
+    pack_id TEXT NOT NULL,
+    section_id TEXT NOT NULL,
+    position INTEGER NOT NULL,
+    title TEXT NOT NULL,
+    description TEXT,
+    PRIMARY KEY (pack_id, section_id)
+);
+
+CREATE TABLE item (
+    pack_id TEXT NOT NULL,
+    item_id TEXT NOT NULL,
+    position INTEGER NOT NULL,
+    section_id TEXT NOT NULL,
+    type TEXT NOT NULL,
+    title TEXT NOT NULL,
+    subtitle TEXT NOT NULL,
+    payload TEXT NOT NULL,
+    PRIMARY KEY (pack_id, item_id)
+);
+
+CREATE INDEX item_position ON item(pack_id, position);
+
+upsertPack:
+INSERT OR REPLACE INTO pack (
+    id, title, description, language, author, license, source, tags, icon, color, revision, created, updated,
+    study_order, new_per_session, reversible, ignore_diacritics, card_exercises, item_count, imported_at, updated_at
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+selectPack:
+SELECT * FROM pack WHERE id = ?;
+
+selectPacks:
+SELECT * FROM pack ORDER BY title COLLATE NOCASE, id;
+
+deletePack:
+DELETE FROM pack WHERE id = ?;
+
+upsertSource:
+INSERT OR REPLACE INTO pack_source (pack_id, json) VALUES (?, ?);
+
+selectSource:
+SELECT json FROM pack_source WHERE pack_id = ?;
+
+deleteSource:
+DELETE FROM pack_source WHERE pack_id = ?;
+
+insertSection:
+INSERT INTO section (pack_id, section_id, position, title, description) VALUES (?, ?, ?, ?, ?);
+
+selectSections:
+SELECT * FROM section WHERE pack_id = ? ORDER BY position;
+
+deleteSections:
+DELETE FROM section WHERE pack_id = ?;
+
+upsertItem:
+INSERT OR REPLACE INTO item (pack_id, item_id, position, section_id, type, title, subtitle, payload) VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+
+selectItemTypes:
+SELECT item_id, type FROM item WHERE pack_id = ?;
+
+selectItems:
+SELECT * FROM item WHERE pack_id = ? ORDER BY position;
+
+selectItemRows:
+SELECT item_id, position, section_id, type, title, subtitle FROM item WHERE pack_id = ? ORDER BY position;
+
+countItemsBySection:
+SELECT section_id, COUNT(*) AS item_count FROM item WHERE pack_id = ? GROUP BY section_id;
+
+countItemsByType:
+SELECT type, COUNT(*) AS item_count FROM item WHERE pack_id = ? GROUP BY type;
+
+deleteItem:
+DELETE FROM item WHERE pack_id = ? AND item_id = ?;
+
+deleteItems:
+DELETE FROM item WHERE pack_id = ?;

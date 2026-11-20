@@ -7,5 +7,5 @@ import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 actual class DatabaseDriverFactory(
     private val context: Context,
 ) {
-    actual fun createDriver(): SqlDriver = AndroidSqliteDriver(BueffelDatabase.Schema, context, "bueffel.db")
+    internal actual fun createDriver(): SqlDriver = AndroidSqliteDriver(BueffelDatabase.Schema, context, "bueffel.db")
 }
