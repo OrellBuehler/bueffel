@@ -609,6 +609,7 @@ class StudySessionTest {
             assertEquals(3, recorder.attempts.size)
             assertTrue(recorder.attempts.all { it.practice && !it.reschedule })
             assertEquals(SessionMode.PRACTICE, session.finished().mode)
+            assertEquals(0, session.finished().newFacets)
         }
 
     @Test

@@ -150,7 +150,7 @@ val packId: String, val mode: SessionMode
 2. Auto-graded kinds (choice, type, cloze, true/false, order): call `submit(answer)`. Self-graded kinds (flip, open): call `reveal()`.
 3. `Feedback(...)`: show the result. Auto-graded: `verdict` is `CORRECT` or `WRONG`, `needsSelfGrade` is false, show a "Continue" button that calls `next()`. Self-graded: `verdict` is `PENDING_SELF_GRADE` and `needsSelfGrade` is true: show the answer (and for open questions the key point checklist), then call `selfGrade(grade)`. There is no further Feedback after `selfGrade`; it moves straight to the next question.
 4. Wrong answers (`WRONG`, or a self-grade of `AGAIN`) are re-asked 3 items later (immediately if it was the last one), with `isRetry = true`, until answered right once. Only the **first** attempt is recorded (review log and schedule). `willRepeat` on the feedback tells the UI.
-5. `Finished(summary)`: `SessionSummary(mode, total, answered, correct, wrong, retries, newFacets, accuracy, durationMs, abandoned)`. `correct`/`wrong`/`accuracy` count first attempts.
+5. `Finished(summary)`: `SessionSummary(mode, total, answered, correct, wrong, retries, newFacets, accuracy, durationMs, abandoned)`. `correct`/`wrong`/`accuracy` count first attempts, `newFacets` the facets that were new before this session (not counted in non-rescheduling practice), `retries` the repeated attempts.
 
 Every first answer is written to the database before `submit`/`selfGrade` returns, so abandoning a session (app killed, `finish()`) loses nothing. Calls made in the wrong state, with an answer of the wrong kind, or while another call is in flight are ignored.
 

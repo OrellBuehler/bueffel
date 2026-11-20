@@ -154,7 +154,7 @@ class StudySession internal constructor(
             )
             slot.attempts++
             if (correct) firstCorrect++ else firstWrong++
-            if (entry.schedule.state == LearningState.NEW) newFacets++
+            if (config.reschedule && entry.schedule.state == LearningState.NEW) newFacets++
         } else {
             slot.attempts++
             retries++
