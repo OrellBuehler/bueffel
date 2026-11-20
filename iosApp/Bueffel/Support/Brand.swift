@@ -41,6 +41,7 @@ enum Brand {
     static let cream = Color(hex: 0xFAF7F2)
 
     static let accent = Color.adaptive(light: 0x5B47E0, dark: 0x9C8CFF)
+    static let onAccent = Color.adaptive(light: 0xFFFFFF, dark: 0x17142A)
     static let success = Color.adaptive(light: 0x1F9D68, dark: 0x3DCB91)
     static let error = Color.adaptive(light: 0xE5484D, dark: 0xFF6B70)
     static let flame = Color.adaptive(light: 0xF08A00, dark: 0xFFB238)

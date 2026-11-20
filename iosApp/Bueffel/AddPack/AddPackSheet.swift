@@ -14,6 +14,7 @@ struct AddPackSheet: View {
     @State private var path: [AddRoute] = []
     @State private var showImporter = false
     @State private var fileError: String?
+    @State private var showsFileError = false
 
     var body: some View {
         NavigationStack(path: $path) {
@@ -45,13 +46,7 @@ struct AddPackSheet: View {
         ) { result in
             handleFile(result)
         }
-        .alert(
-            "import.failed.title",
-            isPresented: Binding(
-                get: { fileError != nil },
-                set: { if !$0 { fileError = nil } }
-            )
-        ) {
+        .alert("import.failed.title", isPresented: $showsFileError) {
             Button("common.ok", role: .cancel) {}
         } message: {
             Text(fileError ?? "")
@@ -138,6 +133,7 @@ struct AddPackSheet: View {
             Task { await flow.begin(url: url) }
         case .failure(let error):
             fileError = error.localizedDescription
+            showsFileError = true
         }
     }
 }

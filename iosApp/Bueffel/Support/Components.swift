@@ -34,7 +34,7 @@ struct PressableStyle: ButtonStyle {
 
 struct BrandButtonStyle: ButtonStyle {
     var fill: Color = Brand.accent
-    var foreground: Color = Color.white
+    var foreground: Color = Brand.onAccent
     @Environment(\.isEnabled) private var isEnabled
 
     func makeBody(configuration: Configuration) -> some View {

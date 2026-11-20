@@ -226,7 +226,7 @@ private struct PreviewDetails: View {
     private func confirmLabel(key: String) -> some View {
         if isBusy {
             ProgressView()
-                .tint(Color.white)
+                .tint(Brand.onAccent)
         } else {
             Text(L10n.tr(key))
         }

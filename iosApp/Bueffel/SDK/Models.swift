@@ -318,17 +318,6 @@ struct StudyRequest: Identifiable, Hashable, Sendable {
             filter: filter
         )
     }
-
-    func switched(to mode: StudyMode) -> StudyRequest {
-        StudyRequest(
-            packId: packId,
-            title: title,
-            colorHex: colorHex,
-            mode: mode,
-            sectionId: sectionId,
-            filter: filter
-        )
-    }
 }
 
 struct SessionPreviewInfo: Hashable, Sendable {
@@ -467,7 +456,6 @@ struct FeedbackInfo: Hashable, Sendable {
 }
 
 struct SummaryInfo: Hashable, Sendable {
-    let isPractice: Bool
     let total: Int
     let answered: Int
     let correct: Int

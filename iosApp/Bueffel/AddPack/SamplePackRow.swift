@@ -4,10 +4,12 @@ struct SamplePackRow: View {
     let sample: SamplePackInfo
     @Environment(AppModel.self) private var model
     @State private var isAdding = false
+    @State private var justAdded = false
     @State private var failure: String?
+    @State private var showsFailure = false
 
     private var isInstalled: Bool {
-        model.packs.contains { $0.id == sample.id }
+        justAdded || model.packs.contains { $0.id == sample.id }
     }
 
     private var style: PackStyle {
@@ -35,13 +37,7 @@ struct SamplePackRow: View {
         }
         .padding(14)
         .card(radius: 22)
-        .alert(
-            "import.failed.title",
-            isPresented: Binding(
-                get: { failure != nil },
-                set: { if !$0 { failure = nil } }
-            )
-        ) {
+        .alert("import.failed.title", isPresented: $showsFailure) {
             Button("common.ok", role: .cancel) {}
         } message: {
             Text(failure ?? "")
@@ -65,7 +61,7 @@ struct SamplePackRow: View {
                     .font(.brand(.subheadline, weight: .bold))
                     .padding(.horizontal, 14)
                     .padding(.vertical, 8)
-                    .foregroundStyle(Color.white)
+                    .foregroundStyle(Brand.onAccent)
                     .background(Brand.accent, in: Capsule())
             }
             .buttonStyle(PressableStyle())
@@ -77,8 +73,12 @@ struct SamplePackRow: View {
         Task {
             let outcome = await model.importSample(sample)
             isAdding = false
-            if case .failure(let issue) = outcome {
+            switch outcome {
+            case .success:
+                justAdded = true
+            case .failure(let issue):
                 failure = issue.localizedMessage
+                showsFailure = true
             }
         }
     }

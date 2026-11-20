@@ -22,6 +22,7 @@ final class StudyStore {
     private(set) var questionToken = 0
     private(set) var correctTicks = 0
     private(set) var wrongTicks = 0
+    private(set) var gradeTicks = 0
 
     private var driver: SessionDriver?
     private let client = SDKClient.shared
@@ -126,6 +127,7 @@ final class StudyStore {
 
     func selfGrade(_ grade: GradeChoice) {
         guard let driver else { return }
+        gradeTicks += 1
         Task {
             await driver.selfGrade(grade)
         }

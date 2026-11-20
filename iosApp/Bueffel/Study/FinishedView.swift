@@ -5,6 +5,7 @@ struct FinishedView: View {
     let style: PackStyle
     let onDone: () -> Void
     @State private var appeared = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private var isEmpty: Bool { summary.total == 0 }
     private var celebrates: Bool { !summary.abandoned && summary.answered > 0 && summary.accuracy >= 0.7 }
@@ -42,7 +43,7 @@ struct FinishedView: View {
                 .padding(.horizontal, 24)
                 .padding(.bottom, 32)
             }
-            if celebrates {
+            if celebrates && !reduceMotion {
                 ConfettiView()
                     .ignoresSafeArea()
                     .allowsHitTesting(false)

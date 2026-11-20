@@ -107,7 +107,6 @@ enum SessionAdapter {
 
     static func summary(_ s: SessionSummary) -> SummaryInfo {
         SummaryInfo(
-            isPractice: isPractice(s.mode),
             total: Int(s.total),
             answered: Int(s.answered),
             correct: Int(s.correct),
@@ -201,13 +200,6 @@ enum SessionAdapter {
         case .cloze(let gaps): return ClozeAnswer(gaps: gaps)
         case .trueFalse(let value): return TrueFalseAnswer(value: value)
         case .order(let ids): return OrderAnswer(entryIds: ids)
-        }
-    }
-
-    private static func isPractice(_ mode: SessionMode) -> Bool {
-        switch mode {
-        case .practice: return true
-        default: return false
         }
     }
 

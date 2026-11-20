@@ -37,6 +37,7 @@ struct Mascot: View {
     var happy = false
     var animated = false
     @State private var lifted = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         let s = size / 256
@@ -54,11 +55,11 @@ struct Mascot: View {
         .frame(width: size, height: size, alignment: .topLeading)
         .offset(y: lifted ? -size * 0.04 : 0)
         .animation(
-            animated ? Animation.easeInOut(duration: 1.1).repeatForever(autoreverses: true) : nil,
+            animated && !reduceMotion ? Animation.easeInOut(duration: 1.1).repeatForever(autoreverses: true) : nil,
             value: lifted
         )
         .onAppear {
-            if animated { lifted = true }
+            if animated && !reduceMotion { lifted = true }
         }
         .accessibilityHidden(true)
     }
