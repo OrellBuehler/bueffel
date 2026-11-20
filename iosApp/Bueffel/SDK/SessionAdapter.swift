@@ -1,0 +1,225 @@
+@preconcurrency import shared
+import Foundation
+
+enum SessionAdapter {
+    static func snapshot(_ state: SessionState) -> SessionSnapshot? {
+        switch onEnum(of: state) {
+        case .question(let q):
+            return .question(
+                QuestionInfo(
+                    exercise: exercise(q.exercise),
+                    position: Int(q.position),
+                    total: Int(q.total),
+                    isRetry: q.isRetry,
+                    hasHint: q.hasHint,
+                    hint: q.hint.map { Mapping.styled($0) }
+                )
+            )
+        case .feedback(let f):
+            let grades = (0 ... f.keyPoints.count).map { ticked in
+                gradeChoice(f.suggestedGrade(tickedKeyPoints: Int32(ticked)))
+            }
+            return .feedback(
+                feedback(
+                    exercise: f.exercise,
+                    position: f.position,
+                    total: f.total,
+                    needsSelfGrade: f.needsSelfGrade,
+                    correct: f.correct,
+                    willRepeat: f.willRepeat,
+                    correctAnswer: f.correctAnswer,
+                    userAnswer: f.userAnswer,
+                    explanation: f.explanation,
+                    choiceResults: f.choiceResults,
+                    gapResults: f.gapResults,
+                    orderResults: f.orderResults,
+                    keyPoints: f.keyPoints,
+                    statementIsTrue: f.statementIsTrue,
+                    suggestedGrades: grades
+                )
+            )
+        case .finished(let done):
+            return .finished(summary(done.summary))
+        default:
+            return nil
+        }
+    }
+
+    static func feedback(
+        exercise exerciseValue: Exercise,
+        position: Int32,
+        total: Int32,
+        needsSelfGrade: Bool,
+        correct: Bool,
+        willRepeat: Bool,
+        correctAnswer: RichText,
+        userAnswer: String,
+        explanation: RichText?,
+        choiceResults: [ChoiceResult],
+        gapResults: [GapResult],
+        orderResults: [OrderResult],
+        keyPoints: [RichText],
+        statementIsTrue: Bool,
+        suggestedGrades: [GradeChoice]
+    ) -> FeedbackInfo {
+        let verdict: FeedbackVerdict
+        if needsSelfGrade {
+            verdict = .pendingSelfGrade
+        } else if correct {
+            verdict = .correct
+        } else {
+            verdict = .wrong
+        }
+        return FeedbackInfo(
+            exercise: exercise(exerciseValue),
+            position: Int(position),
+            total: Int(total),
+            verdict: verdict,
+            willRepeat: willRepeat,
+            correctAnswer: Mapping.styled(correctAnswer),
+            userAnswer: userAnswer,
+            explanation: explanation.map { Mapping.styled($0) },
+            choiceResults: choiceResults.map { result in
+                ChoiceResultInfo(
+                    id: result.id,
+                    text: Mapping.styled(result.text),
+                    correct: result.correct,
+                    selected: result.selected,
+                    explanation: result.explanation.map { Mapping.styled($0) }
+                )
+            },
+            gapResults: gapResults.map { gap in
+                GapResultInfo(index: Int(gap.index), given: gap.given, canonical: gap.canonical, correct: gap.correct)
+            },
+            orderResults: orderResults.map { entry in
+                OrderResultInfo(
+                    position: Int(entry.position),
+                    arranged: Mapping.styled(entry.arranged),
+                    expected: Mapping.styled(entry.expected),
+                    correct: entry.correct
+                )
+            },
+            keyPoints: keyPoints.map { Mapping.styled($0) },
+            statementIsTrue: statementIsTrue,
+            suggestedGrades: suggestedGrades
+        )
+    }
+
+    static func summary(_ s: SessionSummary) -> SummaryInfo {
+        SummaryInfo(
+            isPractice: isPractice(s.mode),
+            total: Int(s.total),
+            answered: Int(s.answered),
+            correct: Int(s.correct),
+            wrong: Int(s.wrong),
+            retries: Int(s.retries),
+            newFacets: Int(s.newFacets),
+            accuracy: s.accuracy,
+            duration: Double(s.durationMs) / 1000,
+            abandoned: s.abandoned
+        )
+    }
+
+    static func exercise(_ e: Exercise) -> ExerciseInfo {
+        switch onEnum(of: e) {
+        case .flipExercise(let x):
+            return info(e, kind: .flip, prompt: Mapping.styled(x.prompt))
+        case .choiceExercise(let x):
+            return ExerciseInfo(
+                itemId: x.itemId,
+                kind: .choice,
+                prompt: Mapping.styled(x.question),
+                options: x.options.map { OptionInfo(id: $0.id, text: Mapping.styled($0.text)) },
+                multiSelect: x.multiSelect,
+                segments: [],
+                gapCount: 0
+            )
+        case .typeExercise(let x):
+            return info(e, kind: .typed, prompt: Mapping.styled(x.prompt))
+        case .clozeExercise(let x):
+            return ExerciseInfo(
+                itemId: x.itemId,
+                kind: .cloze,
+                prompt: .empty,
+                options: [],
+                multiSelect: false,
+                segments: x.segments.map { clozeSegment($0) },
+                gapCount: Int(x.gapCount)
+            )
+        case .trueFalseExercise(let x):
+            return info(e, kind: .trueFalse, prompt: Mapping.styled(x.statement))
+        case .orderExercise(let x):
+            return ExerciseInfo(
+                itemId: x.itemId,
+                kind: .order,
+                prompt: Mapping.styled(x.prompt),
+                options: x.entries.map { OptionInfo(id: $0.id, text: Mapping.styled($0.text)) },
+                multiSelect: false,
+                segments: [],
+                gapCount: 0
+            )
+        case .openExercise(let x):
+            return info(e, kind: .open, prompt: Mapping.styled(x.question))
+        default:
+            return info(e, kind: .flip, prompt: .empty)
+        }
+    }
+
+    static func clozeSegment(_ segment: ClozeSegment) -> ClozeSegmentInfo {
+        switch onEnum(of: segment) {
+        case .text(let t):
+            return .text(Mapping.styled(t.text))
+        case .gap(let g):
+            return .gap(index: Int(g.index), hint: g.hint)
+        default:
+            return .text(.empty)
+        }
+    }
+
+    static func gradeChoice(_ grade: Grade) -> GradeChoice {
+        switch grade {
+        case .again: return .again
+        case .hard: return .hard
+        case .easy: return .easy
+        default: return .good
+        }
+    }
+
+    static func kotlinGrade(_ choice: GradeChoice) -> Grade {
+        switch choice {
+        case .again: return Grade.again
+        case .hard: return Grade.hard
+        case .good: return Grade.good
+        case .easy: return Grade.easy
+        }
+    }
+
+    static func kotlinAnswer(_ input: AnswerInput) -> Answer {
+        switch input {
+        case .choice(let ids): return ChoiceAnswer(selectedIds: ids)
+        case .text(let text): return TextAnswer(text: text)
+        case .cloze(let gaps): return ClozeAnswer(gaps: gaps)
+        case .trueFalse(let value): return TrueFalseAnswer(value: value)
+        case .order(let ids): return OrderAnswer(entryIds: ids)
+        }
+    }
+
+    private static func isPractice(_ mode: SessionMode) -> Bool {
+        switch mode {
+        case .practice: return true
+        default: return false
+        }
+    }
+
+    private static func info(_ e: Exercise, kind: ExerciseKind, prompt: StyledText) -> ExerciseInfo {
+        ExerciseInfo(
+            itemId: e.itemId,
+            kind: kind,
+            prompt: prompt,
+            options: [],
+            multiSelect: false,
+            segments: [],
+            gapCount: 0
+        )
+    }
+}

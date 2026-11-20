@@ -1,6 +1,7 @@
 name: Bueffel
 options:
   bundleIdPrefix: ch.orellbuehler
+  developmentLanguage: en
   deploymentTarget:
     iOS: '18.0'
   xcodeVersion: '16.2'
@@ -48,6 +49,37 @@ targets:
         # encryption — TestFlight then skips the per-build export-compliance
         # prompt that would otherwise block each upload.
         ITSAppUsesNonExemptEncryption: false
+        CFBundleLocalizations:
+          - en
+          - de
+        # `.bueffel` packs offer to open in Büffel from Files, Mail, Messages, …
+        # `LSSupportsOpeningDocumentsInPlace: false` makes iOS hand over a copy,
+        # so the import never touches the sender's file.
+        LSSupportsOpeningDocumentsInPlace: false
+        CFBundleDocumentTypes:
+          - CFBundleTypeName: Büffel pack
+            CFBundleTypeRole: Viewer
+            LSHandlerRank: Owner
+            LSItemContentTypes:
+              - ch.orellbuehler.bueffel.pack
+          # Packs are JSON and some apps hand a received attachment over as plain
+          # JSON rather than by its file extension; the import tells the user
+          # when a file is not a pack.
+          - CFBundleTypeName: JSON document
+            CFBundleTypeRole: Viewer
+            LSHandlerRank: Alternate
+            LSItemContentTypes:
+              - public.json
+        UTExportedTypeDeclarations:
+          - UTTypeIdentifier: ch.orellbuehler.bueffel.pack
+            UTTypeDescription: Büffel pack
+            UTTypeConformsTo:
+              - public.json
+            UTTypeTagSpecification:
+              public.filename-extension:
+                - bueffel
+              public.mime-type:
+                - application/vnd.bueffel.pack+json
     dependencies:
       - framework: '../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)/shared.framework'
         embed: false
