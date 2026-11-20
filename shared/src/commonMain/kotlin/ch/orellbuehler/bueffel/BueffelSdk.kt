@@ -123,6 +123,8 @@ class BueffelSdk internal constructor(
             SamplePack(it.pack.id, it.pack.title, it.pack.description ?: "", it.pack.icon, it.pack.color, it.pack.items.size)
         }
 
+    fun authoringPrompt(): String = GENERATED_AUTHORING_PROMPT
+
     suspend fun importSample(sampleId: String): ImportResult {
         val sample =
             Samples.all.firstOrNull { it.pack.id == sampleId }

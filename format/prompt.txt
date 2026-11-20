@@ -1,0 +1,73 @@
+You are creating a learning pack for the app Büffel. Produce ONE JSON document in the "Büffel Pack" format described below. Output only that JSON, in a single ```json code block, with no text before or after it.
+
+TASK
+Create a Büffel pack about: [TOPIC, or paste your notes / source text here]
+Language of the content: [e.g. English. For a language course: the language being learned, plus the language the explanations are written in]
+Audience / level: [e.g. complete beginners, exam in June, software engineers preparing for interviews]
+Number of items: about [e.g. 40]
+Preferred item types: [e.g. mostly cards and a few multiple-choice questions, or: choose what fits best]
+Use only facts you are sure about. If you are unsure about something, leave it out.
+
+FORMAT (Büffel Pack, version 1)
+The file is one JSON object.
+Top level:
+- "format": "bueffel-pack"                      (required, always this string)
+- "version": 1                                  (required, always the number 1)
+- "id": string                                  (required; only A-Z a-z 0-9 . _ - ; use "pack." + topic slug + "." + 6 random hex characters, e.g. "pack.roman-emperors.7f3a9c")
+- "title": string                               (required)
+- optional: "description" (string), "language" (BCP-47 tag of the subject, e.g. "es", "en", "de-CH"), "author" (string), "license" (e.g. "CC-BY-4.0"), "tags" (string array), "icon" (ONE emoji), "color" ("#RRGGBB"), "revision": 1, "created" and "updated" ("YYYY-MM-DD")
+- "sections": optional array of {"id", "title", "description"?} that groups items into chapters or topics (ids like "greetings"). Use sections when there are more than about 20 items.
+- "study": optional object: "order": "sequential" or "random" (default sequential); "newPerSession": integer (default 10); "reversible": boolean (default false; for cards, also ask back to front); "ignoreDiacritics": boolean (default false; true = typed "adios" matches "adiós"); "exercises": {"card": any non-empty subset of ["flip","choice","type"]}
+- "items": array (required, non-empty)
+
+Every item has: "id" (required; unique within the file; lowercase slug of a-z 0-9 . _ - , max 64 characters, e.g. "capital-of-france"; never reuse an id), "type" (required, one of the seven below). Optional on every item: "section" (an id from "sections"), "tags" (string array), "hint" (a nudge shown BEFORE answering; never the answer), "explanation" (shown AFTER answering: why it is so, an example, a memory aid).
+
+The seven item types:
+1. "card": two-sided flashcard. Required "front", "back" (strings; keep "back" short, it can be typed). Optional: "reversible" (bool: also ask back to front), "alternatives" (array of other accepted typed answers for the back), "frontAlternatives" (accepted typed answers for the front when asked in reverse), "distractors" (array of explicit WRONG options for multiple choice; omit unless needed, the app draws wrong options from other cards), "exercises" (subset of ["flip","choice","type"]).
+2. "choice": multiple choice. Required "question" (string) and "options": array of 2-10 objects {"text": string, "correct": true (only on correct options), "explanation": string (optional)}. At least one option must have "correct": true. Several correct options make it multi-select (say "Select all that apply" in the question). Optional "shuffle" (bool, default true). Never use indices or letters to mark the answer.
+3. "text": short typed answer. Required "question", "answers" (array of at least 1 accepted answer strings, first is canonical; list spelling variants, abbreviations, digits and words). Optional "caseSensitive" (bool, default false).
+4. "cloze": fill in the gaps. Required "text" containing at least one gap written {{answer}}. Optional hint inside the gap: {{answer::hint}}. Alternatives inside a gap are separated with |: {{colour|color}}. Example: "The Berlin Wall fell in {{1989::year}}." Use 1-3 gaps per item.
+5. "truefalse": required "statement" (string), "answer" (boolean true or false). Add an "explanation".
+6. "order": put things in order. Required "prompt" (what to order and by which criterion) and "sequence": array of 2-20 DISTINCT strings in the CORRECT order (the app shuffles them). Do not put years or ranks that reveal the order into the entries.
+7. "open": open question, self-graded. Required "question". Optional "answer" (compact model answer) and "keyPoints" (array of 3-7 short strings: the checklist a good answer covers).
+
+TEXT RULES
+- Text is plain text. The only markup is **bold**, *italic*, `code` and \n for a new line. No HTML, no links, no Markdown headings or lists. Avoid stray * or ` characters.
+- "alternatives", "frontAlternatives" and "answers" are literal text without markup.
+- Typed answers are compared ignoring upper/lower case, extra spaces, trailing . , ; : ! ? and a leading ¿ or ¡. Accents, spelling variants, synonyms and number words are NOT matched automatically: list them as alternatives (or set study.ignoreDiacritics to true).
+- JSON rules: double quotes only, no comments, no trailing commas, escape a double quote inside a string as \" and a backslash as \\. Write real UTF-8 characters, not HTML entities.
+
+QUALITY RULES
+- One fact per item (atomic); short prompts; short answers. Put background into "explanation", not into the answer.
+- Choose the type that fits: cards for pairs and vocabulary, "text" for one short factual answer, "choice" for recognition with plausible distractors (3-5 options, similar length and style, no "all of the above"), "cloze" for key words in a sentence, "truefalse" only for common misconceptions, "order" for sequences with one correct order, "open" with "keyPoints" for explanations and interview questions.
+- Mix types sensibly, do not force variety. Put prerequisites first. Keep items of a section together.
+- Give every item a short, meaningful, unique slug id. Do not use spaces, umlauts or slashes in ids.
+- Add "hint" only when it truly helps; add "explanation" where it teaches something.
+
+EXAMPLE of the expected output (content is only an illustration):
+```json pack
+{
+  "format": "bueffel-pack",
+  "version": 1,
+  "id": "pack.solar-system.4f7a2c",
+  "title": "The Solar System",
+  "description": "Basic facts about the Sun and the planets.",
+  "language": "en",
+  "icon": "🪐",
+  "sections": [{ "id": "basics", "title": "Basics" }],
+  "study": { "newPerSession": 5 },
+  "items": [
+    { "id": "largest-planet", "type": "card", "section": "basics", "front": "Largest planet in the Solar System", "back": "Jupiter", "distractors": ["Saturn", "Neptune", "Earth"] },
+    { "id": "red-planet", "type": "choice", "section": "basics", "question": "Which planet is called the Red Planet?",
+      "options": [{ "text": "Mars", "correct": true }, { "text": "Venus" }, { "text": "Mercury", "explanation": "Mercury is grey and closest to the Sun." }] },
+    { "id": "planet-count", "type": "text", "section": "basics", "question": "How many planets does the Solar System have?", "answers": ["8", "eight"] },
+    { "id": "sun-mass", "type": "cloze", "section": "basics", "text": "The {{Sun::our star}} holds more than 99% of the mass of the Solar System." },
+    { "id": "pluto-planet", "type": "truefalse", "section": "basics", "statement": "Pluto is classified as a planet.", "answer": false, "explanation": "Since 2006 Pluto is a dwarf planet." },
+    { "id": "planet-order", "type": "order", "section": "basics", "prompt": "Order these planets by distance from the Sun, closest first.", "sequence": ["Mercury", "Venus", "Earth", "Mars"] },
+    { "id": "why-seasons", "type": "open", "section": "basics", "question": "Why does Earth have seasons?", "answer": "Earth's axis is tilted by about 23.4 degrees. During the year each hemisphere leans towards or away from the Sun, which changes the daylight hours and the angle of the sunlight.",
+      "keyPoints": ["Caused by the tilt of Earth's axis", "Not caused by the distance to the Sun", "Changes day length and the angle of sunlight"] }
+  ]
+}
+```
+
+Before you answer, check silently: valid JSON; every id unique; every choice has at least one "correct": true; every cloze has at least one {{gap}}; every "section" matches a declared section id; all facts are correct. Then output only the JSON code block.

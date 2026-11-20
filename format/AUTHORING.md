@@ -246,7 +246,7 @@ It checks the [JSON Schema](bueffel-pack.schema.json) and the rules a schema can
 
 ## 12. Copy-paste prompt for any chatbot
 
-Paste the block below into any chatbot, replace the parts in `[square brackets]`, and send it. The prompt contains the whole format, so the chatbot needs no other context. Save the answer (the JSON) as `something.bueffel` and import it into Büffel.
+Paste the block below into any chatbot, replace the parts in `[square brackets]`, and send it. The block is the file [`prompt.txt`](prompt.txt) verbatim; the apps offer the same text under "Create with AI". The prompt contains the whole format, so the chatbot needs no other context. Save the answer (the JSON) as `something.bueffel` and import it into Büffel.
 
 Tips: paste your own notes or a text after the task line if you want the pack to be based on them; ask for fewer items first to check quality; if the app reports errors, paste them back into the chat and ask for a corrected file.
 

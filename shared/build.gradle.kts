@@ -18,6 +18,10 @@ abstract class GenerateFormatResources : DefaultTask() {
     @get:PathSensitive(PathSensitivity.RELATIVE)
     abstract val vectorsFile: RegularFileProperty
 
+    @get:InputFile
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val promptFile: RegularFileProperty
+
     @get:OutputDirectory
     abstract val mainOutput: DirectoryProperty
 
@@ -43,6 +47,17 @@ abstract class GenerateFormatResources : DefaultTask() {
                 appendLine("    listOf(")
                 samples.forEach { appendLine("        \"${it.name}\" to ${kotlinLiteral(it.readText())},") }
                 appendLine("    )")
+            },
+        )
+        val promptSource = promptFile.get().asFile
+        val prompt = promptSource.readText().trim()
+        val authoring = File(mainOutput.get().asFile, "ch/orellbuehler/bueffel/GeneratedAuthoring.kt")
+        authoring.writeText(
+            buildString {
+                appendLine("// Generated from format/prompt.txt by the generateFormatResources Gradle task. Do not edit.")
+                appendLine("package ch.orellbuehler.bueffel")
+                appendLine()
+                appendLine("internal val GENERATED_AUTHORING_PROMPT: String = ${kotlinLiteral(prompt)}")
             },
         )
         val test = File(testOutput.get().asFile, "ch/orellbuehler/bueffel/format/GeneratedVectors.kt")
@@ -79,6 +94,7 @@ val generateFormatResources =
     tasks.register<GenerateFormatResources>("generateFormatResources") {
         examplesDir.set(rootProject.layout.projectDirectory.dir("format/examples"))
         vectorsFile.set(rootProject.layout.projectDirectory.file("format/test-vectors.json"))
+        promptFile.set(rootProject.layout.projectDirectory.file("format/prompt.txt"))
         mainOutput.set(layout.buildDirectory.dir("generated/formatResources/commonMain/kotlin"))
         testOutput.set(layout.buildDirectory.dir("generated/formatResources/commonTest/kotlin"))
     }

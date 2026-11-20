@@ -47,6 +47,7 @@ Create exactly one instance per process and keep it alive (application scope). O
 | `exportPack(packId)` | `String?` | The pack JSON as it was imported (content only, no progress). |
 | `samplePacks()` | `List<SamplePack>` | Bundled packs (from `format/examples`). Not suspending. |
 | `importSample(sampleId)` | `ImportResult` | `sampleId` is the pack id (`SamplePack.id`). |
+| `authoringPrompt()` | `String` | The copy-paste chatbot prompt of `format/prompt.txt` (also embedded in `AUTHORING.md`): offer it under "Create with AI". Not suspending. |
 | `refresh()` | | Re-emits all flows. Call it when the app returns to the foreground: "due" depends on the clock. |
 
 The text passed to `previewImport`/`importPack` is the file decoded as UTF-8 (a BOM is fine). Decode errors are the UI's to report.
@@ -181,7 +182,7 @@ Pure and deterministic (`study/Scheduler.kt`), SM-2 family: facets go `NEW -> LE
 ## Threading
 
 - Everything that touches the database is a `suspend` function (runs on `Dispatchers.Default` internally) or a `Flow` (computed on `Dispatchers.Default`). Call suspend functions from any thread; results arrive on the caller's context.
-- Non-suspending members never touch the disk. `StudySession.reveal/revealHint/next/finish`, `refresh()` and `samplePacks()` are cheap and safe on the main thread. The first `samplePacks()` call parses five small JSON files (a few ms).
+- Non-suspending members never touch the disk. `StudySession.reveal/revealHint/next/finish`, `refresh()` and `samplePacks()`/`authoringPrompt()` are cheap and safe on the main thread. The first `samplePacks()` call parses five small JSON files (a few ms).
 - `StudySession.state` is a `StateFlow`: collect on the main thread. A session is meant to be driven by one UI at a time; overlapping calls are ignored instead of queued.
 - Flows are cold: each collector recomputes on every change. Cancel collection when the screen goes away.
 
@@ -269,7 +270,7 @@ source ~/.sdkman/bin/sdkman-init.sh && export ANDROID_HOME=~/android-sdk
 ```
 
 - `commonTest` has the pure logic tests (reader, markup, normalisation, scheduler, planner, session engine, every vector of `format/test-vectors.json`) and runs on the JVM and on iOS. `androidUnitTest` has the database tests (in-memory JDBC SQLite, fake clock and time zone, seeded `Random`).
-- The sample packs and the test vectors are not copied anywhere: the `generateFormatResources` Gradle task turns `format/examples/*.bueffel` and `format/test-vectors.json` into Kotlin string constants under `shared/build/generated/formatResources` (compiled for every target, ignored by ktlint).
+- The sample packs and the test vectors are not copied anywhere: the `generateFormatResources` Gradle task turns `format/examples/*.bueffel`, `format/prompt.txt` and `format/test-vectors.json` into Kotlin string constants under `shared/build/generated/formatResources` (compiled for every target, ignored by ktlint).
 - The database schema is version 1. `src/commonMain/sqldelight/databases/1.db` is the schema snapshot used by `verifyCommonMainBueffelDatabaseMigration`. Until the first release, regenerate it after editing a `.sq` table (`./gradlew shared:generateCommonMainBueffelDatabaseSchema`); afterwards add `1.sqm` migrations instead.
 - Unicode NFC/NFD (needed for `ignoreDiacritics` and answer comparison) is an expect/actual: `java.text.Normalizer` on Android, `NSString` canonical mapping on iOS.
 - Test seams (all `internal`): `BueffelSdk(driver, clock, timeZone, random, dispatcher)` takes a SQLDelight driver, `kotlin.time.Clock`, a time zone provider, a `kotlin.random.Random` and the coroutine dispatcher for the database work.

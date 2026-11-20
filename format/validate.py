@@ -518,6 +518,14 @@ def main():
             print("%s  README.md contains examples/format-tour.bueffel verbatim" % ("ok  " if found else "FAIL"))
             failed = failed or not found
 
+    if not args.files and not args.no_docs:
+        prompt = HERE / "prompt.txt"
+        authoring = HERE / "AUTHORING.md"
+        if prompt.exists() and authoring.exists():
+            found = prompt.read_text(encoding="utf-8").strip() in authoring.read_text(encoding="utf-8")
+            print("%s  AUTHORING.md contains prompt.txt verbatim" % ("ok  " if found else "FAIL"))
+            failed = failed or not found
+
     if not args.no_vectors and VECTORS_PATH.exists() and not args.files:
         errs, total = run_vectors(VECTORS_PATH)
         print("%s  test-vectors.json  (%d vectors)" % ("FAIL" if errs else "ok  ", total))

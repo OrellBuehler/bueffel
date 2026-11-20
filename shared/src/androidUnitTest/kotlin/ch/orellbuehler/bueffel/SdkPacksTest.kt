@@ -30,6 +30,14 @@ class SdkPacksTest {
     private fun sample(name: String) = GENERATED_SAMPLE_PACKS.first { it.first == name }.second
 
     @Test
+    fun authoringPromptDescribesTheFormat() {
+        val prompt = sdk.authoringPrompt()
+        assertTrue(prompt.startsWith("You are creating a learning pack for the app Büffel."))
+        assertTrue("\"format\": \"bueffel-pack\"" in prompt)
+        assertTrue(prompt.endsWith("Then output only the JSON code block."))
+    }
+
+    @Test
     fun importedPackAppearsInTheLibrary() =
         runTest {
             assertEquals(emptyList(), sdk.observePacks().first())
