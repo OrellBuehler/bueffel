@@ -1,0 +1,10 @@
+CREATE TABLE IF NOT EXISTS Placeholder (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL
+);
+
+insertPlaceholder:
+INSERT INTO Placeholder (name) VALUES (?);
+
+selectPlaceholders:
+SELECT * FROM Placeholder ORDER BY id;

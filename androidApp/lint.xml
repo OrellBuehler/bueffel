@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <!-- All user-facing Compose UI text must go through stringResource(...) /
+         strings.xml so it can be translated (en/de). -->
+    <issue id="HardcodedText" severity="error" />
+</lint>
