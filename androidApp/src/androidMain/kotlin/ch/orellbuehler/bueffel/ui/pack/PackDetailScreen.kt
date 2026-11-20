@@ -237,7 +237,7 @@ private fun PackDetailContent(
                     Modifier
                         .fillMaxWidth()
                         .windowInsetsTopHeight(WindowInsets.statusBars)
-                        .background(scheme.background.copy(alpha = 0.94f)),
+                        .background(scheme.background.copy(alpha = 0.97f)),
                 )
             }
         }
