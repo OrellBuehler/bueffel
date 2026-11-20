@@ -1,0 +1,182 @@
+import SwiftUI
+
+private enum ClozeToken {
+    case word(AttributedString)
+    case gap(index: Int, hint: String?)
+}
+
+private func clozeLines(_ segments: [ClozeSegmentInfo]) -> [[ClozeToken]] {
+    var lines: [[ClozeToken]] = [[]]
+    for segment in segments {
+        switch segment {
+        case .gap(let index, let hint):
+            lines[lines.count - 1].append(.gap(index: index, hint: hint))
+        case .text(let text):
+            for span in text.spans {
+                let parts = span.text.components(separatedBy: "\n")
+                for (offset, part) in parts.enumerated() {
+                    if offset > 0 { lines.append([]) }
+                    for word in part.split(whereSeparator: { $0.isWhitespace }) {
+                        let styled = StyledText(
+                            spans: [StyledSpan(text: String(word), bold: span.bold, italic: span.italic, code: span.code)]
+                        )
+                        lines[lines.count - 1].append(.word(styled.attributed))
+                    }
+                }
+            }
+        }
+    }
+    return lines.filter { !$0.isEmpty }
+}
+
+struct ClozeExerciseView: View {
+    let store: StudyStore
+    let current: StudyCurrent
+    let style: PackStyle
+    @State private var answers: [String]
+    @FocusState private var focusedGap: Int?
+
+    init(store: StudyStore, current: StudyCurrent, style: PackStyle) {
+        self.store = store
+        self.current = current
+        self.style = style
+        _answers = State(initialValue: Array(repeating: "", count: max(current.exercise.gapCount, 0)))
+    }
+
+    private var feedback: FeedbackInfo? { current.feedback }
+    private var allEmpty: Bool { answers.allSatisfy { $0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty } }
+
+    var body: some View {
+        ExerciseScaffold(current: current, style: style) {
+            VStack(spacing: 16) {
+                textCard
+                if let feedback {
+                    FeedbackBanner(feedback: feedback)
+                }
+            }
+        } bar: {
+            if feedback != nil {
+                ContinueBar(store: store, style: style)
+            } else {
+                VStack(spacing: 8) {
+                    Button {
+                        submit(answers)
+                    } label: {
+                        Text("study.check")
+                    }
+                    .buttonStyle(BrandButtonStyle(fill: style.base, foreground: style.onBase))
+                    .disabled(allEmpty)
+                    Button {
+                        submit(Array(repeating: "", count: answers.count))
+                    } label: {
+                        Text("study.dontknow")
+                            .font(.brand(.subheadline, weight: .semibold))
+                            .foregroundStyle(Brand.textSecondary)
+                    }
+                }
+            }
+        }
+        .task {
+            _ = try? await Task.sleep(nanoseconds: 400_000_000)
+            focusedGap = 0
+        }
+    }
+
+    private var textCard: some View {
+        let lines = clozeLines(current.exercise.segments)
+        return VStack(alignment: .leading, spacing: 12) {
+            Text("study.label.cloze")
+                .font(.brand(.caption, weight: .bold))
+                .foregroundStyle(style.accentText)
+                .tracking(0.6)
+                .textCase(.uppercase)
+            VStack(alignment: .leading, spacing: 10) {
+                ForEach(Array(lines.enumerated()), id: \.offset) { _, line in
+                    FlowLayout(spacing: 6, lineSpacing: 10) {
+                        ForEach(Array(line.enumerated()), id: \.offset) { _, token in
+                            tokenView(token)
+                        }
+                    }
+                }
+            }
+            if let hint = current.question?.hint, !hint.isEmpty {
+                RichTextView(text: hint, font: .brand(.subheadline), color: Brand.textSecondary)
+            }
+        }
+        .padding(20)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .card(radius: 26)
+    }
+
+    @ViewBuilder
+    private func tokenView(_ token: ClozeToken) -> some View {
+        switch token {
+        case .word(let text):
+            Text(text)
+                .font(.brand(.title3, weight: .medium))
+                .foregroundStyle(Brand.text)
+        case .gap(let index, let hint):
+            gapView(index: index, hint: hint)
+        }
+    }
+
+    @ViewBuilder
+    private func gapView(index: Int, hint: String?) -> some View {
+        if let result = feedback?.gapResults.first(where: { $0.index == index }) {
+            resultPill(result)
+        } else if index >= 0 && index < answers.count {
+            TextField(hint ?? "", text: $answers[index])
+                .font(.brand(.title3, weight: .semibold))
+                .multilineTextAlignment(.center)
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+                .submitLabel(index == answers.count - 1 ? .done : .next)
+                .focused($focusedGap, equals: index)
+                .onSubmit {
+                    advance(from: index)
+                }
+                .frame(width: 104)
+                .padding(.vertical, 6)
+                .padding(.horizontal, 6)
+                .background(style.base.opacity(0.12), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                .overlay(alignment: .bottom) {
+                    Rectangle()
+                        .fill(focusedGap == index ? style.base : style.base.opacity(0.4))
+                        .frame(height: 2)
+                }
+        } else {
+            EmptyView()
+        }
+    }
+
+    private func resultPill(_ result: GapResultInfo) -> some View {
+        let tint = result.correct ? Brand.success : Brand.error
+        return HStack(spacing: 6) {
+            Text(result.given.isEmpty ? "…" : result.given)
+                .strikethrough(!result.correct && !result.given.isEmpty)
+                .foregroundStyle(tint)
+            if !result.correct {
+                Text(result.canonical)
+                    .foregroundStyle(Brand.success)
+            }
+        }
+        .font(.brand(.title3, weight: .bold))
+        .padding(.vertical, 5)
+        .padding(.horizontal, 10)
+        .background(tint.opacity(0.14), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+    }
+
+    private func advance(from index: Int) {
+        if index + 1 < answers.count {
+            focusedGap = index + 1
+        } else {
+            focusedGap = nil
+            if !allEmpty { submit(answers) }
+        }
+    }
+
+    private func submit(_ values: [String]) {
+        focusedGap = nil
+        store.submit(.cloze(values.map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }))
+    }
+}
