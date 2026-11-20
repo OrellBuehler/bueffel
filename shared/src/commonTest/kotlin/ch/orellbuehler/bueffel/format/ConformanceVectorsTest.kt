@@ -1,0 +1,110 @@
+package ch.orellbuehler.bueffel.format
+
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonNull
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.boolean
+import kotlinx.serialization.json.booleanOrNull
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
+
+class ConformanceVectorsTest {
+    private val vectors = Json.parseToJsonElement(GENERATED_TEST_VECTORS).jsonObject
+
+    private fun section(name: String): List<JsonObject> = vectors.getValue(name).jsonArray.map { it.jsonObject }
+
+    private fun flag(
+        vector: JsonObject,
+        name: String,
+    ): Boolean = vector[name]?.jsonPrimitive?.booleanOrNull ?: false
+
+    @Test
+    fun vectorsFileIsLoaded() {
+        assertTrue(section("normalize").size > 30)
+        assertTrue(section("match").size > 10)
+        assertTrue(section("markup").size > 20)
+        assertTrue(section("cloze").size > 15)
+    }
+
+    @Test
+    fun normalizeVectors() {
+        section("normalize").forEachIndexed { index, v ->
+            val input = v.getValue("input").jsonPrimitive.content
+            val expected = v.getValue("expected").jsonPrimitive.content
+            assertEquals(
+                expected,
+                normalize(input, flag(v, "caseSensitive"), flag(v, "ignoreDiacritics")),
+                "normalize[$index] $input",
+            )
+        }
+    }
+
+    @Test
+    fun matchVectors() {
+        section("match").forEachIndexed { index, v ->
+            val typed = v.getValue("typed").jsonPrimitive.content
+            val expected = v.getValue("expected").jsonPrimitive.content
+            val result = v.getValue("result").jsonPrimitive.boolean
+            assertEquals(
+                result,
+                matchesAnswer(typed, listOf(expected), flag(v, "caseSensitive"), flag(v, "ignoreDiacritics")),
+                "match[$index] typed=$typed expected=$expected",
+            )
+        }
+    }
+
+    @Test
+    fun markupVectors() {
+        section("markup").forEachIndexed { index, v ->
+            val input = v.getValue("input").jsonPrimitive.content
+            val spans = parseMarkup(input).map { listOf(styleOf(it), it.text) }
+            val expected = v.getValue("spans").jsonArray.map { span -> span.jsonArray.map { it.jsonPrimitive.content } }
+            assertEquals(expected, spans, "markup[$index] $input")
+            v["plain"]?.let { assertEquals(it.jsonPrimitive.content, RichText.parse(input).plain, "markup plain[$index] $input") }
+        }
+    }
+
+    @Test
+    fun clozeVectors() {
+        section("cloze").forEachIndexed { index, v ->
+            val input = v.getValue("input").jsonPrimitive.content
+            val actual =
+                parseCloze(input).map { part ->
+                    when (part) {
+                        is ClozePart.Text -> JsonArray(listOf(JsonPrimitive("t"), JsonPrimitive(part.raw)))
+                        is ClozePart.Gap ->
+                            JsonArray(
+                                listOf(
+                                    JsonPrimitive("g"),
+                                    JsonObject(
+                                        mapOf(
+                                            "answers" to JsonArray(part.answers.map { JsonPrimitive(it) }),
+                                            "hint" to (part.hint?.let { JsonPrimitive(it) } ?: JsonNull),
+                                        ),
+                                    ),
+                                ),
+                            )
+                    }
+                }
+            val expected: List<JsonElement> = v.getValue("segments").jsonArray.toList()
+            assertEquals(expected, actual, "cloze[$index] $input")
+            assertTrue(v.getValue("segments").jsonArray.all { it.jsonArray[0].jsonPrimitive.contentOrNull in listOf("t", "g") })
+        }
+    }
+
+    private fun styleOf(span: TextSpan): String =
+        when {
+            span.bold -> "b"
+            span.italic -> "i"
+            span.code -> "c"
+            else -> ""
+        }
+}
