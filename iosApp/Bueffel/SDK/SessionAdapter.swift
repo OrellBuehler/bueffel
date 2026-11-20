@@ -1,6 +1,8 @@
 @preconcurrency import shared
 import Foundation
 
+// Nested sealed subclasses (SessionState, ClozeSegment) go through SKIE `onEnum(of:)`; the Exercise
+// subclasses are top-level Kotlin classes, so they are plain casts and need no SKIE naming guess.
 enum SessionAdapter {
     static func snapshot(_ state: SessionState) -> SessionSnapshot? {
         switch onEnum(of: state) {
@@ -120,10 +122,10 @@ enum SessionAdapter {
     }
 
     static func exercise(_ e: Exercise) -> ExerciseInfo {
-        switch onEnum(of: e) {
-        case .flipExercise(let x):
+        if let x = e as? FlipExercise {
             return info(e, kind: .flip, prompt: Mapping.styled(x.prompt))
-        case .choiceExercise(let x):
+        }
+        if let x = e as? ChoiceExercise {
             return ExerciseInfo(
                 itemId: x.itemId,
                 kind: .choice,
@@ -133,9 +135,11 @@ enum SessionAdapter {
                 segments: [],
                 gapCount: 0
             )
-        case .typeExercise(let x):
+        }
+        if let x = e as? TypeExercise {
             return info(e, kind: .typed, prompt: Mapping.styled(x.prompt))
-        case .clozeExercise(let x):
+        }
+        if let x = e as? ClozeExercise {
             return ExerciseInfo(
                 itemId: x.itemId,
                 kind: .cloze,
@@ -145,9 +149,11 @@ enum SessionAdapter {
                 segments: x.segments.map { clozeSegment($0) },
                 gapCount: Int(x.gapCount)
             )
-        case .trueFalseExercise(let x):
+        }
+        if let x = e as? TrueFalseExercise {
             return info(e, kind: .trueFalse, prompt: Mapping.styled(x.statement))
-        case .orderExercise(let x):
+        }
+        if let x = e as? OrderExercise {
             return ExerciseInfo(
                 itemId: x.itemId,
                 kind: .order,
@@ -157,11 +163,11 @@ enum SessionAdapter {
                 segments: [],
                 gapCount: 0
             )
-        case .openExercise(let x):
-            return info(e, kind: .open, prompt: Mapping.styled(x.question))
-        default:
-            return info(e, kind: .flip, prompt: .empty)
         }
+        if let x = e as? OpenExercise {
+            return info(e, kind: .open, prompt: Mapping.styled(x.question))
+        }
+        return info(e, kind: .flip, prompt: .empty)
     }
 
     static func clozeSegment(_ segment: ClozeSegment) -> ClozeSegmentInfo {

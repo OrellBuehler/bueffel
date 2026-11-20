@@ -22,7 +22,7 @@ struct OrderExerciseView: View {
                 QuestionCard(
                     labelKey: "study.label.order",
                     prompt: current.exercise.prompt,
-                    hint: current.question?.hint,
+                    hint: current.hint,
                     style: style
                 )
                 if let feedback {

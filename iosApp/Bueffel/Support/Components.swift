@@ -75,7 +75,7 @@ struct ProgressRing: View {
     var tint: Color = Brand.accent
     var track: Color = Brand.hairline
 
-    private var clamped: Double { min(max(progress, 0), 1) }
+    private var clamped: Double { progress.isFinite ? min(max(progress, 0), 1) : 0 }
 
     var body: some View {
         ZStack {
@@ -95,7 +95,7 @@ struct ProgressBar: View {
     var track: Color = Brand.hairline
     var height: CGFloat = 8
 
-    private var clamped: Double { min(max(value, 0), 1) }
+    private var clamped: Double { value.isFinite ? min(max(value, 0), 1) : 0 }
 
     var body: some View {
         GeometryReader { proxy in

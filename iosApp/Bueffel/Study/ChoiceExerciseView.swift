@@ -15,7 +15,7 @@ struct ChoiceExerciseView: View {
                 QuestionCard(
                     labelKey: exercise.multiSelect ? "study.label.multi" : "study.label.choice",
                     prompt: exercise.prompt,
-                    hint: current.question?.hint,
+                    hint: current.hint,
                     style: style
                 )
                 VStack(spacing: 10) {
@@ -65,9 +65,9 @@ struct ChoiceExerciseView: View {
         withAnimation(.snappy(duration: 0.2)) {
             if exercise.multiSelect {
                 if selected.contains(id) {
-                    selected.remove(id)
+                    _ = selected.remove(id)
                 } else {
-                    selected.insert(id)
+                    _ = selected.insert(id)
                 }
             } else {
                 selected = [id]

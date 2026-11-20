@@ -16,7 +16,7 @@ struct TypeExerciseView: View {
                 QuestionCard(
                     labelKey: "study.label.type",
                     prompt: current.exercise.prompt,
-                    hint: current.question?.hint,
+                    hint: current.hint,
                     style: style
                 )
                 if let feedback {

@@ -111,6 +111,8 @@ enum Mapping {
         counts.map { TypeCountInfo(kind: itemKind($0.type), count: Int($0.count)) }
     }
 
+    // SKIE turns Kotlin enums into Swift enums with lowerCamelCase cases. ItemStatus.NEW is the
+    // `default` branch on purpose: `new` collides with NSObject and SKIE may rename it.
     static func itemKind(_ type: ItemType) -> ItemKind {
         switch type {
         case .card: return .card

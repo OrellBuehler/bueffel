@@ -203,7 +203,7 @@ struct ImportIssue: Hashable, Sendable {
         case .revisionDowngrade: L10n.tr("import.error.downgrade")
         case .storage: L10n.tr("import.error.storage")
         case .unreadableFile: L10n.tr("import.error.unreadable")
-        case .unknownSample, .other: message
+        case .unknownSample, .other: message.isEmpty ? L10n.tr("import.error.generic") : message
         }
     }
 }

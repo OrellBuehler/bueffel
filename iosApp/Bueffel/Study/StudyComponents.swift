@@ -24,7 +24,7 @@ struct ExerciseScaffold<Content: View, Bar: View>: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
-                if current.question?.isRetry == true {
+                if current.isRetry {
                     Chip(text: L10n.tr("study.retry"), systemImage: "arrow.counterclockwise", tint: Brand.flame)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }

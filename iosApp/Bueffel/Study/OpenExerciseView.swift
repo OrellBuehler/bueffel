@@ -14,7 +14,7 @@ struct OpenExerciseView: View {
                 QuestionCard(
                     labelKey: "study.label.open",
                     prompt: current.exercise.prompt,
-                    hint: current.question?.hint,
+                    hint: current.hint,
                     style: style
                 )
                 if let feedback {
@@ -105,9 +105,9 @@ struct OpenExerciseView: View {
     private func toggle(_ index: Int) {
         withAnimation(.snappy(duration: 0.2)) {
             if ticked.contains(index) {
-                ticked.remove(index)
+                _ = ticked.remove(index)
             } else {
-                ticked.insert(index)
+                _ = ticked.insert(index)
             }
         }
     }

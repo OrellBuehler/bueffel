@@ -77,6 +77,7 @@
 "grade.good" = "Good";
 "grade.hard" = "Hard";
 "import.error.downgrade" = "The installed pack is newer than this file.";
+"import.error.generic" = "Something went wrong while reading the pack.";
 "import.error.invalid" = "The pack is missing a valid id, title or version.";
 "import.error.noitems" = "The pack doesn't contain any usable items.";
 "import.error.notapack" = "This doesn't look like a Büffel pack. Packs are JSON files with \"format\": \"bueffel-pack\".";

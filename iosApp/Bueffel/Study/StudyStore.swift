@@ -5,6 +5,8 @@ struct StudyCurrent {
     let exercise: ExerciseInfo
     let question: QuestionInfo?
     let feedback: FeedbackInfo?
+    let isRetry: Bool
+    let hint: StyledText?
 }
 
 @MainActor
@@ -24,6 +26,8 @@ final class StudyStore {
     private(set) var wrongTicks = 0
     private(set) var gradeTicks = 0
 
+    private(set) var answeredAny = false
+    private var lastQuestion: QuestionInfo?
     private var driver: SessionDriver?
     private let client = SDKClient.shared
 
@@ -35,9 +39,21 @@ final class StudyStore {
         guard let snapshot else { return nil }
         switch snapshot {
         case .question(let question):
-            return StudyCurrent(exercise: question.exercise, question: question, feedback: nil)
+            return StudyCurrent(
+                exercise: question.exercise,
+                question: question,
+                feedback: nil,
+                isRetry: question.isRetry,
+                hint: question.hint
+            )
         case .feedback(let feedback):
-            return StudyCurrent(exercise: feedback.exercise, question: nil, feedback: feedback)
+            return StudyCurrent(
+                exercise: feedback.exercise,
+                question: nil,
+                feedback: feedback,
+                isRetry: lastQuestion?.isRetry ?? false,
+                hint: lastQuestion?.hint
+            )
         case .finished:
             return nil
         }
@@ -52,12 +68,7 @@ final class StudyStore {
     }
 
     var hasAnswered: Bool {
-        guard let snapshot else { return false }
-        switch snapshot {
-        case .question(let question): return question.position > 1 || question.isRetry
-        case .feedback: return true
-        case .finished: return false
-        }
+        answeredAny && summary == nil
     }
 
     var hintAvailable: Bool {
@@ -139,7 +150,9 @@ final class StudyStore {
             if !isSameQuestion(question) {
                 questionToken += 1
             }
+            lastQuestion = question
         case .feedback(let feedback):
+            answeredAny = true
             switch feedback.verdict {
             case .correct: correctTicks += 1
             case .wrong: wrongTicks += 1

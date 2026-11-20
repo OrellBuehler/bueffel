@@ -99,7 +99,7 @@ struct ClozeExerciseView: View {
                     }
                 }
             }
-            if let hint = current.question?.hint, !hint.isEmpty {
+            if let hint = current.hint, !hint.isEmpty {
                 RichTextView(text: hint, font: .brand(.subheadline), color: Brand.textSecondary)
             }
         }

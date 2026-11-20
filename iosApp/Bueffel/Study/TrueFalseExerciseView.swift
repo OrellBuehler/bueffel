@@ -14,7 +14,7 @@ struct TrueFalseExerciseView: View {
                 QuestionCard(
                     labelKey: "study.label.truefalse",
                     prompt: current.exercise.prompt,
-                    hint: current.question?.hint,
+                    hint: current.hint,
                     style: style
                 )
                 HStack(spacing: 12) {

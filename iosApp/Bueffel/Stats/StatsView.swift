@@ -197,6 +197,8 @@ private struct ActivityBarsCard: View {
     private func bar(_ day: DayActivityInfo) -> some View {
         let ratio = Double(day.reviews) / Double(peak)
         let reached = goal > 0 && day.reviews >= goal
+        let weekday = day.date.formatted(.dateTime.weekday(.wide).day().month())
+        let accessibilityText = weekday + ": " + L10n.plural("stats.reviews.count", day.reviews)
         return VStack(spacing: 6) {
             Spacer(minLength: 0)
             if day.reviews > 0 {
@@ -216,9 +218,7 @@ private struct ActivityBarsCard: View {
         }
         .frame(maxWidth: .infinity)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(
-            day.date.formatted(.dateTime.weekday(.wide).day().month()) + ": " + L10n.plural("stats.reviews.count", day.reviews)
-        )
+        .accessibilityLabel(accessibilityText)
     }
 }
 

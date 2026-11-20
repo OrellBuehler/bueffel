@@ -1,6 +1,8 @@
 @preconcurrency import shared
 import Foundation
 
+// SKIE `onEnum(of:)` cases are the lowerCamelCased names of the nested sealed subclasses
+// (ImportResult.Success -> .success). Nested Kotlin types are never named in Swift on purpose.
 enum ImportAdapter {
     static func outcome(_ result: ImportResult) -> ImportOutcome {
         switch onEnum(of: result) {

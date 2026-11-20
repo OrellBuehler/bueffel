@@ -39,6 +39,8 @@ final class AppModel {
 
     private let client = SDKClient.shared
     @ObservationIgnored private var watchers: [Task<Void, Never>] = []
+    @ObservationIgnored private var writeChain: Task<Void, Never>?
+    @ObservationIgnored private var pendingWrites = 0
 
     var showOnboarding: Bool {
         settingsLoaded && !settings.onboardingSeen
@@ -76,10 +78,6 @@ final class AppModel {
             return ContinueTarget(pack: fresh, count: fresh.newCount, isDue: false)
         }
         return nil
-    }
-
-    func pack(withId id: String) -> PackInfo? {
-        packs.first { $0.id == id }
     }
 
     func start() {
@@ -128,7 +126,7 @@ final class AppModel {
 
     func completeOnboarding() {
         settings.onboardingSeen = true
-        Task { [client = self.client] in
+        enqueueWrite { client in
             await client.setOnboardingSeen(true)
         }
     }
@@ -137,7 +135,7 @@ final class AppModel {
         let value = min(max(goal, 1), 1000)
         guard value != settings.dailyGoal else { return }
         settings.dailyGoal = value
-        Task { [client = self.client] in
+        enqueueWrite { client in
             await client.setDailyGoal(value)
         }
     }
@@ -146,7 +144,7 @@ final class AppModel {
         let value = min(max(size, 1), 500)
         guard value != settings.defaultSessionSize else { return }
         settings.defaultSessionSize = value
-        Task { [client = self.client] in
+        enqueueWrite { client in
             await client.setDefaultSessionSize(value)
         }
     }
@@ -154,7 +152,7 @@ final class AppModel {
     func setTheme(_ theme: ThemeChoice) {
         guard theme != settings.theme else { return }
         settings.theme = theme
-        Task { [client = self.client] in
+        enqueueWrite { client in
             await client.setTheme(theme)
         }
     }
@@ -177,7 +175,25 @@ final class AppModel {
     }
 
     private func applySettings(_ value: SettingsInfo) {
-        settings = value
         settingsLoaded = true
+        guard pendingWrites == 0 else { return }
+        settings = value
+    }
+
+    private func enqueueWrite(_ operation: @escaping @Sendable (SDKClient) async -> Void) {
+        pendingWrites += 1
+        let previous = writeChain
+        writeChain = Task { [weak self, client = self.client] in
+            await previous?.value
+            await operation(client)
+            self?.finishWrite()
+        }
+    }
+
+    private func finishWrite() {
+        pendingWrites -= 1
+        if pendingWrites == 0 {
+            client.refresh()
+        }
     }
 }

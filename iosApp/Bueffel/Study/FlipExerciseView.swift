@@ -44,7 +44,7 @@ struct FlipExerciseView: View {
     }
 
     private var card: some View {
-        let text = showsBack ? (current.feedback?.correctAnswer ?? StyledText.empty) : (current.question?.exercise.prompt ?? current.exercise.prompt)
+        let text = showsBack ? (current.feedback?.correctAnswer ?? StyledText.empty) : current.exercise.prompt
         let key = showsBack ? "study.flip.back" : "study.flip.front"
         return VStack(spacing: 18) {
             Text(L10n.tr(key))
@@ -53,7 +53,7 @@ struct FlipExerciseView: View {
                 .tracking(0.6)
                 .textCase(.uppercase)
             RichTextView(text: text, font: .brand(.title2, weight: .semibold), alignment: .center)
-            if !showsBack, let hint = current.question?.hint, !hint.isEmpty {
+            if !showsBack, let hint = current.hint, !hint.isEmpty {
                 RichTextView(text: hint, font: .brand(.subheadline), color: Brand.textSecondary, alignment: .center)
             }
             if !showsBack {
@@ -76,7 +76,9 @@ struct FlipExerciseView: View {
         guard flipped != showsBack else { return }
         withAnimation(.easeIn(duration: 0.16)) {
             angle = 90
-        } completion: {
+        }
+        Task {
+            _ = try? await Task.sleep(nanoseconds: 160_000_000)
             showsBack = flipped
             angle = -90
             withAnimation(.easeOut(duration: 0.22)) {
