@@ -116,10 +116,12 @@ android {
         implementation(libs.lifecycle.runtime.compose)
         implementation(libs.lifecycle.viewmodel.compose)
         implementation(libs.kotlinx.datetime)
+        implementation(libs.reorderable)
         debugImplementation(libs.compose.ui.tooling)
         testImplementation(libs.kotlin.test)
         testImplementation(libs.kotlin.test.junit)
         testImplementation(libs.kotlinx.coroutines.test)
         testImplementation(libs.turbine)
+        testImplementation(libs.mockk)
     }
 }
