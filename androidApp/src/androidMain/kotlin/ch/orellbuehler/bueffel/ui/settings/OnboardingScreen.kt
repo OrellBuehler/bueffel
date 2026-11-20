@@ -54,6 +54,7 @@ import ch.orellbuehler.bueffel.ui.components.Mascot
 import ch.orellbuehler.bueffel.ui.components.MascotMood
 import ch.orellbuehler.bueffel.ui.theme.Amber
 import ch.orellbuehler.bueffel.ui.theme.Violet
+import ch.orellbuehler.bueffel.ui.theme.cardSurface
 import kotlinx.coroutines.launch
 
 private const val PAGES = 3
@@ -189,7 +190,7 @@ private fun Feature(
         Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(18.dp))
-            .background(MaterialTheme.colorScheme.surfaceContainerLowest)
+            .background(MaterialTheme.cardSurface)
             .padding(14.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(14.dp),

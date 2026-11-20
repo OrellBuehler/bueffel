@@ -246,7 +246,7 @@ private fun GapField(
                 contentAlignment = Alignment.Center,
             ) {
                 if (value.isEmpty() && !hint.isNullOrBlank()) {
-                    Text(hint, style = MaterialTheme.typography.bodyMedium, color = scheme.onSurfaceVariant, maxLines = 1)
+                    Text(hint, style = MaterialTheme.typography.labelMedium, color = scheme.onSurfaceVariant, maxLines = 1)
                 }
                 inner()
             }

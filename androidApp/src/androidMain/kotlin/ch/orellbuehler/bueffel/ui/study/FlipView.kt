@@ -36,6 +36,7 @@ import ch.orellbuehler.bueffel.R
 import ch.orellbuehler.bueffel.study.FlipExercise
 import ch.orellbuehler.bueffel.study.SessionState
 import ch.orellbuehler.bueffel.ui.theme.PackPalette
+import ch.orellbuehler.bueffel.ui.theme.cardSurface
 
 @Composable
 fun FlipView(
@@ -75,7 +76,7 @@ fun FlipView(
             if (rotation <= 90f) {
                 CardFace(
                     label = stringResource(R.string.flip_front),
-                    container = MaterialTheme.colorScheme.surfaceContainerLowest,
+                    container = MaterialTheme.cardSurface,
                     content = MaterialTheme.colorScheme.onSurface,
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
                 ) {

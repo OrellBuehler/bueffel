@@ -33,6 +33,8 @@ sealed interface StudyUiState {
         val summary: SessionSummary,
         val stats: Stats?,
     ) : StudyUiState
+
+    data object Closed : StudyUiState
 }
 
 data class StudyPackInfo(
@@ -85,10 +87,10 @@ class StudyViewModel(
                     _ui.value =
                         when (state) {
                             is SessionState.Finished ->
-                                if (state.summary.total == 0) {
-                                    StudyUiState.Empty(started.mode)
-                                } else {
-                                    StudyUiState.Done(state.summary, runCatching { sdk.observeStats(1).first() }.getOrNull())
+                                when {
+                                    state.summary.abandoned -> StudyUiState.Closed
+                                    state.summary.total == 0 -> StudyUiState.Empty(started.mode)
+                                    else -> StudyUiState.Done(state.summary, runCatching { sdk.observeStats(1).first() }.getOrNull())
                                 }
                             else -> {
                                 val startsNewStep =

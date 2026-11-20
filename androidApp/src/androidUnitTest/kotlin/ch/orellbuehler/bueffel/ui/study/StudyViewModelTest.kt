@@ -124,6 +124,15 @@ class StudyViewModelTest {
         }
 
     @Test
+    fun abandoningASessionClosesTheScreenInsteadOfShowingASummary() =
+        runTest {
+            val state = MutableStateFlow<SessionState>(question(1))
+            val vm = viewModel(state)
+            state.value = SessionState.Finished(summary(3).copy(abandoned = true))
+            assertEquals(StudyUiState.Closed, vm.ui.value)
+        }
+
+    @Test
     fun forwardsUserActionsToTheSession() =
         runTest {
             val vm = viewModel(MutableStateFlow(question(1)))

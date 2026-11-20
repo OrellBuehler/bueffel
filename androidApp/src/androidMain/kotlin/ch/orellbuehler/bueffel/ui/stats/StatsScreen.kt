@@ -58,6 +58,7 @@ import ch.orellbuehler.bueffel.ui.components.ProgressRing
 import ch.orellbuehler.bueffel.ui.components.bottomContentPadding
 import ch.orellbuehler.bueffel.ui.theme.Amber
 import ch.orellbuehler.bueffel.ui.theme.bueffel
+import ch.orellbuehler.bueffel.ui.theme.cardSurface
 import java.time.LocalDate
 import kotlin.math.roundToInt
 import java.time.format.TextStyle as DateTextStyle
@@ -129,7 +130,7 @@ private fun GoalCard(stats: Stats) {
     Card(
         Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(28.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.cardSurface),
     ) {
         Row(Modifier.padding(20.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(18.dp)) {
             ProgressRing(
@@ -231,7 +232,7 @@ private fun ActivityCard(state: StatsState) {
     Card(
         Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(28.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.cardSurface),
     ) {
         Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
             Text(stringResource(R.string.stats_activity), style = MaterialTheme.typography.titleMedium)

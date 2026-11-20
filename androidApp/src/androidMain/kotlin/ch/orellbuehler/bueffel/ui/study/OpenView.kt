@@ -24,6 +24,7 @@ import ch.orellbuehler.bueffel.R
 import ch.orellbuehler.bueffel.study.OpenExercise
 import ch.orellbuehler.bueffel.study.SessionState
 import ch.orellbuehler.bueffel.ui.components.RichTextView
+import ch.orellbuehler.bueffel.ui.theme.cardSurface
 
 @Composable
 fun OpenView(
@@ -86,7 +87,7 @@ fun OpenView(
                         Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(16.dp))
-                            .background(scheme.surfaceContainerLowest)
+                            .background(MaterialTheme.cardSurface)
                             .toggleable(checked, role = Role.Checkbox) {
                                 haptics.performHapticFeedback(if (it) HapticFeedbackType.ToggleOn else HapticFeedbackType.ToggleOff)
                                 if (it) ticked.add(key) else ticked.remove(key)

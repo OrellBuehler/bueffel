@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import ch.orellbuehler.bueffel.store.ThemePreference
 
@@ -32,6 +33,11 @@ val MaterialTheme.isDark: Boolean
     @Composable
     @ReadOnlyComposable
     get() = LocalDarkTheme.current
+
+val MaterialTheme.cardSurface: Color
+    @Composable
+    @ReadOnlyComposable
+    get() = if (LocalDarkTheme.current) colorScheme.surfaceContainerHigh else colorScheme.surfaceContainerLowest
 
 @Composable
 fun BueffelTheme(

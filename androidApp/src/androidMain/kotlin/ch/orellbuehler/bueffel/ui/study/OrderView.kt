@@ -43,6 +43,7 @@ import ch.orellbuehler.bueffel.study.OrderExercise
 import ch.orellbuehler.bueffel.study.SessionState
 import ch.orellbuehler.bueffel.ui.components.RichTextView
 import ch.orellbuehler.bueffel.ui.theme.bueffel
+import ch.orellbuehler.bueffel.ui.theme.cardSurface
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
@@ -108,7 +109,7 @@ fun OrderView(
                                 if (dragging) {
                                     MaterialTheme.colorScheme.primaryContainer
                                 } else {
-                                    MaterialTheme.colorScheme.surfaceContainerLowest
+                                    MaterialTheme.cardSurface
                                 },
                             shadowElevation = elevation,
                             modifier =

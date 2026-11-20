@@ -96,6 +96,7 @@ import ch.orellbuehler.bueffel.ui.components.SlimProgressBar
 import ch.orellbuehler.bueffel.ui.theme.Ink
 import ch.orellbuehler.bueffel.ui.theme.PackPalette
 import ch.orellbuehler.bueffel.ui.theme.bueffel
+import ch.orellbuehler.bueffel.ui.theme.cardSurface
 import ch.orellbuehler.bueffel.ui.theme.isDark
 import ch.orellbuehler.bueffel.ui.theme.packPalette
 import kotlinx.coroutines.launch
@@ -442,7 +443,7 @@ private fun StatTile(
     Card(
         modifier,
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.cardSurface),
     ) {
         Column(Modifier.fillMaxWidth().padding(vertical = 12.dp, horizontal = 6.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             Text("$value", style = MaterialTheme.typography.titleLarge)
@@ -584,7 +585,7 @@ private fun SectionsBlock(
             Card(
                 onClick = { onSection(section) },
                 shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.cardSurface),
             ) {
                 Row(
                     Modifier.padding(16.dp),
@@ -662,7 +663,7 @@ private fun AboutBlock(
             Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(20.dp))
-                .background(MaterialTheme.colorScheme.surfaceContainerLowest)
+                .background(MaterialTheme.cardSurface)
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {

@@ -49,6 +49,7 @@ import ch.orellbuehler.bueffel.store.AppSettings
 import ch.orellbuehler.bueffel.store.ThemePreference
 import ch.orellbuehler.bueffel.ui.components.LocalBottomBarInset
 import ch.orellbuehler.bueffel.ui.components.bottomContentPadding
+import ch.orellbuehler.bueffel.ui.theme.cardSurface
 import kotlin.math.roundToInt
 
 const val FORMAT_URL = "https://github.com/OrellBuehler/bueffel/tree/main/format"
@@ -119,7 +120,7 @@ private fun GroupCard(content: @Composable () -> Unit) {
         Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(24.dp))
-            .background(MaterialTheme.colorScheme.surfaceContainerLowest)
+            .background(MaterialTheme.cardSurface)
             .padding(horizontal = 20.dp, vertical = 14.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {

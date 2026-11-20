@@ -41,6 +41,7 @@ import ch.orellbuehler.bueffel.study.ChoiceExercise
 import ch.orellbuehler.bueffel.study.SessionState
 import ch.orellbuehler.bueffel.ui.components.RichTextView
 import ch.orellbuehler.bueffel.ui.theme.bueffel
+import ch.orellbuehler.bueffel.ui.theme.cardSurface
 
 private enum class OptionState {
     Idle,
@@ -130,10 +131,10 @@ private fun OptionCard(
     val success = MaterialTheme.bueffel
     val container by animateColorAsState(
         when (state) {
-            OptionState.Idle -> scheme.surfaceContainerLowest
+            OptionState.Idle -> MaterialTheme.cardSurface
             OptionState.Selected -> scheme.primaryContainer
             OptionState.Correct -> success.successContainer
-            OptionState.Missed -> scheme.surfaceContainerLowest
+            OptionState.Missed -> MaterialTheme.cardSurface
             OptionState.Wrong -> scheme.errorContainer
             OptionState.Dimmed -> scheme.surfaceContainerLow
         },

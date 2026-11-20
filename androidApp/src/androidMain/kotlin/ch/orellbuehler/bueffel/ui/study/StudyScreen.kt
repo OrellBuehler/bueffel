@@ -94,6 +94,7 @@ fun StudyScreen(
                     is StudyUiState.Empty -> "empty"
                     is StudyUiState.Active -> "step-${it.step}"
                     is StudyUiState.Done -> "done"
+                    StudyUiState.Closed -> "closed"
                 }
             },
             transitionSpec = { transitionFor(initialState, targetState) },
@@ -116,6 +117,7 @@ fun StudyScreen(
                             ),
                         onHint = viewModel::revealHint,
                     )
+                StudyUiState.Closed -> Box(Modifier.fillMaxSize())
                 is StudyUiState.Done ->
                     FinishedScreen(
                         state = state,
