@@ -1,0 +1,30 @@
+version: 2
+updates:
+  # Gradle (Kotlin Multiplatform / Android)
+  - package-ecosystem: 'gradle'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+    groups:
+      gradle-minor-patch:
+        patterns:
+          - '*'
+        update-types:
+          - 'minor'
+          - 'patch'
+    # SKIE hard-fails the build on any Kotlin version it hasn't whitelisted.
+    # Bump Kotlin by hand together with SKIE.
+    ignore:
+      - dependency-name: 'org.jetbrains.kotlin:*'
+      - dependency-name: 'org.jetbrains.kotlin.*'
+
+  # GitHub Actions
+  # One PR for all action bumps.
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+    groups:
+      github-actions:
+        patterns:
+          - '*'
