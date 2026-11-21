@@ -26,6 +26,11 @@ internal class Env(
     val dispatcher: CoroutineDispatcher,
 ) {
     private val ticks = MutableStateFlow(0L)
+    private val idRandom = Random.Default
+
+    var syncTracking: Boolean = false
+
+    fun newId(): String = hex(idRandom.nextBytes(ID_BYTES))
 
     fun now(): Long = clock.now().toEpochMilliseconds()
 
@@ -42,5 +47,11 @@ internal class Env(
         ticks.update { it + 1 }
     }
 
+    private fun hex(bytes: ByteArray): String = bytes.joinToString("") { (it.toInt() and 0xff).toString(16).padStart(2, '0') }
+
     fun <T> observe(compute: () -> T): Flow<T> = ticks.map { compute() }.distinctUntilChanged().flowOn(dispatcher)
+
+    private companion object {
+        const val ID_BYTES = 16
+    }
 }

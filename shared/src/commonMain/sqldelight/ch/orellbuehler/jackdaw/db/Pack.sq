@@ -89,6 +89,9 @@ INSERT OR REPLACE INTO item (pack_id, item_id, position, section_id, type, title
 selectItemTypes:
 SELECT item_id, type FROM item WHERE pack_id = ?;
 
+selectItemType:
+SELECT type FROM item WHERE pack_id = ? AND item_id = ?;
+
 selectItems:
 SELECT * FROM item WHERE pack_id = ? ORDER BY position;
 

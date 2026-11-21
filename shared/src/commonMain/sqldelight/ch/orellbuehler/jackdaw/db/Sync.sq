@@ -1,0 +1,86 @@
+CREATE TABLE sync_pack (
+    pack_id TEXT NOT NULL PRIMARY KEY,
+    content_at INTEGER NOT NULL,
+    reset_at INTEGER NOT NULL,
+    deleted_at INTEGER NOT NULL
+);
+
+CREATE TABLE sync_record (
+    record_name TEXT NOT NULL PRIMARY KEY,
+    kind TEXT NOT NULL,
+    entity_key TEXT NOT NULL,
+    version INTEGER NOT NULL,
+    synced_version INTEGER NOT NULL,
+    system_fields TEXT
+);
+
+CREATE TABLE sync_meta (
+    name TEXT NOT NULL PRIMARY KEY,
+    content TEXT NOT NULL
+);
+
+selectSyncPack:
+SELECT * FROM sync_pack WHERE pack_id = ?;
+
+selectSyncPacks:
+SELECT * FROM sync_pack;
+
+insertSyncPackIfMissing:
+INSERT OR IGNORE INTO sync_pack (pack_id, content_at, reset_at, deleted_at) VALUES (?, ?, 0, 0);
+
+writeSyncPack:
+INSERT OR REPLACE INTO sync_pack (pack_id, content_at, reset_at, deleted_at) VALUES (?, ?, ?, ?);
+
+touchInsert:
+INSERT OR IGNORE INTO sync_record (record_name, kind, entity_key, version, synced_version, system_fields) VALUES (?, ?, ?, 0, 0, NULL);
+
+touchBump:
+UPDATE sync_record SET version = version + 1 WHERE record_name = ?;
+
+dirtyNames:
+SELECT record_name FROM sync_record WHERE version > synced_version ORDER BY kind, record_name;
+
+dirtyCount:
+SELECT COUNT(*) FROM sync_record WHERE version > synced_version;
+
+dirtyRow:
+SELECT * FROM sync_record WHERE record_name = ? AND version > synced_version;
+
+markSynced:
+UPDATE sync_record SET synced_version = MAX(synced_version, :version) WHERE record_name = :name;
+
+forgetSyncedReview:
+DELETE FROM sync_record WHERE record_name = ? AND kind = 'review' AND version <= synced_version;
+
+selectSystemFields:
+SELECT system_fields FROM sync_record WHERE record_name = ?;
+
+writeSystemFields:
+UPDATE sync_record SET system_fields = ? WHERE record_name = ?;
+
+queueAllPacks:
+INSERT OR IGNORE INTO sync_record (record_name, kind, entity_key, version, synced_version, system_fields)
+SELECT 'pack.' || pack_id, 'pack', pack_id, 0, 0, NULL FROM sync_pack;
+
+queueAllReviews:
+INSERT OR IGNORE INTO sync_record (record_name, kind, entity_key, version, synced_version, system_fields)
+SELECT 'log.' || id, 'review', id, 0, 0, NULL FROM review_log;
+
+queueAllSettings:
+INSERT OR IGNORE INTO sync_record (record_name, kind, entity_key, version, synced_version, system_fields)
+SELECT 'setting.' || name, 'setting', name, 0, 0, NULL FROM setting WHERE name IN ?;
+
+bumpAll:
+UPDATE sync_record SET version = MAX(version, synced_version) + 1, system_fields = NULL;
+
+clearSyncRecords:
+DELETE FROM sync_record;
+
+selectMeta:
+SELECT content FROM sync_meta WHERE name = ?;
+
+writeMeta:
+INSERT OR REPLACE INTO sync_meta (name, content) VALUES (?, ?);
+
+deleteMeta:
+DELETE FROM sync_meta WHERE name = ?;

@@ -15,7 +15,7 @@ CREATE TABLE review_state (
 CREATE INDEX review_state_pack ON review_state(pack_id, state, due_at);
 
 CREATE TABLE review_log (
-    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    id TEXT NOT NULL PRIMARY KEY,
     ts INTEGER NOT NULL,
     day INTEGER NOT NULL,
     pack_id TEXT NOT NULL,
@@ -24,11 +24,14 @@ CREATE TABLE review_log (
     exercise INTEGER NOT NULL,
     grade INTEGER NOT NULL,
     correct INTEGER NOT NULL,
-    practice INTEGER NOT NULL
+    practice INTEGER NOT NULL,
+    reschedule INTEGER NOT NULL,
+    item_type TEXT NOT NULL
 );
 
 CREATE INDEX review_log_day ON review_log(day);
 CREATE INDEX review_log_pack ON review_log(pack_id, ts);
+CREATE INDEX review_log_facet ON review_log(pack_id, item_id, facet, ts);
 
 upsertState:
 INSERT OR REPLACE INTO review_state (
@@ -95,7 +98,25 @@ SELECT
 FROM review_state;
 
 insertLog:
-INSERT INTO review_log (ts, day, pack_id, item_id, facet, exercise, grade, correct, practice) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+INSERT OR IGNORE INTO review_log (
+    id, ts, day, pack_id, item_id, facet, exercise, grade, correct, practice, reschedule, item_type
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+selectLog:
+SELECT * FROM review_log WHERE id = ?;
+
+logExists:
+SELECT EXISTS(SELECT 1 FROM review_log WHERE id = ?);
+
+replayFacet:
+SELECT ts, grade FROM review_log
+WHERE pack_id = ? AND item_id = ? AND facet = ? AND reschedule = 1 AND item_type = ? AND ts > ?
+ORDER BY ts, id;
+
+replayPack:
+SELECT item_id, facet, ts, grade, item_type FROM review_log
+WHERE pack_id = ? AND reschedule = 1 AND ts > ?
+ORDER BY ts, id;
 
 lastStudied:
 SELECT pack_id, MAX(ts) AS last_ts FROM review_log GROUP BY pack_id;

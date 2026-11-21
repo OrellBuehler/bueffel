@@ -1,10 +1,14 @@
 CREATE TABLE setting (
     name TEXT NOT NULL PRIMARY KEY,
-    content TEXT NOT NULL
+    content TEXT NOT NULL,
+    updated_at INTEGER NOT NULL
 );
 
 selectSettings:
 SELECT name, content FROM setting;
 
+selectSetting:
+SELECT name, content, updated_at FROM setting WHERE name = ?;
+
 upsertSetting:
-INSERT OR REPLACE INTO setting (name, content) VALUES (?, ?);
+INSERT OR REPLACE INTO setting (name, content, updated_at) VALUES (?, ?, ?);

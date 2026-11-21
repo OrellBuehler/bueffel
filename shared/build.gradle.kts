@@ -142,6 +142,9 @@ kotlin {
         iosMain.dependencies {
             implementation(libs.sqldelight.native)
         }
+        iosTest.dependencies {
+            implementation(libs.sqldelight.native)
+        }
         val androidUnitTest by getting {
             dependencies {
                 implementation(libs.sqldelight.jvm)

@@ -7,10 +7,11 @@ Package root `ch.orellbuehler.jackdaw`. On iOS the module is the `shared` framew
 | Package | Content |
 |---|---|
 | `JackdawSdk` | The one entry point (see below). |
-| `db` | `DatabaseDriverFactory` (expect/actual), SQLDelight schema (`Pack.sq`, `Review.sq`, `Setting.sq`). |
+| `db` | `DatabaseDriverFactory` (expect/actual), SQLDelight schema (`Pack.sq`, `Review.sq`, `Setting.sq`, `Sync.sq`). |
 | `format` | Pack reader (tolerant, spec section 11), markup/cloze parsers, answer normalisation. Public: `RichText`, `TextSpan`, `ItemType`, `Import*` types. Everything else is `internal`. |
 | `study` | Scheduler, planner, exercise factory and the `StudySession` state machine. |
 | `store` | Repositories and the read models the UIs render (`PackSummary`, `Stats`, ...). |
+| `sync` | Platform independent half of iCloud sync: what changed locally, applying fetched records, merge rules (see "Sync"). Still no network code. |
 | `samples` | The bundled sample packs. |
 
 ## Conventions
@@ -91,7 +92,7 @@ Errors and warnings carry a stable `code` for localisation and an English `messa
 | `SECTION_DROPPED` | A malformed or duplicate section. |
 | `MORE_WARNINGS` | Only the first 100 warnings are listed, `count` is the rest. |
 
-Updates follow spec section 4.2: same pack id replaces metadata, sections and hints; items are matched by id; progress is kept (also when the text changed) unless the item's type changed (then it restarts); removed items lose their progress.
+Updates follow spec section 4.2: same pack id replaces metadata, sections and hints; items are matched by id; progress is kept (also when the text changed) unless the item's type changed (then it restarts); removed items drop out of the schedule, and their progress comes back if an item with that id and type is added again (the schedule is always rebuilt from the review log, see "Sync").
 
 ### Stats and settings
 
@@ -100,6 +101,28 @@ Updates follow spec section 4.2: same pack id replaces metadata, sections and hi
 Every first answer in a session counts as a review (practice too). Re-asked items in the same session do not.
 
 Settings: `observeSettings()`, `settings()`, `setDailyGoal(n)` (1..1000), `setDefaultSessionSize(n)` (1..500), `setTheme(ThemePreference.SYSTEM/LIGHT/DARK)`, `setOnboardingSeen(bool)`. Defaults: goal 20, session size 20, SYSTEM, onboarding not seen. `AppSettings` has the four values.
+
+## Sync
+
+`sdk.sync` (`JackdawSync`) is the part of iCloud sync that does not depend on CloudKit. Android does not use it and keeps no sync bookkeeping: tracking is off until `sync.enableTracking()` is called (the iOS app does that once at launch). The CloudKit layer in `iosApp/Jackdaw/SDK/` is the only caller.
+
+What exists as a record (stable, device independent ids):
+
+| Kind | Record name | Content | Merge rule |
+|---|---|---|---|
+| `pack` | `pack.<packId>` | the pack's source JSON, `importedAt`, `contentAt`, `resetAt`, `deletedAt` | content: later `contentAt` wins, ties by source text. `resetAt` and `deletedAt` only grow (max). Live when `source != null` and `contentAt > deletedAt`. Deleting a pack keeps a tombstone (delete and reset time, no source) instead of removing the record, so a stale device can never bring it back, and importing it again starts without the old progress. |
+| `review` | `log.<random 128 bit id>` | one first answer: `ts`, `day`, pack, item, facet, exercise, grade, `correct`, `practice`, `reschedule`, `itemType` | immutable, union by id |
+| `setting` | `setting.<name>` | `value`, `updatedAt` | later `updatedAt` wins, ties by value. Only `daily_goal` and `default_session_size` are synced; `theme` and `onboarding_seen` stay on the device. |
+
+The schedule of a facet is never merged, it is recomputed: replay of the facet's `reschedule` log entries (oldest first, ties by id) that are newer than the pack's `resetAt` and were recorded for the item's current type, starting from a new facet. Local answers apply the same step in place, so both ways agree. Review ids came from the old autoincrement column; `review_log.id` is now a random hex string.
+
+Calls (all `suspend`, called by the platform layer):
+
+- `observeLocalChanges()` emits whenever a record became dirty; `pendingRecords()` lists the dirty record names (durable in the database, so nothing is lost when the app is killed before a send finishes).
+- `packRecord / reviewRecord / settingRecord(name)` return the current content to upload, with a `version` (null when the record is not dirty). After a successful send call `markSent(name, version, systemFields)`: the record stays dirty if it changed since the snapshot. `systemFields` is an opaque string the platform keeps per record (CloudKit change tags), see `systemFields` / `setSystemFields`.
+- `apply(packs, reviews, settings)` merges fetched records. Records that arrive this way are not marked dirty (no echo); `SyncApplyResult.needsUpload` names the records whose merged state differs from what was fetched, they are dirty and must be sent. `notes` are human readable warnings (for example a pack in a newer format).
+- `queueEverything()` marks every record dirty and forgets the stored system fields (first sync, and after the server side data was deleted). Merging makes this safe for data that already exists remotely.
+- `meta / setMeta` store small platform values (engine state, last sync time, last error, account id).
 
 ## Study sessions
 
@@ -269,7 +292,7 @@ source ~/.sdkman/bin/sdkman-init.sh && export ANDROID_HOME=~/android-sdk
 ./gradlew shared:compileKotlinIosSimulatorArm64 shared:compileTestKotlinIosSimulatorArm64   # type-checks common + iOS code on Linux
 ```
 
-- `commonTest` has the pure logic tests (reader, markup, normalisation, scheduler, planner, session engine, every vector of `format/test-vectors.json`) and runs on the JVM and on iOS. `androidUnitTest` has the database tests (in-memory JDBC SQLite, fake clock and time zone, seeded `Random`).
+- `commonTest` has the pure logic tests (reader, markup, normalisation, scheduler, planner, session engine, every vector of `format/test-vectors.json`) and the sync tests (two simulated devices on in-memory databases, `newTestDriver()` is an expect/actual), and runs on the JVM and on iOS. `androidUnitTest` has the database tests (in-memory JDBC SQLite, fake clock and time zone, seeded `Random`).
 - The sample packs and the test vectors are not copied anywhere: the `generateFormatResources` Gradle task turns `format/examples/*.jackdaw`, `format/prompt.txt` and `format/test-vectors.json` into Kotlin string constants under `shared/build/generated/formatResources` (compiled for every target, ignored by ktlint).
 - The database schema is version 1. `src/commonMain/sqldelight/databases/1.db` is the schema snapshot used by `verifyCommonMainJackdawDatabaseMigration`. Until the first release, regenerate it after editing a `.sq` table (`./gradlew shared:generateCommonMainJackdawDatabaseSchema`); afterwards add `1.sqm` migrations instead.
 - Unicode NFC/NFD (needed for `ignoreDiacritics` and answer comparison) is an expect/actual: `java.text.Normalizer` on Android, `NSString` canonical mapping on iOS.

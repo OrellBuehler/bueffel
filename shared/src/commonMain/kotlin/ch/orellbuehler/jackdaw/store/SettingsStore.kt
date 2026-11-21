@@ -1,10 +1,12 @@
 package ch.orellbuehler.jackdaw.store
 
 import ch.orellbuehler.jackdaw.db.JackdawDatabase
+import ch.orellbuehler.jackdaw.sync.SyncTracker
 
 internal class SettingsStore(
     private val db: JackdawDatabase,
     private val env: Env,
+    private val tracker: SyncTracker,
 ) {
     fun get(): AppSettings {
         val values =
@@ -32,7 +34,9 @@ internal class SettingsStore(
         key: String,
         value: String,
     ) {
-        db.settingQueries.upsertSetting(key, value)
+        val previous = db.settingQueries.selectSetting(key).executeAsOneOrNull()
+        db.settingQueries.upsertSetting(key, value, maxOf(env.now(), (previous?.updated_at ?: 0L) + 1))
+        tracker.touchSetting(key)
         env.changed()
     }
 
@@ -43,8 +47,8 @@ internal class SettingsStore(
         private const val MAX_GOAL = 1000
         private const val MIN_SIZE = 1
         private const val MAX_SIZE = 500
-        private const val DAILY_GOAL = "daily_goal"
-        private const val SESSION_SIZE = "default_session_size"
+        internal const val DAILY_GOAL = "daily_goal"
+        internal const val SESSION_SIZE = "default_session_size"
         private const val THEME = "theme"
         private const val ONBOARDING = "onboarding_seen"
     }

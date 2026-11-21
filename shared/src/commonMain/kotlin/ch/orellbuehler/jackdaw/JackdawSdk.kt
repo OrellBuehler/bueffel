@@ -33,6 +33,9 @@ import ch.orellbuehler.jackdaw.study.ResolvedConfig
 import ch.orellbuehler.jackdaw.study.SessionConfig
 import ch.orellbuehler.jackdaw.study.SessionPreview
 import ch.orellbuehler.jackdaw.study.StudySession
+import ch.orellbuehler.jackdaw.sync.JackdawSync
+import ch.orellbuehler.jackdaw.sync.SyncStore
+import ch.orellbuehler.jackdaw.sync.SyncTracker
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -58,9 +61,12 @@ class JackdawSdk internal constructor(
 
     private val env = Env(clock, timeZone, random, dispatcher)
     private val database = JackdawDatabase(driver)
-    private val packStore = PackStore(database, env)
-    private val settingsStore = SettingsStore(database, env)
+    private val syncTracker = SyncTracker(database, env)
+    private val packStore = PackStore(database, env, syncTracker)
+    private val settingsStore = SettingsStore(database, env, syncTracker)
     private val statsStore = StatsStore(database, env, packStore, settingsStore)
+
+    val sync: JackdawSync = JackdawSync(SyncStore(database, env, packStore, syncTracker), syncTracker, env, dispatcher)
 
     fun observePacks(): Flow<List<PackSummary>> = env.observe { packStore.summaries() }
 

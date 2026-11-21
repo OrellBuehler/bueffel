@@ -11,12 +11,14 @@ import ch.orellbuehler.jackdaw.study.Attempt
 import ch.orellbuehler.jackdaw.study.DueCutoffs
 import ch.orellbuehler.jackdaw.study.Facet
 import ch.orellbuehler.jackdaw.study.FacetKey
+import ch.orellbuehler.jackdaw.study.Grade
 import ch.orellbuehler.jackdaw.study.LearningState
 import ch.orellbuehler.jackdaw.study.LoadedPack
 import ch.orellbuehler.jackdaw.study.PackContext
 import ch.orellbuehler.jackdaw.study.PracticeFilter
 import ch.orellbuehler.jackdaw.study.Schedule
 import ch.orellbuehler.jackdaw.study.Scheduler
+import ch.orellbuehler.jackdaw.sync.SyncTracker
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonPrimitive
@@ -49,9 +51,11 @@ internal class ImportDiff(
 internal class PackStore(
     private val db: JackdawDatabase,
     private val env: Env,
+    private val tracker: SyncTracker,
 ) {
     private val packs get() = db.packQueries
     private val reviews get() = db.reviewQueries
+    private val sync get() = db.syncQueries
 
     fun diff(pack: Pack): ImportDiff {
         val existing = packs.selectPack(pack.id).executeAsOneOrNull()
@@ -88,11 +92,26 @@ internal class PackStore(
         rawJson: String,
         now: Long,
     ): ImportDiff {
+        val at =
+            sync.selectSyncPack(pack.id).executeAsOneOrNull()?.let { maxOf(now, it.content_at + 1, it.deleted_at + 1) } ?: now
+        val diff = installRaw(pack, payloads, rawJson, at, null)
+        tracker.touchPack(pack.id)
+        env.changed()
+        return diff
+    }
+
+    fun installRaw(
+        pack: Pack,
+        payloads: List<String>,
+        rawJson: String,
+        now: Long,
+        importedAtOverride: Long?,
+    ): ImportDiff {
         var result: ImportDiff? = null
         db.transaction {
             val diff = diff(pack)
             result = diff
-            val importedAt = packs.selectPack(pack.id).executeAsOneOrNull()?.imported_at ?: now
+            val importedAt = importedAtOverride ?: packs.selectPack(pack.id).executeAsOneOrNull()?.imported_at ?: now
             packs.upsertPack(
                 id = pack.id,
                 title = pack.title,
@@ -127,6 +146,7 @@ internal class PackStore(
                     .executeAsList()
                     .groupBy({ it.item_id }, { it.facet })
             val context = PackContext(pack.study, pack.items)
+            val created = HashSet<Pair<String, Long>>()
             pack.items.forEachIndexed { position, item ->
                 packs.upsertItem(
                     pack.id,
@@ -142,7 +162,10 @@ internal class PackStore(
                 if (typeChanged) reviews.deleteItemStates(pack.id, item.id)
                 val present = if (typeChanged) emptyList() else facetsByItem[item.id].orEmpty()
                 val wanted = context.facetsOf(item).map { it.code.toLong() }
-                wanted.filter { it !in present }.forEach { reviews.insertStateIfMissing(pack.id, item.id, it) }
+                wanted.filter { it !in present }.forEach {
+                    reviews.insertStateIfMissing(pack.id, item.id, it)
+                    created += item.id to it
+                }
                 present.filter { it !in wanted }.forEach { reviews.deleteFacetState(pack.id, item.id, it) }
             }
             val newIds = pack.items.map { it.id }.toSet()
@@ -150,25 +173,112 @@ internal class PackStore(
                 packs.deleteItem(pack.id, it)
                 reviews.deleteItemStates(pack.id, it)
             }
+            val known = sync.selectSyncPack(pack.id).executeAsOneOrNull()
+            sync.writeSyncPack(pack.id, now, known?.reset_at ?: 0L, known?.deleted_at ?: 0L)
+            if (created.isNotEmpty()) recompute(pack.id, created)
         }
-        env.changed()
         return checkNotNull(result)
     }
 
     fun delete(packId: String) {
+        if (packs.selectPack(packId).executeAsOneOrNull() == null) return
+        val known = sync.selectSyncPack(packId).executeAsOneOrNull()
+        deleteRaw(packId, maxOf(env.now(), known?.content_at ?: 0L, known?.deleted_at ?: 0L))
+        tracker.touchPack(packId)
+        env.changed()
+    }
+
+    fun deleteRaw(
+        packId: String,
+        at: Long,
+    ) {
         db.transaction {
+            val known = sync.selectSyncPack(packId).executeAsOneOrNull()
             reviews.deletePackStates(packId)
             packs.deleteItems(packId)
             packs.deleteSections(packId)
             packs.deleteSource(packId)
             packs.deletePack(packId)
+            sync.writeSyncPack(
+                packId,
+                known?.content_at ?: 0L,
+                maxOf(known?.reset_at ?: 0L, at),
+                maxOf(known?.deleted_at ?: 0L, at),
+            )
         }
-        env.changed()
     }
 
     fun reset(packId: String) {
-        reviews.resetPackStates(packId)
+        val row = packs.selectPack(packId).executeAsOneOrNull() ?: return
+        val known = sync.selectSyncPack(packId).executeAsOneOrNull()
+        resetRaw(packId, maxOf(env.now(), known?.reset_at ?: 0L), row.updated_at)
+        tracker.touchPack(packId)
         env.changed()
+    }
+
+    fun resetRaw(
+        packId: String,
+        at: Long,
+        fallbackContentAt: Long,
+    ) {
+        db.transaction {
+            val known = sync.selectSyncPack(packId).executeAsOneOrNull()
+            sync.writeSyncPack(
+                packId,
+                known?.content_at ?: fallbackContentAt,
+                maxOf(known?.reset_at ?: 0L, at),
+                known?.deleted_at ?: 0L,
+            )
+            reviews.resetPackStates(packId)
+            recompute(packId, null)
+        }
+    }
+
+    fun recompute(
+        packId: String,
+        only: Set<Pair<String, Long>>?,
+    ) {
+        val resetAt = sync.selectSyncPack(packId).executeAsOneOrNull()?.reset_at ?: 0L
+        val types = packs.selectItemTypes(packId).executeAsList().associate { it.item_id to it.type }
+        val keys =
+            reviews
+                .selectStateKeys(packId)
+                .executeAsList()
+                .map { it.item_id to it.facet }
+                .filter { only == null || it in only }
+        if (keys.isEmpty()) return
+        val bulk =
+            if (only == null || only.size > RECOMPUTE_BULK_THRESHOLD) {
+                reviews
+                    .replayPack(packId, resetAt)
+                    .executeAsList()
+                    .groupBy({ it.item_id to it.facet }, { Triple(it.item_type, it.ts, it.grade) })
+            } else {
+                null
+            }
+        for ((itemId, facet) in keys) {
+            val type = types[itemId] ?: continue
+            val entries =
+                if (bulk != null) {
+                    bulk[itemId to facet].orEmpty().filter { it.first == type }.map { it.second to it.third }
+                } else {
+                    reviews.replayFacet(packId, itemId, facet, type, resetAt).executeAsList().map { it.ts to it.grade }
+                }
+            var schedule = Schedule.fresh()
+            for ((ts, grade) in entries) schedule = Scheduler.review(schedule, Grade.fromCode(grade.toInt()), ts)
+            reviews.upsertState(
+                packId,
+                itemId,
+                facet,
+                schedule.state.code.toLong(),
+                schedule.ease.toLong(),
+                schedule.intervalDays.toLong(),
+                schedule.dueAt,
+                schedule.reps.toLong(),
+                schedule.lapses.toLong(),
+                schedule.lastReviewedAt,
+            )
+        }
     }
 
     fun source(packId: String): String? = packs.selectSource(packId).executeAsOneOrNull()
@@ -214,7 +324,9 @@ internal class PackStore(
                     )
                 }
             }
+            val id = env.newId()
             reviews.insertLog(
+                id,
                 attempt.timestamp,
                 env.epochDay(attempt.timestamp).toLong(),
                 packId,
@@ -224,7 +336,10 @@ internal class PackStore(
                 attempt.grade.code.toLong(),
                 attempt.correct.toLong(),
                 attempt.practice.toLong(),
+                attempt.reschedule.toLong(),
+                packs.selectItemType(packId, attempt.itemId).executeAsOneOrNull() ?: "",
             )
+            tracker.touchReview(id)
         }
         env.changed()
     }
@@ -464,6 +579,8 @@ internal class PackStore(
             updatedAt = row.updated_at,
         )
 }
+
+private const val RECOMPUTE_BULK_THRESHOLD = 50
 
 internal class Counts(
     val total: Int,
