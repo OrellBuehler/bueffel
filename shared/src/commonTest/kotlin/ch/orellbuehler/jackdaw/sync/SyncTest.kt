@@ -423,6 +423,39 @@ class SyncTest {
         }
 
     @Test
+    fun aLivePackRecordWithoutContentIsSkippedInsteadOfDeletingThePack() =
+        runTest {
+            val a = device(1)
+            a.import(cardPack())
+            val name = "pack.$PACK"
+            val broken = SyncPackRecord(name, PACK, null, 1L, clock.millis + 1000, 0L, 0L, 0L)
+            val result = a.sdk.sync.apply(listOf(broken), emptyList(), emptyList())
+            assertTrue(result.notes.isNotEmpty())
+            assertEquals(
+                1,
+                a.sdk
+                    .observePacks()
+                    .first()
+                    .size,
+            )
+        }
+
+    @Test
+    fun discardingARecordClearsItFromTheOutbox() =
+        runTest {
+            val a = device(1)
+            a.import(cardPack())
+            val name = "pack.$PACK"
+            assertEquals(listOf(name), a.sdk.sync.pendingRecords())
+            a.sdk.sync.discard(name)
+            assertTrue(
+                a.sdk.sync
+                    .pendingRecords()
+                    .isEmpty(),
+            )
+        }
+
+    @Test
     fun nothingIsTrackedUntilTrackingIsEnabled() =
         runTest {
             val device = Device(clock, 3, tracking = false)

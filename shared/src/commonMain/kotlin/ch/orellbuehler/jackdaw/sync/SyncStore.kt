@@ -28,7 +28,9 @@ internal class SyncStore(
 
     fun pending(): List<String> = q.dirtyNames().executeAsList()
 
-    fun pendingCount(): Long = q.dirtyCount().executeAsOne()
+    fun discard(recordName: String) {
+        q.discardRecord(recordName)
+    }
 
     fun packRecord(recordName: String): SyncPackRecord? {
         val row = q.dirtyRow(recordName).executeAsOneOrNull() ?: return null
@@ -184,6 +186,10 @@ internal class SyncStore(
         notes: MutableList<String>,
     ): Boolean {
         val id = remote.packId
+        if (remote.source == null && remote.contentAt > remote.deletedAt) {
+            notes += "Pack ${remote.packId} was skipped: its content is missing"
+            return false
+        }
         val row = db.packQueries.selectPack(id).executeAsOneOrNull()
         val known = q.selectSyncPack(id).executeAsOneOrNull()
         val localSource = if (row != null) db.packQueries.selectSource(id).executeAsOneOrNull() else null

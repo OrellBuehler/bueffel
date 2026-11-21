@@ -40,8 +40,8 @@ UPDATE sync_record SET version = version + 1 WHERE record_name = ?;
 dirtyNames:
 SELECT record_name FROM sync_record WHERE version > synced_version ORDER BY kind, record_name;
 
-dirtyCount:
-SELECT COUNT(*) FROM sync_record WHERE version > synced_version;
+discardRecord:
+UPDATE sync_record SET synced_version = version WHERE record_name = ?;
 
 dirtyRow:
 SELECT * FROM sync_record WHERE record_name = ? AND version > synced_version;

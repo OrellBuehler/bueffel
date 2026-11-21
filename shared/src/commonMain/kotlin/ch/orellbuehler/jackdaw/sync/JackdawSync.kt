@@ -26,7 +26,9 @@ class JackdawSync internal constructor(
 
     suspend fun pendingRecords(): List<String> = withContext(dispatcher) { store.pending() }
 
-    suspend fun pendingCount(): Long = withContext(dispatcher) { store.pendingCount() }
+    suspend fun discard(recordName: String) {
+        withContext(dispatcher) { store.discard(recordName) }
+    }
 
     suspend fun packRecord(recordName: String): SyncPackRecord? = withContext(dispatcher) { store.packRecord(recordName) }
 
