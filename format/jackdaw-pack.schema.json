@@ -1,0 +1,476 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/OrellBuehler/jackdaw/main/format/jackdaw-pack.schema.json",
+  "title": "Jackdaw Pack",
+  "description": "A Jackdaw Pack (format version 1) is a single UTF-8 JSON document that describes a learning dataset: metadata, optional sections and a list of items. Items come in seven types (card, choice, text, cloze, truefalse, order, open) that define how they are learned. Learning progress and spaced-repetition scheduling are NOT part of a pack. This schema is intentionally STRICTER than readers: readers must ignore unknown properties and skip items with an unknown type, but this schema (meant for authors, generators and validators) rejects unknown item types so typos are caught. Unknown properties are allowed everywhere; keys starting with 'x-' are reserved for vendor extensions. Specification: README.md next to this file.",
+  "type": "object",
+  "required": ["format", "version", "id", "title", "items"],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Optional. URL of this schema, so editors can offer completion and validation. Ignored by readers."
+    },
+    "format": {
+      "const": "jackdaw-pack",
+      "description": "Required. Constant file-format marker. Always the string \"jackdaw-pack\"."
+    },
+    "version": {
+      "type": "integer",
+      "const": 1,
+      "description": "Required. Major version of the pack format. Always the integer 1 for this schema. Readers MUST reject files whose version is greater than the highest they support."
+    },
+    "id": {
+      "$ref": "#/$defs/PackId"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "pattern": "\\S",
+      "description": "Required. Human-readable name of the pack, shown in the library. Plain text (no markup), single line, at most 200 characters."
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 2000,
+      "description": "Optional. What the pack covers and who it is for. Plain text (no markup); newlines allowed."
+    },
+    "language": {
+      "type": "string",
+      "pattern": "^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})*$",
+      "description": "Optional. BCP-47 language tag of the subject matter: for a language-learning pack the language being learned (e.g. \"es\", \"fr-CH\"), otherwise the language the content is written in (e.g. \"en\", \"de-CH\")."
+    },
+    "author": {
+      "type": "string",
+      "maxLength": 200,
+      "description": "Optional. Name of the author or organisation. Plain text."
+    },
+    "license": {
+      "type": "string",
+      "maxLength": 100,
+      "description": "Optional. License of the pack content. An SPDX identifier such as \"CC-BY-4.0\" or \"CC0-1.0\" is recommended; free text is allowed."
+    },
+    "source": {
+      "type": "string",
+      "pattern": "^https?://\\S+$",
+      "description": "Optional. http(s) URL of the origin of the material (website, textbook page, repository). Readers must not fetch it automatically."
+    },
+    "tags": {
+      "$ref": "#/$defs/Tags"
+    },
+    "icon": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 16,
+      "description": "Optional. A single emoji (one grapheme cluster, e.g. \"🇪🇸\" or \"📚\") used as the pack's icon. Readers ignore the value if it is not a single emoji."
+    },
+    "color": {
+      "type": "string",
+      "pattern": "^#[0-9A-Fa-f]{6}$",
+      "description": "Optional. Accent color as #RRGGBB (six hex digits, e.g. \"#C2410C\"). Readers ignore other values."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Optional. Content revision of the pack. Increase it by 1 every time you publish an updated file with the same id. Readers use it to detect downgrades. Not the same as the format 'version'."
+    },
+    "created": {
+      "$ref": "#/$defs/IsoDateTime"
+    },
+    "updated": {
+      "$ref": "#/$defs/IsoDateTime"
+    },
+    "sections": {
+      "type": "array",
+      "description": "Optional. Ordered list of sections (chapters, topics) that items can be assigned to via their 'section' property. The array order is the display order of the sections.",
+      "items": {
+        "$ref": "#/$defs/Section"
+      }
+    },
+    "study": {
+      "$ref": "#/$defs/Study"
+    },
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Required. The learning items, in the order in which they are introduced when study.order is 'sequential' (the default). Each item has a 'type' that determines its other properties. Item ids must be unique within the pack. Recommended maximum: 5000 items per pack.",
+      "items": {
+        "$ref": "#/$defs/Item"
+      }
+    }
+  },
+  "patternProperties": {
+    "^x-": {
+      "description": "Vendor extension. Any property whose name starts with 'x-' may hold any JSON value. Readers ignore extensions they do not understand and never fail because of them."
+    }
+  },
+  "$defs": {
+    "PackId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "description": "Required. Stable, globally unique identifier of the pack: 1-128 characters from A-Z a-z 0-9 . _ - (first character alphanumeric), compared case-sensitively. A reverse-domain slug (\"com.example.spanish-basics\") or a UUID (\"3f2b8c1e-9a4d-4c55-8f0e-5d6a7b8c9d01\") works well. Never change it after publishing: importing a file with an id that is already installed UPDATES that pack and keeps learning progress for items whose id is unchanged."
+    },
+    "LocalId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+      "description": "Identifier unique within the pack: 1-64 characters from A-Z a-z 0-9 . _ - (first character alphanumeric), compared case-sensitively. Lowercase slugs such as \"capital-of-france\" are recommended."
+    },
+    "IsoDateTime": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}(:\\d{2}(\\.\\d+)?)?(Z|[+-]\\d{2}:\\d{2}))?$",
+      "description": "Optional. ISO-8601 calendar date (\"2026-11-20\") or date-time with time zone (\"2026-11-20T14:30:00Z\")."
+    },
+    "Tags": {
+      "type": "array",
+      "maxItems": 50,
+      "description": "Optional. Free-form labels used for search and filtering. Short, usually lowercase, plain text.",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 50,
+        "pattern": "\\S"
+      }
+    },
+    "RichText": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4000,
+      "pattern": "\\S",
+      "description": "Rich text: plain text with the tiny inline markup subset **bold**, *italic*, `code` and newlines. Backslash escapes a marker (\\*, \\`, \\\\). No HTML, no links, no images. At most 4000 characters."
+    },
+    "PlainText": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500,
+      "pattern": "\\S",
+      "description": "Plain text, taken literally: no markup and no escape characters are interpreted. At most 500 characters."
+    },
+    "ExerciseKind": {
+      "type": "string",
+      "enum": ["flip", "choice", "type"],
+      "description": "flip = reveal the answer and self-grade; choice = multiple-choice question built by the app; type = the user types the answer."
+    },
+    "ExerciseList": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/ExerciseKind"
+      },
+      "description": "Non-empty set of exercise kinds (flip, choice, type). The order is not significant."
+    },
+    "Section": {
+      "type": "object",
+      "required": ["id", "title"],
+      "description": "A named group of items (a chapter or topic).",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/LocalId"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": "\\S",
+          "description": "Required. Display name of the section. Plain text, single line."
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 1000,
+          "description": "Optional. One or two sentences about the section. Plain text."
+        }
+      }
+    },
+    "Study": {
+      "type": "object",
+      "description": "Optional. Hints from the author about HOW the pack is best learned. They are defaults and recommendations; the app and the user may override them. Spaced-repetition scheduling is not configured here.",
+      "properties": {
+        "order": {
+          "type": "string",
+          "enum": ["sequential", "random"],
+          "default": "sequential",
+          "description": "Order in which NEW items are introduced: 'sequential' = the order of the 'items' array (default), 'random' = shuffled by the app."
+        },
+        "newPerSession": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 500,
+          "default": 10,
+          "description": "Suggested number of new items to introduce per study session. Default 10."
+        },
+        "reversible": {
+          "type": "boolean",
+          "default": false,
+          "description": "Default for the 'reversible' property of card items: when true, cards are also asked in the direction back-to-front. An item's own 'reversible' overrides this. Default false."
+        },
+        "ignoreDiacritics": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, typed answers are compared without combining diacritical marks, so \"cafe\" matches \"café\" and \"Zurich\" matches \"Zürich\". Applies to the typed answers of card, text and cloze items. Default false (accents are significant)."
+        },
+        "exercises": {
+          "type": "object",
+          "description": "Allowed exercise kinds per item type. In format version 1 only 'card' is meaningful (all other item types have exactly one way of being exercised). Other keys are reserved and ignored.",
+          "properties": {
+            "card": {
+              "$ref": "#/$defs/ExerciseList",
+              "description": "Exercise kinds allowed for card items that do not define their own 'exercises'. Default: [\"flip\", \"choice\", \"type\"]."
+            }
+          }
+        }
+      }
+    },
+    "ItemCommon": {
+      "type": "object",
+      "required": ["id", "type"],
+      "description": "Properties shared by every item.",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/LocalId",
+          "description": "Required. Identifier of the item, unique within the pack and stable across updates. Learning progress is stored per item id, so never reuse an id for different content and keep ids unchanged when you only fix typos."
+        },
+        "type": {
+          "type": "string",
+          "enum": ["card", "choice", "text", "cloze", "truefalse", "order", "open"],
+          "description": "Required. Item type; determines the other properties and how the item is learned. One of: card (two-sided flashcard), choice (explicit multiple-choice), text (typed short answer), cloze (fill in the gaps), truefalse (statement is true or false), order (put things in the right order), open (open question, self-graded)."
+        },
+        "section": {
+          "$ref": "#/$defs/LocalId",
+          "description": "Optional. The id of a section declared in the pack's 'sections' array. Items without a section are shown in an implicit ungrouped section."
+        },
+        "tags": {
+          "$ref": "#/$defs/Tags"
+        },
+        "hint": {
+          "$ref": "#/$defs/RichText",
+          "description": "Optional. Help shown only when the learner asks for it, BEFORE answering. Give a nudge (context, first letter, mnemonic), not the answer. For cards that are asked in both directions, write a direction-neutral hint."
+        },
+        "explanation": {
+          "$ref": "#/$defs/RichText",
+          "description": "Optional. Shown AFTER the learner has answered: why the answer is what it is, background, an example sentence, a mnemonic."
+        }
+      }
+    },
+    "Item": {
+      "description": "A learning item. The 'type' property selects which of the seven definitions applies. Unknown types are rejected by this schema, whereas readers skip them with a warning.",
+      "$ref": "#/$defs/ItemCommon",
+      "oneOf": [
+        { "$ref": "#/$defs/CardItem" },
+        { "$ref": "#/$defs/ChoiceItem" },
+        { "$ref": "#/$defs/TextItem" },
+        { "$ref": "#/$defs/ClozeItem" },
+        { "$ref": "#/$defs/TrueFalseItem" },
+        { "$ref": "#/$defs/OrderItem" },
+        { "$ref": "#/$defs/OpenItem" }
+      ]
+    },
+    "CardItem": {
+      "title": "card",
+      "type": "object",
+      "required": ["id", "type", "front", "back"],
+      "description": "Classic two-sided flashcard (vocabulary, definitions, facts that map one thing to another). Learned through the exercises 'flip' (reveal and self-grade), 'choice' (app-built multiple choice) and 'type' (user types the back). With reversible=true it is also asked back-to-front.",
+      "properties": {
+        "type": { "const": "card" },
+        "front": {
+          "$ref": "#/$defs/RichText",
+          "description": "Required. The prompt side (the term, the question)."
+        },
+        "back": {
+          "$ref": "#/$defs/RichText",
+          "description": "Required. The answer side. For the 'type' exercise the user must type this text (its plain-text rendering) or one of 'alternatives'. Keep it short and typeable."
+        },
+        "reversible": {
+          "type": "boolean",
+          "description": "Optional. When true, the card is also asked back-to-front (back is the prompt, front the answer). Overrides study.reversible. Default: study.reversible, else false."
+        },
+        "alternatives": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/PlainText" },
+          "description": "Optional. Additional accepted typed answers for the back (synonyms, spelling variants, the answer without article). Plain text, taken literally. 'back' itself is always accepted."
+        },
+        "frontAlternatives": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/PlainText" },
+          "description": "Optional. Additional accepted typed answers for the FRONT, used when the card is asked in the reverse direction. Plain text, taken literally. 'front' itself is always accepted."
+        },
+        "distractors": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/RichText" },
+          "description": "Optional. Explicit WRONG options for the 'choice' exercise (back is the correct one). Prefer 3 plausible wrong answers. If missing or too few, the app draws distractors from the backs of other cards, first from the same section, then from the whole pack."
+        },
+        "frontDistractors": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/RichText" },
+          "description": "Optional. Like 'distractors', but for the reverse direction: explicit WRONG options for the front. If missing or too few, the app draws fronts of other cards."
+        },
+        "exercises": {
+          "$ref": "#/$defs/ExerciseList",
+          "description": "Optional. Exercise kinds the app may use for this card, a non-empty subset of [\"flip\", \"choice\", \"type\"]. Overrides study.exercises.card. Default: study.exercises.card, else all three."
+        },
+        "caseSensitive": {
+          "type": "boolean",
+          "default": false,
+          "description": "Optional. When true, typed answers must match upper/lower case exactly. Default false."
+        }
+      }
+    },
+    "ChoiceOption": {
+      "type": "object",
+      "required": ["text"],
+      "description": "One answer option of a choice item.",
+      "properties": {
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000,
+          "pattern": "\\S",
+          "description": "Required. The option text. Rich text (inline markup allowed)."
+        },
+        "correct": {
+          "type": "boolean",
+          "default": false,
+          "description": "Optional. true if this option is a correct answer. Default false. Must be a JSON boolean, not a string."
+        },
+        "explanation": {
+          "$ref": "#/$defs/RichText",
+          "description": "Optional. Why this option is right or wrong. Shown after answering for the options the learner selected and for the correct options."
+        }
+      }
+    },
+    "ChoiceItem": {
+      "title": "choice",
+      "type": "object",
+      "required": ["id", "type", "question", "options"],
+      "description": "Explicit multiple-choice question. Options are objects carrying their own 'correct' flag (not indices). One correct option = single-select; two or more correct options = multi-select, answered correctly only if exactly the correct options are selected.",
+      "properties": {
+        "type": { "const": "choice" },
+        "question": {
+          "$ref": "#/$defs/RichText",
+          "description": "Required. The question text."
+        },
+        "options": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 10,
+          "items": { "$ref": "#/$defs/ChoiceOption" },
+          "contains": {
+            "type": "object",
+            "required": ["correct"],
+            "properties": { "correct": { "const": true } }
+          },
+          "description": "Required. At least 2 options (recommended 3-5, at most 10), at least one of which has \"correct\": true. More than one correct option makes the question multi-select."
+        },
+        "shuffle": {
+          "type": "boolean",
+          "default": true,
+          "description": "Optional. When true (default) the app shows the options in random order; when false, in array order."
+        }
+      }
+    },
+    "TextItem": {
+      "title": "text",
+      "type": "object",
+      "required": ["id", "type", "question", "answers"],
+      "description": "Short typed answer (a name, a number, a term). The learner types the answer; it is compared with the accepted answers after normalisation (see the specification).",
+      "properties": {
+        "type": { "const": "text" },
+        "question": {
+          "$ref": "#/$defs/RichText",
+          "description": "Required. The question. Must have a short, unambiguous answer."
+        },
+        "answers": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/PlainText" },
+          "description": "Required. Accepted answers, at least one. The first is the canonical answer shown after answering. Plain text, taken literally. List spelling variants, abbreviations and equivalent forms (\"1969\", \"nineteen sixty-nine\") explicitly."
+        },
+        "caseSensitive": {
+          "type": "boolean",
+          "default": false,
+          "description": "Optional. When true, typed answers must match upper/lower case exactly. Default false."
+        }
+      }
+    },
+    "ClozeItem": {
+      "title": "cloze",
+      "type": "object",
+      "required": ["id", "type", "text"],
+      "description": "Fill-in-the-gap sentence. Gaps are written {{answer}} or {{answer::hint}}; alternatives inside one gap are separated by '|' ({{colour|color}}). All gaps of an item are shown and answered together. Write a literal marker with a backslash: \\{ \\} \\| \\: \\\\.",
+      "properties": {
+        "type": { "const": "cloze" },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000,
+          "pattern": "\\{\\{[^\\n]*?\\S[^\\n]*?\\}\\}",
+          "description": "Required. The sentence or passage with at least one gap. Gap syntax: {{answer}}, {{answer::hint}}, {{answer1|answer2}}, {{answer1|answer2::hint}}. A gap sits on one line; the first alternative is the canonical answer. Outside the gaps the text is rich text. Escape literal special characters with a backslash (\\{ \\} \\| \\: \\* \\` \\\\); remember that a backslash itself must be doubled in JSON."
+        },
+        "caseSensitive": {
+          "type": "boolean",
+          "default": false,
+          "description": "Optional. When true, typed gap answers must match upper/lower case exactly. Default false."
+        }
+      }
+    },
+    "TrueFalseItem": {
+      "title": "truefalse",
+      "type": "object",
+      "required": ["id", "type", "statement", "answer"],
+      "description": "A statement the learner judges as true or false.",
+      "properties": {
+        "type": { "const": "truefalse" },
+        "statement": {
+          "$ref": "#/$defs/RichText",
+          "description": "Required. A self-contained, unambiguous statement that is clearly true or clearly false."
+        },
+        "answer": {
+          "type": "boolean",
+          "description": "Required. true if the statement is true, false if it is false. Must be a JSON boolean."
+        }
+      }
+    },
+    "OrderItem": {
+      "title": "order",
+      "type": "object",
+      "required": ["id", "type", "prompt", "sequence"],
+      "description": "Put things in the right order (chronology, process steps, rankings). The app shows the entries shuffled; the learner arranges them.",
+      "properties": {
+        "type": { "const": "order" },
+        "prompt": {
+          "$ref": "#/$defs/RichText",
+          "description": "Required. Tells the learner what to order and by which criterion (\"Put these events in chronological order, oldest first.\")."
+        },
+        "sequence": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/RichText" },
+          "description": "Required. The entries in the CORRECT order, at least 2 (recommended 3-7, at most 20), all different. Do not include numbering or the ordering criterion (years, rank) in the entries if that would give the order away."
+        }
+      }
+    },
+    "OpenItem": {
+      "title": "open",
+      "type": "object",
+      "required": ["id", "type", "question"],
+      "description": "Open question that the learner answers in their head (or aloud) and then grades themselves against a model answer and a checklist of key points. Ideal for interview preparation, essay recall and explain-in-your-own-words questions.",
+      "properties": {
+        "type": { "const": "open" },
+        "question": {
+          "$ref": "#/$defs/RichText",
+          "description": "Required. The open question."
+        },
+        "answer": {
+          "$ref": "#/$defs/RichText",
+          "description": "Optional. A model answer revealed after the learner has answered."
+        },
+        "keyPoints": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/RichText" },
+          "description": "Optional. Checklist of the points a good answer covers (recommended 3-7, one short sentence each). The learner ticks off the points they covered when self-assessing."
+        }
+      }
+    }
+  }
+}

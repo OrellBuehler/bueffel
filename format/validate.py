@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Validate Büffel packs: JSON Schema plus the semantic rules a schema cannot express.
+"""Validate Jackdaw packs: JSON Schema plus the semantic rules a schema cannot express.
 
 Usage:
     python3 validate.py [--strict] [--no-docs] [--no-vectors] [FILE ...]
 
-With no FILE it checks every examples/*.bueffel, the packs and items embedded in
+With no FILE it checks every examples/*.jackdaw, the packs and items embedded in
 README.md / AUTHORING.md (code fences marked "json pack" and "json item") and the
 reference implementation against test-vectors.json.
 
@@ -28,7 +28,7 @@ except ImportError:
              "ideally inside a throwaway virtualenv.")
 
 HERE = Path(__file__).resolve().parent
-SCHEMA_PATH = HERE / "bueffel-pack.schema.json"
+SCHEMA_PATH = HERE / "jackdaw-pack.schema.json"
 VECTORS_PATH = HERE / "test-vectors.json"
 
 MAX_ITEMS = 5000
@@ -427,7 +427,7 @@ def extract_pack_blocks(md_path):
                 j += 1
             body = "\n".join(lines[start:j])
             if m.group(3) == "item":
-                body = ('{"format": "bueffel-pack", "version": 1, "id": "snippet", "title": "snippet", "items": [%s]}' % body)
+                body = ('{"format": "jackdaw-pack", "version": 1, "id": "snippet", "title": "snippet", "items": [%s]}' % body)
             blocks.append(("%s line %d (%s)" % (md_path.name, start, m.group(3)), body))
             i = j
         i += 1
@@ -465,8 +465,8 @@ def run_vectors(path):
 # --------------------------------------------------------------------------
 
 def main():
-    ap = argparse.ArgumentParser(description="Validate Büffel packs against the schema and the semantic rules.")
-    ap.add_argument("files", nargs="*", help="pack files (default: examples/*.bueffel)")
+    ap = argparse.ArgumentParser(description="Validate Jackdaw packs against the schema and the semantic rules.")
+    ap.add_argument("files", nargs="*", help="pack files (default: examples/*.jackdaw)")
     ap.add_argument("--strict", action="store_true", help="treat warnings as errors")
     ap.add_argument("--no-docs", action="store_true", help="skip the packs embedded in README.md and AUTHORING.md")
     ap.add_argument("--no-vectors", action="store_true", help="skip the test vectors")
@@ -481,7 +481,7 @@ def main():
         type_index[schema["$defs"][name]["properties"]["type"]["const"]] = idx
 
     targets = []
-    paths = [Path(f) for f in args.files] if args.files else sorted((HERE / "examples").glob("*.bueffel"))
+    paths = [Path(f) for f in args.files] if args.files else sorted((HERE / "examples").glob("*.jackdaw"))
     for p in paths:
         targets.append((str(p), p.read_text(encoding="utf-8-sig"), None))
     if not args.files and not args.no_docs:
@@ -510,12 +510,12 @@ def main():
         print("ok    %s  (%d complete packs, %d item snippets)" % (doc, packs, items))
 
     if not args.files and not args.no_docs:
-        tour = HERE / "examples" / "format-tour.bueffel"
+        tour = HERE / "examples" / "format-tour.jackdaw"
         readme = HERE / "README.md"
         if tour.exists() and readme.exists():
             expected = load_pack(tour.read_text(encoding="utf-8"))
             found = any(load_pack(t) == expected for label, t in extract_pack_blocks(readme) if label.endswith("(pack)"))
-            print("%s  README.md contains examples/format-tour.bueffel verbatim" % ("ok  " if found else "FAIL"))
+            print("%s  README.md contains examples/format-tour.jackdaw verbatim" % ("ok  " if found else "FAIL"))
             failed = failed or not found
 
     if not args.files and not args.no_docs:

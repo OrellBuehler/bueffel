@@ -1,15 +1,15 @@
-# Büffel Pack Format
+# Jackdaw Pack Format
 
 **Format version 1** · specification revision 1.0 (draft, 2026-11-20)
 
-A **Büffel pack** is a single UTF-8 JSON file that describes a learning dataset: foreign-language vocabulary, history facts, exam questions, interview preparation, anything you can ask a question about. The Büffel app imports packs, schedules the learning (spaced repetition) and keeps the learning progress. The file format is open and documented so that people, scripts and AI assistants can create packs without the app.
+A **Jackdaw pack** is a single UTF-8 JSON file that describes a learning dataset: foreign-language vocabulary, history facts, exam questions, interview preparation, anything you can ask a question about. The Jackdaw app imports packs, schedules the learning (spaced repetition) and keeps the learning progress. The file format is open and documented so that people, scripts and AI assistants can create packs without the app.
 
 | | |
 |---|---|
-| File extension | `.bueffel` (also accepted: `.bueffel.json`, `.json`) |
-| Media type | `application/vnd.bueffel.pack+json` |
+| File extension | `.jackdaw` (also accepted: `.jackdaw.json`, `.json`) |
+| Media type | `application/vnd.jackdaw.pack+json` |
 | Encoding | UTF-8, JSON ([RFC 8259](https://www.rfc-editor.org/rfc/rfc8259)) |
-| Schema | [`bueffel-pack.schema.json`](bueffel-pack.schema.json) (JSON Schema 2020-12) |
+| Schema | [`jackdaw-pack.schema.json`](jackdaw-pack.schema.json) (JSON Schema 2020-12) |
 | Writing guide for AIs and tool authors | [`AUTHORING.md`](AUTHORING.md) |
 | Examples | [`examples/`](examples/) |
 | Validator | [`validate.py`](validate.py) |
@@ -64,7 +64,7 @@ The smallest useful pack: required properties only.
 
 ```json pack
 {
-  "format": "bueffel-pack",
+  "format": "jackdaw-pack",
   "version": 1,
   "id": "com.example.european-capitals",
   "title": "European Capitals",
@@ -80,7 +80,7 @@ A [complete example](#16-complete-example) that uses every property is at the en
 ## 3. Conventions
 
 - The key words **MUST**, **MUST NOT**, **SHOULD**, **SHOULD NOT** and **MAY** are used as in [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119).
-- A **writer** is anything that produces a pack (a person, a script, an AI assistant, an exporter). A **reader** is anything that consumes one (the Büffel app, a converter, a validator). Requirements on writers are what the JSON Schema checks. Requirements on readers say how to behave when a file does not meet them.
+- A **writer** is anything that produces a pack (a person, a script, an AI assistant, an exporter). A **reader** is anything that consumes one (the Jackdaw app, a converter, a validator). Requirements on writers are what the JSON Schema checks. Requirements on readers say how to behave when a file does not meet them.
 - Property tables list the JSON type, whether the property is required (**yes**/no) and its default. Types: *string*, *integer*, *boolean*, *array*, *object*. Two kinds of strings exist: **plain text** (taken literally) and **rich text** (a few inline markup characters are interpreted, see [section 8](#8-text-plain-text-inline-markup-and-cloze-gaps)). Every table says which one a property is.
 - Property names are case-sensitive and use lowerCamelCase. The order of properties inside an object is not significant. Within arrays, order is significant.
 - "Unicode whitespace" means the characters listed in [section 9.1](#91-whitespace).
@@ -94,7 +94,7 @@ The top level of the file is one JSON object.
 | Property | Type | Required | Default | Description |
 |---|---|---|---|---|
 | `$schema` | string | no | | URL of the JSON Schema. Lets editors validate and complete. Ignored by readers. |
-| `format` | string | **yes** | | Constant `"bueffel-pack"`. |
+| `format` | string | **yes** | | Constant `"jackdaw-pack"`. |
 | `version` | integer | **yes** | | Major format version. `1` for this specification. |
 | `id` | string | **yes** | | Stable, globally unique identifier of the pack ([4.1](#41-identifiers)). |
 | `title` | string | **yes** | | Name of the pack. Plain text, one line, 1 to 200 characters. |
@@ -582,7 +582,7 @@ Readers MUST NOT crash, hang or run out of memory on invalid files. They apply t
 | Problem | Action |
 |---|---|
 | The file is not valid JSON or not UTF-8, the top level is not an object (a leading BOM is tolerated) | **Reject** the file. |
-| `format` is missing or not `"bueffel-pack"` | **Reject** (not a pack). |
+| `format` is missing or not `"jackdaw-pack"` | **Reject** (not a pack). |
 | `version` is missing, not an integer of at least 1 (`1.0` MAY be accepted as `1`), or greater than supported | **Reject** (suggest updating the app if it is too high). |
 | `id` is missing or violates [4.1](#41-identifiers) | **Reject**. |
 | `title` is missing, not a string or blank | **Reject**. |
@@ -629,7 +629,7 @@ Small items learn better: keep prompts short and answers atomic ([`AUTHORING.md`
 
 There are three layers:
 
-1. **JSON Schema** ([`bueffel-pack.schema.json`](bueffel-pack.schema.json), draft 2020-12): structure, types, required properties, enumerations, patterns, limits. Add `"$schema": "https://raw.githubusercontent.com/OrellBuehler/bueffel/main/format/bueffel-pack.schema.json"` to a pack to get completion and validation in editors that support it.
+1. **JSON Schema** ([`jackdaw-pack.schema.json`](jackdaw-pack.schema.json), draft 2020-12): structure, types, required properties, enumerations, patterns, limits. Add `"$schema": "https://raw.githubusercontent.com/OrellBuehler/jackdaw/main/format/jackdaw-pack.schema.json"` to a pack to get completion and validation in editors that support it.
 2. **Semantic rules** that a schema cannot express. A valid pack satisfies:
    - item ids are unique; section ids are unique;
    - every `section` of an item names a declared section;
@@ -644,7 +644,7 @@ There are three layers:
 
 ```
 pip install jsonschema        # once, ideally in a throwaway virtualenv
-python3 validate.py my-pack.bueffel
+python3 validate.py my-pack.jackdaw
 python3 validate.py           # the examples, the packs in this document, the test vectors
 ```
 
@@ -678,21 +678,21 @@ A pack is untrusted input, possibly written by a stranger or generated by a prog
 
 ## 16. Complete example
 
-This pack uses every property of the format and every item type. It is also stored as [`examples/format-tour.bueffel`](examples/format-tour.bueffel), and doubles as a short quiz about the format.
+This pack uses every property of the format and every item type. It is also stored as [`examples/format-tour.jackdaw`](examples/format-tour.jackdaw), and doubles as a short quiz about the format.
 
 ```json pack
 {
-  "$schema": "https://raw.githubusercontent.com/OrellBuehler/bueffel/main/format/bueffel-pack.schema.json",
-  "format": "bueffel-pack",
+  "$schema": "https://raw.githubusercontent.com/OrellBuehler/jackdaw/main/format/jackdaw-pack.schema.json",
+  "format": "jackdaw-pack",
   "version": 1,
-  "id": "com.github.orellbuehler.bueffel.examples.format-tour",
-  "title": "Büffel Format Tour",
+  "id": "com.github.orellbuehler.jackdaw.examples.format-tour",
+  "title": "Jackdaw Format Tour",
   "description": "A complete example that uses every property of the format and every item type. It doubles as a small quiz about the format itself.",
   "language": "en",
-  "author": "Büffel project",
+  "author": "Jackdaw project",
   "license": "CC0-1.0",
-  "source": "https://github.com/OrellBuehler/bueffel/tree/main/format",
-  "tags": ["bueffel", "format", "example"],
+  "source": "https://github.com/OrellBuehler/jackdaw/tree/main/format",
+  "tags": ["jackdaw", "format", "example"],
   "icon": "🧭",
   "color": "#7C3AED",
   "revision": 3,
@@ -710,13 +710,13 @@ This pack uses every property of the format and every item type. It is also stor
       "type": "card",
       "section": "basics",
       "tags": ["file"],
-      "front": "What is the file extension of a Büffel pack?",
-      "back": ".bueffel",
-      "alternatives": ["bueffel"],
+      "front": "What is the file extension of a Jackdaw pack?",
+      "back": ".jackdaw",
+      "alternatives": ["jackdaw"],
       "distractors": [".buf", ".pack", ".zip"],
       "exercises": ["flip", "choice", "type"],
       "hint": "It starts with a dot and uses the ASCII spelling of the app's name.",
-      "explanation": "`.bueffel.json` and `.json` are accepted as well."
+      "explanation": "`.jackdaw.json` and `.json` are accepted as well."
     },
     {
       "id": "card-format-value",
@@ -724,11 +724,11 @@ This pack uses every property of the format and every item type. It is also stor
       "section": "basics",
       "tags": ["file"],
       "front": "`format` value",
-      "back": "`bueffel-pack`",
+      "back": "`jackdaw-pack`",
       "reversible": true,
       "caseSensitive": true,
       "frontAlternatives": ["format", "format property"],
-      "distractors": ["bueffel", "bueffel-file", "buffel-pack"],
+      "distractors": ["jackdaw", "jackdaw-file", "jackdaw-pack"],
       "frontDistractors": ["`version` value", "`id` value", "`type` value"],
       "exercises": ["flip", "choice", "type"],
       "hint": "A constant marker at the top level of every pack.",
@@ -845,7 +845,7 @@ This pack uses every property of the format and every item type. It is also stor
 }
 ```
 
-More examples in [`examples/`](examples/): [`spanish-basics.bueffel`](examples/spanish-basics.bueffel) (reversible vocabulary cards), [`world-history-20th-century.bueffel`](examples/world-history-20th-century.bueffel) (mixed question types), [`interview-prep-software-engineer.bueffel`](examples/interview-prep-software-engineer.bueffel) (open questions with key points) and [`swiss-cantons.bueffel`](examples/swiss-cantons.bueffel) (capitals as choice and typed answers).
+More examples in [`examples/`](examples/): [`spanish-basics.jackdaw`](examples/spanish-basics.jackdaw) (reversible vocabulary cards), [`world-history-20th-century.jackdaw`](examples/world-history-20th-century.jackdaw) (mixed question types), [`interview-prep-software-engineer.jackdaw`](examples/interview-prep-software-engineer.jackdaw) (open questions with key points) and [`swiss-cantons.jackdaw`](examples/swiss-cantons.jackdaw) (capitals as choice and typed answers).
 
 ---
 

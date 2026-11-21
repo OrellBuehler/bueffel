@@ -1,19 +1,12 @@
 <p align="center">
-  <img src="brand/app-icon.svg" width="96" height="96" alt="Büffel logo">
+  <img src="brand/app-icon.svg" width="96" height="96" alt="Jackdaw logo">
 </p>
 
-<h1 align="center">Büffel</h1>
+<h1 align="center">Jackdaw</h1>
 
 <p align="center">Learn any dataset. Local-only, with an open pack format that people, scripts and chatbots can write.</p>
 
-<p align="center">
-  <img src="docs/screenshots/android/01-library.png" width="180" alt="Library with packs and daily progress">
-  <img src="docs/screenshots/android/03-pack-detail.png" width="180" alt="Pack detail with sections and learning progress">
-  <img src="docs/screenshots/android/05-study-choice.png" width="180" alt="A multiple-choice question in a study session">
-  <img src="docs/screenshots/android/08-stats.png" width="180" alt="Statistics with streak and activity">
-</p>
-
-Büffel is a spaced-repetition learning app for Android and iOS. You learn from **packs**: single JSON files that hold anything you can ask a question about, such as vocabulary, history facts, exam questions or interview preparation. Packs have an [open, documented format](format/README.md), so a chatbot can write one for you in a minute.
+Jackdaw is a spaced-repetition learning app for Android and iOS. You learn from **packs**: single JSON files that hold anything you can ask a question about, such as vocabulary, history facts, exam questions or interview preparation. Packs have an [open, documented format](format/README.md), so a chatbot can write one for you in a minute.
 
 Everything stays on the device: no account, no sync, no analytics, no network code in the shared core (the Android app does not even request the internet permission).
 
@@ -22,16 +15,16 @@ Everything stays on the device: no account, no sync, no analytics, no network co
 - **Seven item types**: flashcards (one or both directions), multiple choice, short typed answers, cloze (fill the gaps), true/false, ordering and open questions with a self-graded key point checklist.
 - **Spaced repetition**: an SM-2 family scheduler tracks every card direction separately. Learn mode asks what is due and introduces new items; practice mode drills any items (mixed, flashcards, quiz or typing) without changing the schedule.
 - **Stats**: daily goal, streak, accuracy and an activity history.
-- **Easy to add content**: open a `.bueffel` file (also from Files, Mail or a chat), paste text, pick from the bundled sample library, or use "Create with AI" to copy a ready-made chatbot prompt.
+- **Easy to add content**: open a `.jackdaw` file (also from Files, Mail or a chat), paste text, pick from the bundled sample library, or use "Create with AI" to copy a ready-made chatbot prompt.
 - **Pack updates keep your progress**: importing a newer revision of a pack keeps the progress on items that still exist ([spec section 4.2](format/README.md#42-updating-a-pack)).
 - **English and German**, light and dark theme.
 - **One core, two native UIs**: all logic lives in a Kotlin Multiplatform module; the apps are Jetpack Compose (Android) and SwiftUI (iOS).
 
 ## The pack format
 
-A pack is one UTF-8 JSON file (`.bueffel`, media type `application/vnd.bueffel.pack+json`).
+A pack is one UTF-8 JSON file (`.jackdaw`, media type `application/vnd.jackdaw.pack+json`).
 
-- Required: `format` (`"bueffel-pack"`), `version` (`1`), `id` (stable and unique), `title`, and a non-empty `items` array.
+- Required: `format` (`"jackdaw-pack"`), `version` (`1`), `id` (stable and unique), `title`, and a non-empty `items` array.
 - Optional: `description`, `language`, `author`, `license`, `tags`, `icon`, `color`, `revision`, `sections` (chapters) and `study` (order, new items per session, reversible cards, ...).
 - Every item has a unique `id` and a `type`: `card`, `choice`, `text`, `cloze`, `truefalse`, `order` or `open`. It may also have a `section`, a `hint` (shown before answering) and an `explanation` (shown after).
 - Text is plain with `**bold**`, `*italic*` and `` `code` ``. Cloze gaps are written `{{answer}}`, with an optional hint `{{answer::hint}}` and alternatives `{{colour|color}}`.
@@ -40,7 +33,7 @@ A pack is one UTF-8 JSON file (`.bueffel`, media type `application/vnd.bueffel.p
 
 ```json
 {
-  "format": "bueffel-pack",
+  "format": "jackdaw-pack",
   "version": 1,
   "id": "pack.capitals.9c41ab",
   "title": "Capitals",
@@ -56,27 +49,26 @@ A pack is one UTF-8 JSON file (`.bueffel`, media type `application/vnd.bueffel.p
 - [`format/README.md`](format/README.md): the normative specification (format version 1, draft)
 - [`format/AUTHORING.md`](format/AUTHORING.md): guide for AI assistants and tool authors
 - [`format/prompt.txt`](format/prompt.txt): the copy-paste chatbot prompt
-- [`format/bueffel-pack.schema.json`](format/bueffel-pack.schema.json): JSON Schema 2020-12
+- [`format/jackdaw-pack.schema.json`](format/jackdaw-pack.schema.json): JSON Schema 2020-12
 - [`format/examples/`](format/examples/): sample packs (also bundled in the app); [`format/validate.py`](format/validate.py) and [`format/test-vectors.json`](format/test-vectors.json) check packs and readers
 
 ## Create a pack with any chatbot
 
 1. In the app choose **Add pack**, then **Create with AI**, and copy the prompt. (It is the same text as [`format/prompt.txt`](format/prompt.txt).)
 2. Paste it into any chatbot and fill in the placeholders: topic or your own notes, language, level and number of items.
-3. Paste the chatbot's answer back into Büffel, or save it as `something.bueffel` and open it. The import preview shows what will be added and lists any problems.
+3. Paste the chatbot's answer back into Jackdaw, or save it as `something.jackdaw` and open it. The import preview shows what will be added and lists any problems.
 
-To check a pack on a computer first: `pip install jsonschema`, then `python3 format/validate.py my-pack.bueffel`.
+To check a pack on a computer first: `pip install jsonschema`, then `python3 format/validate.py my-pack.jackdaw`.
 
 ## Project structure
 
 | Path | Content |
 |---|---|
-| `shared/` | Kotlin Multiplatform core: pack reader, scheduler, study sessions, SQLDelight storage. Entry point `BueffelSdk`; reference in [`shared/README.md`](shared/README.md). On iOS it is the `shared` framework (via SKIE). |
+| `shared/` | Kotlin Multiplatform core: pack reader, scheduler, study sessions, SQLDelight storage. Entry point `JackdawSdk`; reference in [`shared/README.md`](shared/README.md). On iOS it is the `shared` framework (via SKIE). |
 | `androidApp/` | Android app: Jetpack Compose and Material 3. |
-| `iosApp/` | iOS app: SwiftUI. The Xcode project is generated from `project.yml` with XcodeGen. Only `iosApp/Bueffel/SDK/` talks to `shared`. |
+| `iosApp/` | iOS app: SwiftUI. The Xcode project is generated from `project.yml` with XcodeGen. Only `iosApp/Jackdaw/SDK/` talks to `shared`. |
 | `format/` | The pack format: specification, schema, validator, test vectors, authoring guide, examples. |
 | `brand/` | Logo and symbol (SVG). |
-| `docs/screenshots/` | Screenshots used in this README. |
 | `scripts/ios/` | Helper for the iOS release job. |
 | `.github/` | CI and release workflows, the iOS runner setup action, Dependabot. |
 
@@ -110,15 +102,15 @@ cp -R shared/build/bin/iosSimulatorArm64/debugFramework/shared.framework "$DEST/
 cd iosApp
 xcodegen generate
 xcodebuild build \
-  -project Bueffel.xcodeproj \
-  -scheme Bueffel \
+  -project Jackdaw.xcodeproj \
+  -scheme Jackdaw \
   -destination 'generic/platform=iOS Simulator' \
   -configuration Debug \
   CODE_SIGNING_ALLOWED=NO \
   ARCHS=arm64
 ```
 
-`ARCHS=arm64` because the staged framework is the arm64 simulator slice. The Kotlin/Native tests of the shared module run with `./gradlew shared:iosSimulatorArm64Test`. To run the app, open `iosApp/Bueffel.xcodeproj` after the steps above.
+`ARCHS=arm64` because the staged framework is the arm64 simulator slice. The Kotlin/Native tests of the shared module run with `./gradlew shared:iosSimulatorArm64Test`. To run the app, open `iosApp/Jackdaw.xcodeproj` after the steps above.
 
 ## Continuous integration
 
@@ -135,7 +127,7 @@ The iOS jobs run on GitHub's `xcode-27` image with the Xcode 27.0 GM pinned and 
 Publishing a GitHub release (tag such as `v1.0.0`) runs `release.yml`. It can also be started by hand from the Actions tab (inputs: `version`, and `platforms` = both, android or ios, to retry one platform on its own). The version must look like `1.2.3` or `v1.2.3`.
 
 - **Versions**: the tag without `v` is the Android `versionName` and the iOS `MARKETING_VERSION`. The workflow run number is the iOS build number and is folded into the Android `versionCode` (`(major*10000 + minor*100 + patch) * 1000 + run number`), so re-runs always increase.
-- **Android job**: builds a signed AAB and APK, uploads both as workflow artifacts, attaches them to the GitHub release as `bueffel-<version>.apk` and `.aab`, and uploads the AAB to the Google Play internal testing track when `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` is set.
+- **Android job**: builds a signed AAB and APK, uploads both as workflow artifacts, attaches them to the GitHub release as `jackdaw-<version>.apk` and `.aab`, and uploads the AAB to the Google Play internal testing track when `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` is set.
 - **iOS job**: checks the stored provisioning profile, builds the shared release framework, archives with App Store Connect API key cloud signing, removes the development certificates that cloud signing created, exports with manual signing (Apple Distribution certificate and the stored profile), verifies the signature and uploads to TestFlight. The IPA is kept as workflow artifact.
 
 A job whose required secrets are missing fails in its first step and names them. No repository variables are used.
@@ -153,9 +145,9 @@ A job whose required secrets are missing fails in its first step and names them.
 | `APPLE_TEAM_ID` | iOS | Apple developer team ID (injected into `iosApp/ExportOptions.plist` during the job) |
 | `IOS_DIST_CERT_P12_BASE64` | iOS | Apple Distribution certificate with private key, exported as `.p12`, base64 on one line |
 | `IOS_DIST_CERT_PASSWORD` | iOS | Password of the `.p12` |
-| `IOS_PROFILE_APP_BASE64` | iOS | App Store provisioning profile for `ch.orellbuehler.bueffel`, base64 on one line: `openssl base64 -A -in Bueffel_App_Store.mobileprovision \| gh secret set IOS_PROFILE_APP_BASE64` |
+| `IOS_PROFILE_APP_BASE64` | iOS | App Store provisioning profile for `ch.orellbuehler.jackdaw`, base64 on one line: `openssl base64 -A -in Jackdaw_App_Store.mobileprovision \| gh secret set IOS_PROFILE_APP_BASE64` |
 
-One-time iOS setup: register the App ID `ch.orellbuehler.bueffel`, create the app in App Store Connect, and create the App Store provisioning profile with the exact name `Bueffel App Store` (the name `iosApp/ExportOptions.plist` refers to). If the app gains capabilities later, regenerate the profile and update the secret.
+One-time iOS setup: register the App ID `ch.orellbuehler.jackdaw`, create the app in App Store Connect, and create the App Store provisioning profile with the exact name `Jackdaw App Store` (the name `iosApp/ExportOptions.plist` refers to). If the app gains capabilities later, regenerate the profile and update the secret.
 
 ## Status
 

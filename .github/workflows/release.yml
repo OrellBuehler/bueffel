@@ -161,8 +161,8 @@ jobs:
         run: |
           set -euo pipefail
           VERSION="${TAG#v}"
-          APK="$RUNNER_TEMP/bueffel-$VERSION.apk"
-          AAB="$RUNNER_TEMP/bueffel-$VERSION.aab"
+          APK="$RUNNER_TEMP/jackdaw-$VERSION.apk"
+          AAB="$RUNNER_TEMP/jackdaw-$VERSION.aab"
           cp androidApp/build/outputs/apk/release/*.apk "$APK"
           cp androidApp/build/outputs/bundle/release/*.aab "$AAB"
           for candidate in "$TAG" "v$VERSION"; do
@@ -191,7 +191,7 @@ jobs:
         uses: r0adkll/upload-google-play@e738b9dd8f2476ea806d921b64aacd24f34515a5 # v1.1.5
         with:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
-          packageName: ch.orellbuehler.bueffel
+          packageName: ch.orellbuehler.jackdaw
           releaseFiles: androidApp/build/outputs/bundle/release/*.aab
           track: internal
           status: completed
@@ -245,8 +245,8 @@ jobs:
           TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
           set -euo pipefail
-          BUNDLE_ID=ch.orellbuehler.bueffel
-          ENTITLEMENTS=Bueffel/Bueffel.entitlements
+          BUNDLE_ID=ch.orellbuehler.jackdaw
+          ENTITLEMENTS=Jackdaw/Jackdaw.entitlements
           prof="$RUNNER_TEMP/pf.mobileprovision"
           plist="$RUNNER_TEMP/pf.plist"
           failed=0
@@ -294,7 +294,7 @@ jobs:
           fi
 
           if [ "$failed" -ne 0 ]; then
-            echo "::error::Recreate the App Store profile for $BUNDLE_ID named '$expected_name' in the Apple Developer portal, then update the secret: openssl base64 -A -in Bueffel_App_Store.mobileprovision | gh secret set IOS_PROFILE_APP_BASE64"
+            echo "::error::Recreate the App Store profile for $BUNDLE_ID named '$expected_name' in the Apple Developer portal, then update the secret: openssl base64 -A -in Jackdaw_App_Store.mobileprovision | gh secret set IOS_PROFILE_APP_BASE64"
             exit 1
           fi
           echo "ok: profile '$actual_name' (expires $expires)"
@@ -372,11 +372,11 @@ jobs:
         # number, so every upload is unique within a marketing version.
         run: |
           xcodebuild archive \
-            -project Bueffel.xcodeproj \
-            -scheme Bueffel \
+            -project Jackdaw.xcodeproj \
+            -scheme Jackdaw \
             -configuration Release \
             -destination 'generic/platform=iOS' \
-            -archivePath "$RUNNER_TEMP/Bueffel.xcarchive" \
+            -archivePath "$RUNNER_TEMP/Jackdaw.xcarchive" \
             -allowProvisioningUpdates \
             -authenticationKeyPath ~/.appstoreconnect/private_keys/AuthKey_"$KEY_ID".p8 \
             -authenticationKeyID "$KEY_ID" \
@@ -448,7 +448,7 @@ jobs:
         # cloud-managed distribution certificate.
         run: |
           xcodebuild -exportArchive \
-            -archivePath "$RUNNER_TEMP/Bueffel.xcarchive" \
+            -archivePath "$RUNNER_TEMP/Jackdaw.xcarchive" \
             -exportOptionsPlist ExportOptions.plist \
             -exportPath "$RUNNER_TEMP/export"
 

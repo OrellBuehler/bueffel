@@ -36,11 +36,11 @@ val computedVersionCode =
     }
 
 android {
-    namespace = "ch.orellbuehler.bueffel"
+    namespace = "ch.orellbuehler.jackdaw"
     compileSdk = 37
 
     defaultConfig {
-        applicationId = "ch.orellbuehler.bueffel"
+        applicationId = "ch.orellbuehler.jackdaw"
         minSdk = 26
         targetSdk = 36
         versionCode = computedVersionCode

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Büffel</string>
+    <string name="app_name">Jackdaw</string>
     <string name="action_back">Zurück</string>
     <string name="action_cancel">Abbrechen</string>
     <string name="action_clear">Leeren</string>
@@ -44,7 +44,7 @@
     <string name="snackbar_updated">«%1$s» aktualisiert</string>
     <string name="add_title">Pack hinzufügen</string>
     <string name="add_open_file">Datei öffnen</string>
-    <string name="add_open_file_sub">Wähle eine .bueffel- oder .json-Datei auf deinem Gerät</string>
+    <string name="add_open_file_sub">Wähle eine .jackdaw- oder .json-Datei auf deinem Gerät</string>
     <string name="add_paste">Text einfügen</string>
     <string name="add_paste_sub">Füge ein Pack aus der Zwischenablage ein</string>
     <string name="add_samples">Beispiel-Bibliothek</string>
@@ -55,13 +55,13 @@
     <string name="paste_from_clipboard">Einfügen</string>
     <string name="paste_clipboard_empty">Die Zwischenablage enthält keinen Text.</string>
     <string name="paste_continue">Vorschau</string>
-    <string name="ai_explainer">Büffel-Packs sind einfache JSON-Dateien in einem offenen Format, deshalb kann jeder Chatbot eines für dich schreiben. Kopiere den Prompt, nenne dem Chatbot dein Thema und füge die Antwort hier ein oder speichere sie als .bueffel-Datei.</string>
+    <string name="ai_explainer">Jackdaw-Packs sind einfache JSON-Dateien in einem offenen Format, deshalb kann jeder Chatbot eines für dich schreiben. Kopiere den Prompt, nenne dem Chatbot dein Thema und füge die Antwort hier ein oder speichere sie als .jackdaw-Datei.</string>
     <string name="ai_copy">Prompt kopieren</string>
     <string name="ai_copied">Prompt kopiert</string>
     <string name="ai_show_full">Ganzen Prompt zeigen</string>
     <string name="ai_show_less">Weniger zeigen</string>
     <string name="ai_paste_answer">Antwort des Chatbots einfügen</string>
-    <string name="ai_share_subject">Prompt für Büffel-Packs</string>
+    <string name="ai_share_subject">Prompt für Jackdaw-Packs</string>
     <string name="import_reading">Datei wird gelesen …</string>
     <string name="import_preview_new">Neues Pack</string>
     <string name="import_preview_update">Aktualisierung</string>
@@ -77,9 +77,9 @@
     <string name="import_error_title">Import nicht möglich</string>
     <string name="error_copy_details">Details kopieren</string>
     <string name="error_not_json">Das ist kein gültiges JSON. Prüfe, ob der ganze Text kopiert wurde und nichts anderes darum steht.</string>
-    <string name="error_not_a_pack">Das sieht nicht nach einem Büffel-Pack aus.</string>
+    <string name="error_not_a_pack">Das sieht nicht nach einem Jackdaw-Pack aus.</string>
     <string name="error_version_invalid">Die Formatversion dieses Packs ist nicht lesbar.</string>
-    <string name="error_version_too_new">Dieses Pack wurde für eine neuere Formatversion erstellt. Bitte aktualisiere Büffel.</string>
+    <string name="error_version_too_new">Dieses Pack wurde für eine neuere Formatversion erstellt. Bitte aktualisiere Jackdaw.</string>
     <string name="error_id_invalid">Das Pack hat keine gültige ID.</string>
     <string name="error_title_invalid">Das Pack hat keinen Titel.</string>
     <string name="error_items_missing">Das Pack enthält keine Einträge.</string>
@@ -243,21 +243,21 @@
     <string name="theme_system">System</string>
     <string name="theme_light">Hell</string>
     <string name="theme_dark">Dunkel</string>
-    <string name="settings_about">Über Büffel</string>
+    <string name="settings_about">Über Jackdaw</string>
     <string name="about_version">Version</string>
     <string name="about_local_only">Nur lokal: Deine Daten verlassen dein Gerät nie. Kein Konto, kein Netzwerk, kein Tracking.</string>
     <string name="about_format">Offenes Format</string>
-    <string name="about_format_body">Büffel-Packs sind offene JSON-Dateien. Die Spezifikation findest du hier:</string>
+    <string name="about_format_body">Jackdaw-Packs sind offene JSON-Dateien. Die Spezifikation findest du hier:</string>
     <string name="onb1_title">Lerne alles, nachhaltig</string>
     <string name="onb1_body">Vokabeln, Geschichte, Vorstellungsgespräch: Aus jeder Faktenliste werden kurze Lernsitzungen.</string>
     <string name="onb2_title">Nur deins, und offen</string>
-    <string name="onb2_body">Büffel funktioniert komplett auf deinem Gerät.</string>
+    <string name="onb2_body">Jackdaw funktioniert komplett auf deinem Gerät.</string>
     <string name="onb2_feature_device">Dein Fortschritt bleibt auf diesem Gerät</string>
     <string name="onb2_feature_network">Kein Konto und kein Netzwerkzugriff</string>
     <string name="onb2_feature_open">Packs sind offene JSON-Dateien, die du selbst schreiben kannst</string>
     <string name="onb2_feature_schedule">Clevere Wiederholung zeigt dir jeden Eintrag kurz bevor du ihn vergisst</string>
     <string name="onb3_title">Such dir ein Pack zum Start aus</string>
-    <string name="onb3_body">Füge ein Beispiel hinzu, um Büffel auszuprobieren. Eigene Packs kannst du jederzeit importieren.</string>
+    <string name="onb3_body">Füge ein Beispiel hinzu, um Jackdaw auszuprobieren. Eigene Packs kannst du jederzeit importieren.</string>
     <plurals name="days_count">
         <item quantity="one">%d Tag</item>
         <item quantity="other">%d Tage</item>

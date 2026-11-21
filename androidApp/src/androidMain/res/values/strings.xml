@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Büffel</string>
+    <string name="app_name">Jackdaw</string>
     <string name="action_back">Back</string>
     <string name="action_cancel">Cancel</string>
     <string name="action_clear">Clear</string>
@@ -36,7 +36,7 @@
     <string name="pack_badge_done">Done for today</string>
     <string name="pack_card_description">%1$s, %2$d%% learned, %3$d due, %4$d new</string>
     <string name="empty_title">No packs yet</string>
-    <string name="empty_body">Add a sample pack to try Büffel, import your own file, or have a chatbot write one for you.</string>
+    <string name="empty_body">Add a sample pack to try Jackdaw, import your own file, or have a chatbot write one for you.</string>
     <string name="empty_samples_title">Start with a sample</string>
     <string name="empty_more_options">More ways to add packs</string>
     <string name="sample_added">Added</string>
@@ -44,7 +44,7 @@
     <string name="snackbar_updated">Updated “%1$s”</string>
     <string name="add_title">Add pack</string>
     <string name="add_open_file">Open file</string>
-    <string name="add_open_file_sub">Pick a .bueffel or .json file from your device</string>
+    <string name="add_open_file_sub">Pick a .jackdaw or .json file from your device</string>
     <string name="add_paste">Paste text</string>
     <string name="add_paste_sub">Paste a pack from the clipboard</string>
     <string name="add_samples">Sample library</string>
@@ -55,13 +55,13 @@
     <string name="paste_from_clipboard">Paste</string>
     <string name="paste_clipboard_empty">The clipboard has no text.</string>
     <string name="paste_continue">Preview</string>
-    <string name="ai_explainer">Büffel packs are plain JSON files in an open format, so any chatbot can write one for you. Copy the prompt, tell the chatbot your topic, then paste its answer here or save it as a .bueffel file.</string>
+    <string name="ai_explainer">Jackdaw packs are plain JSON files in an open format, so any chatbot can write one for you. Copy the prompt, tell the chatbot your topic, then paste its answer here or save it as a .jackdaw file.</string>
     <string name="ai_copy">Copy prompt</string>
     <string name="ai_copied">Prompt copied</string>
     <string name="ai_show_full">Show full prompt</string>
     <string name="ai_show_less">Show less</string>
     <string name="ai_paste_answer">Paste the chatbot’s answer</string>
-    <string name="ai_share_subject">Büffel pack prompt</string>
+    <string name="ai_share_subject">Jackdaw pack prompt</string>
     <string name="import_reading">Reading file…</string>
     <string name="import_preview_new">New pack</string>
     <string name="import_preview_update">Update</string>
@@ -77,9 +77,9 @@
     <string name="import_error_title">Can’t import this</string>
     <string name="error_copy_details">Copy details</string>
     <string name="error_not_json">This isn’t valid JSON. Check that the whole text was copied, with nothing else around it.</string>
-    <string name="error_not_a_pack">This doesn’t look like a Büffel pack.</string>
+    <string name="error_not_a_pack">This doesn’t look like a Jackdaw pack.</string>
     <string name="error_version_invalid">The format version of this pack can’t be read.</string>
-    <string name="error_version_too_new">This pack was made for a newer version of the format. Please update Büffel.</string>
+    <string name="error_version_too_new">This pack was made for a newer version of the format. Please update Jackdaw.</string>
     <string name="error_id_invalid">The pack has no valid id.</string>
     <string name="error_title_invalid">The pack has no title.</string>
     <string name="error_items_missing">The pack contains no items.</string>
@@ -247,17 +247,17 @@
     <string name="about_version">Version</string>
     <string name="about_local_only">Local only: your data never leaves your device. No account, no network, no tracking.</string>
     <string name="about_format">Open format</string>
-    <string name="about_format_body">Büffel packs are open JSON files. Read the specification at:</string>
+    <string name="about_format_body">Jackdaw packs are open JSON files. Read the specification at:</string>
     <string name="onb1_title">Learn anything, for good</string>
     <string name="onb1_body">Vocabulary, history, interview prep: turn any list of facts into short study sessions.</string>
     <string name="onb2_title">Yours alone, and open</string>
-    <string name="onb2_body">Büffel works entirely on your device.</string>
+    <string name="onb2_body">Jackdaw works entirely on your device.</string>
     <string name="onb2_feature_device">Your progress stays on this device</string>
     <string name="onb2_feature_network">No account and no network access</string>
     <string name="onb2_feature_open">Packs are open JSON files you can write yourself</string>
     <string name="onb2_feature_schedule">Smart repetition shows each item just before you’d forget it</string>
     <string name="onb3_title">Pick a pack to start</string>
-    <string name="onb3_body">Add a sample to try Büffel. You can import your own packs any time.</string>
+    <string name="onb3_body">Add a sample to try Jackdaw. You can import your own packs any time.</string>
     <plurals name="days_count">
         <item quantity="one">%d day</item>
         <item quantity="other">%d days</item>

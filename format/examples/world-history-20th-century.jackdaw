@@ -1,0 +1,349 @@
+{
+  "$schema": "https://raw.githubusercontent.com/OrellBuehler/jackdaw/main/format/jackdaw-pack.schema.json",
+  "format": "jackdaw-pack",
+  "version": 1,
+  "id": "com.github.orellbuehler.jackdaw.examples.world-history-20th-century",
+  "title": "World History: The 20th Century",
+  "description": "Thirty-one questions on key events and facts from the two world wars, the interwar years, the Cold War and the post-war world. Mixes multiple choice, true/false, typed answers, fill-in-the-gap and chronology questions.",
+  "language": "en",
+  "author": "Jackdaw project",
+  "license": "CC0-1.0",
+  "source": "https://github.com/OrellBuehler/jackdaw",
+  "tags": ["history", "20th-century", "world-wars", "cold-war"],
+  "icon": "🌍",
+  "color": "#1D4ED8",
+  "revision": 1,
+  "created": "2026-11-20",
+  "updated": "2026-11-20",
+  "sections": [
+    {"id": "ww1", "title": "The First World War", "description": "1914-1918 and its immediate aftermath."},
+    {"id": "interwar", "title": "Between the wars", "description": "Revolution, depression and the rise of dictatorships."},
+    {"id": "ww2", "title": "The Second World War", "description": "1939-1945."},
+    {"id": "cold-war", "title": "The Cold War", "description": "1947-1991."},
+    {"id": "world", "title": "A changing world", "description": "Decolonisation, new institutions and landmark events."}
+  ],
+  "study": {"order": "sequential", "newPerSession": 6},
+  "items": [
+    {
+      "id": "sarajevo-trigger",
+      "type": "choice",
+      "section": "ww1",
+      "question": "Which event was the immediate trigger of the First World War in 1914?",
+      "options": [
+        {
+          "text": "The assassination of Archduke Franz Ferdinand in Sarajevo",
+          "correct": true,
+          "explanation": "On 28 June 1914 Gavrilo Princip shot the heir to the Austro-Hungarian throne. Within weeks the great powers were at war."
+        },
+        {"text": "The sinking of the Lusitania", "explanation": "A British liner sunk by a German U-boat in 1915, long after the war had begun."},
+        {"text": "The invasion of Poland", "explanation": "That was the start of the Second World War in 1939."},
+        {"text": "The Russian Revolution", "explanation": "It happened in 1917, in the middle of the war."}
+      ]
+    },
+    {
+      "id": "ww1-armistice-year",
+      "type": "text",
+      "section": "ww1",
+      "question": "In which year did the First World War end with an armistice?",
+      "answers": ["1918"],
+      "explanation": "The armistice with Germany took effect on 11 November 1918 at 11 a.m."
+    },
+    {
+      "id": "versailles",
+      "type": "cloze",
+      "section": "ww1",
+      "text": "The Treaty of {{Versailles::city near Paris}} was signed in {{1919::year}} and formally ended the war with Germany.",
+      "explanation": "It was signed on 28 June 1919, exactly five years after the assassination in Sarajevo."
+    },
+    {
+      "id": "us-entry-ww1",
+      "type": "truefalse",
+      "section": "ww1",
+      "statement": "The United States entered the First World War in 1917.",
+      "answer": true,
+      "explanation": "The US declared war on Germany on 6 April 1917, after unrestricted submarine warfare and the Zimmermann Telegram."
+    },
+    {
+      "id": "october-revolution",
+      "type": "truefalse",
+      "section": "ww1",
+      "statement": "The Bolsheviks seized power in Russia in the October Revolution of 1917.",
+      "answer": true,
+      "explanation": "The date is October in the old Russian calendar (7 November in the Gregorian calendar). Lenin led the new government."
+    },
+    {
+      "id": "wall-street-crash",
+      "type": "choice",
+      "section": "interwar",
+      "question": "Which event is usually regarded as the start of the Great Depression?",
+      "options": [
+        {
+          "text": "The Wall Street Crash of October 1929",
+          "correct": true,
+          "explanation": "Share prices collapsed on 24 and 29 October 1929. Banks failed and unemployment soared worldwide."
+        },
+        {"text": "The Treaty of Versailles of 1919"},
+        {"text": "The Reichstag fire of 1933"},
+        {"text": "The Munich Agreement of 1938"}
+      ]
+    },
+    {
+      "id": "mussolini",
+      "type": "text",
+      "section": "interwar",
+      "question": "Which Italian dictator came to power in 1922 after the March on Rome?",
+      "answers": ["Mussolini", "Benito Mussolini"],
+      "hint": "His title was *Il Duce*.",
+      "explanation": "Benito Mussolini led the National Fascist Party and ruled Italy until he was deposed in 1943."
+    },
+    {
+      "id": "interwar-order",
+      "type": "order",
+      "section": "interwar",
+      "prompt": "Put these events in chronological order, earliest first.",
+      "sequence": [
+        "October Revolution in Russia",
+        "Treaty of Versailles is signed",
+        "Wall Street Crash",
+        "Hitler becomes German Chancellor",
+        "Germany invades Poland"
+      ],
+      "explanation": "1917, 1919, 1929, 1933, 1939."
+    },
+    {
+      "id": "ww2-start-year",
+      "type": "text",
+      "section": "ww2",
+      "question": "In which year did Germany invade Poland, starting the Second World War in Europe?",
+      "answers": ["1939"],
+      "explanation": "The invasion began on 1 September 1939. Britain and France declared war on Germany two days later."
+    },
+    {
+      "id": "operation-overlord",
+      "type": "choice",
+      "section": "ww2",
+      "question": "What was the code name of the Allied invasion of Normandy in 1944 (D-Day)?",
+      "options": [
+        {
+          "text": "Operation Overlord",
+          "correct": true,
+          "explanation": "D-Day, 6 June 1944, was the opening of Operation Overlord, the Allied campaign in Normandy."
+        },
+        {"text": "Operation Barbarossa", "explanation": "The German invasion of the Soviet Union in 1941."},
+        {"text": "Operation Torch", "explanation": "The Allied landings in North Africa in 1942."},
+        {"text": "Operation Market Garden", "explanation": "The airborne offensive in the Netherlands in September 1944."}
+      ]
+    },
+    {
+      "id": "barbarossa",
+      "type": "truefalse",
+      "section": "ww2",
+      "statement": "Germany invaded the Soviet Union in June 1941 in Operation Barbarossa.",
+      "answer": true,
+      "explanation": "The attack began on 22 June 1941 and broke the non-aggression pact of 1939."
+    },
+    {
+      "id": "pearl-harbor",
+      "type": "cloze",
+      "section": "ww2",
+      "text": "The Japanese attack on {{Pearl Harbor}} on 7 December {{1941}} brought the United States into the Second World War.",
+      "explanation": "The US declared war on Japan the next day. Germany and Italy declared war on the US on 11 December."
+    },
+    {
+      "id": "atomic-bombs",
+      "type": "choice",
+      "section": "ww2",
+      "question": "Which Japanese cities were hit by atomic bombs in August 1945? (Select all that apply.)",
+      "options": [{"text": "Hiroshima", "correct": true}, {"text": "Nagasaki", "correct": true}, {"text": "Tokyo"}, {"text": "Kyoto"}, {"text": "Osaka"}],
+      "explanation": "Hiroshima was bombed on 6 August and Nagasaki on 9 August 1945. Japan announced its surrender on 15 August."
+    },
+    {
+      "id": "ww2-order",
+      "type": "order",
+      "section": "ww2",
+      "prompt": "Put these events of the Second World War in chronological order, earliest first.",
+      "sequence": [
+        "Germany invades Poland",
+        "Fall of France",
+        "Germany invades the Soviet Union",
+        "Japan attacks Pearl Harbor",
+        "D-Day landings in Normandy",
+        "Atomic bomb dropped on Hiroshima"
+      ],
+      "explanation": "September 1939, June 1940, June 1941, December 1941, June 1944, August 1945."
+    },
+    {
+      "id": "holocaust",
+      "type": "text",
+      "section": "ww2",
+      "question": "What is the name of the systematic genocide of about six million Jews by Nazi Germany and its collaborators?",
+      "answers": ["The Holocaust", "Holocaust", "The Shoah", "Shoah"],
+      "explanation": "*Shoah* is the Hebrew term."
+    },
+    {
+      "id": "yalta",
+      "type": "truefalse",
+      "section": "ww2",
+      "statement": "Roosevelt, Churchill and Stalin met at the Yalta Conference in February 1945.",
+      "answer": true,
+      "explanation": "The \"Big Three\" discussed the final defeat of Germany, the occupation zones and the post-war order."
+    },
+    {
+      "id": "marshall-plan",
+      "type": "choice",
+      "section": "cold-war",
+      "question": "What was the Marshall Plan?",
+      "options": [
+        {
+          "text": "A US programme of economic aid to rebuild Western Europe after the Second World War",
+          "correct": true,
+          "explanation": "Announced in 1947, it provided about 13 billion US dollars in aid between 1948 and 1952."
+        },
+        {"text": "A Soviet plan to spread communism in Eastern Europe"},
+        {"text": "A military alliance of Western powers", "explanation": "That describes NATO, founded in 1949."},
+        {"text": "A peace treaty with Japan"}
+      ]
+    },
+    {
+      "id": "berlin-wall",
+      "type": "cloze",
+      "section": "cold-war",
+      "text": "The {{Berlin Wall}} was built in {{1961}} and fell in {{1989}}.",
+      "explanation": "Construction began on 13 August 1961. The border opened on 9 November 1989."
+    },
+    {
+      "id": "cuban-missile-crisis",
+      "type": "text",
+      "section": "cold-war",
+      "question": "Which crisis of October 1962 brought the United States and the Soviet Union close to nuclear war over missiles in Cuba?",
+      "answers": ["Cuban Missile Crisis", "The Cuban Missile Crisis"],
+      "hint": "Think of Kennedy and Khrushchev.",
+      "explanation": "It ended when Khrushchev agreed to withdraw the missiles. The US pledged not to invade Cuba and secretly agreed to remove its missiles from Turkey."
+    },
+    {
+      "id": "cold-war-order",
+      "type": "order",
+      "section": "cold-war",
+      "prompt": "Put these Cold War events in chronological order, earliest first.",
+      "sequence": [
+        "Truman Doctrine is announced",
+        "NATO is founded",
+        "Korean War begins",
+        "Cuban Missile Crisis",
+        "Berlin Wall falls",
+        "Soviet Union is dissolved"
+      ],
+      "explanation": "1947, 1949, 1950, 1962, 1989, 1991."
+    },
+    {
+      "id": "warsaw-pact",
+      "type": "truefalse",
+      "section": "cold-war",
+      "statement": "The Warsaw Pact was founded in 1955 as the Soviet-led counterpart to NATO.",
+      "answer": true,
+      "explanation": "It was created in May 1955, shortly after West Germany joined NATO, and dissolved in 1991."
+    },
+    {
+      "id": "ussr-dissolved",
+      "type": "choice",
+      "section": "cold-war",
+      "question": "In which year was the Soviet Union dissolved?",
+      "options": [
+        {"text": "1985"},
+        {"text": "1989"},
+        {
+          "text": "1991",
+          "correct": true,
+          "explanation": "On 26 December 1991 the Supreme Soviet formally dissolved the USSR, a day after Gorbachev resigned."
+        },
+        {"text": "1993"}
+      ]
+    },
+    {
+      "id": "last-soviet-leader",
+      "type": "text",
+      "section": "cold-war",
+      "question": "Who was the last leader of the Soviet Union?",
+      "answers": ["Mikhail Gorbachev", "Gorbachev"],
+      "hint": "He led the USSR from 1985 to 1991.",
+      "explanation": "His policies of *glasnost* (openness) and *perestroika* (restructuring) set the changes in motion."
+    },
+    {
+      "id": "partition-1947",
+      "type": "choice",
+      "section": "world",
+      "question": "In 1947 British India became independent and was partitioned into which two states?",
+      "options": [
+        {"text": "India and Pakistan", "correct": true},
+        {"text": "India and Bangladesh", "explanation": "Bangladesh became independent from Pakistan only in 1971."},
+        {"text": "India and Burma", "explanation": "Burma gained independence separately in January 1948."},
+        {"text": "Pakistan and Sri Lanka", "explanation": "Ceylon (Sri Lanka) became independent separately in 1948."}
+      ]
+    },
+    {
+      "id": "gandhi-pm",
+      "type": "truefalse",
+      "section": "world",
+      "statement": "Mahatma Gandhi became India's first prime minister in 1947.",
+      "answer": false,
+      "explanation": "Jawaharlal Nehru was India's first prime minister. Gandhi held no government office and was assassinated in January 1948."
+    },
+    {
+      "id": "un-founded",
+      "type": "truefalse",
+      "section": "world",
+      "statement": "The United Nations was founded in 1945.",
+      "answer": true,
+      "explanation": "The UN Charter entered into force on 24 October 1945."
+    },
+    {
+      "id": "security-council-p5",
+      "type": "choice",
+      "section": "world",
+      "question": "Which of these countries were among the five permanent members of the UN Security Council when it was founded? (Select all that apply.)",
+      "options": [
+        {"text": "United States", "correct": true},
+        {"text": "Soviet Union", "correct": true},
+        {"text": "United Kingdom", "correct": true},
+        {"text": "Germany"},
+        {"text": "Japan"},
+        {"text": "India"}
+      ],
+      "explanation": "The original five were the United States, the Soviet Union, the United Kingdom, France and the Republic of China. The People's Republic of China took China's seat in 1971; Russia succeeded the Soviet Union in 1991."
+    },
+    {
+      "id": "moon-landing",
+      "type": "text",
+      "section": "world",
+      "question": "In which year did Apollo 11 land the first humans on the Moon?",
+      "answers": ["1969"],
+      "explanation": "Apollo 11 landed on 20 July 1969. Neil Armstrong was the first to step onto the surface."
+    },
+    {
+      "id": "mandela",
+      "type": "cloze",
+      "section": "world",
+      "text": "{{Nelson Mandela|Mandela::anti-apartheid leader}} was released from prison in {{1990}} and became South Africa's first Black president in {{1994}}."
+    },
+    {
+      "id": "maastricht",
+      "type": "choice",
+      "section": "world",
+      "question": "Which treaty, signed in 1992, created the European Union?",
+      "options": [
+        {"text": "Maastricht Treaty", "correct": true, "explanation": "Signed on 7 February 1992, in force since 1 November 1993."},
+        {"text": "Treaty of Rome", "explanation": "1957: founded the European Economic Community."},
+        {"text": "Treaty of Lisbon", "explanation": "2007: reformed the EU's institutions."},
+        {"text": "Schengen Agreement", "explanation": "1985: began the abolition of border checks between participating states."}
+      ]
+    },
+    {
+      "id": "prc-founded",
+      "type": "text",
+      "section": "world",
+      "question": "Which leader proclaimed the People's Republic of China on 1 October 1949?",
+      "answers": ["Mao Zedong", "Mao Tse-tung", "Mao"],
+      "explanation": "After the Communist victory in the Chinese Civil War, the Nationalist government withdrew to Taiwan."
+    }
+  ]
+}

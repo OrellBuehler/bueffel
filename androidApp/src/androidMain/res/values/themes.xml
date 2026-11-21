@@ -3,7 +3,7 @@
     <!-- windowBackground matches the Compose scheme background so the cold-start
          window doesn't flash a colour the app never uses. values-night carries
          the dark counterpart. -->
-    <style name="Theme.Bueffel" parent="android:Theme.Material.Light.NoActionBar">
+    <style name="Theme.Jackdaw" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:windowBackground">@color/window_background</item>
     </style>
 </resources>

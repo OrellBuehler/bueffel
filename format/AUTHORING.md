@@ -1,6 +1,6 @@
-# Authoring Büffel Packs
+# Authoring Jackdaw Packs
 
-A guide for **AI assistants, language models and tool authors** (and the people who prompt them) on turning source material into a good Büffel pack. It assumes you know nothing about Büffel. The normative specification is [`README.md`](README.md); the machine-readable definition is [`bueffel-pack.schema.json`](bueffel-pack.schema.json).
+A guide for **AI assistants, language models and tool authors** (and the people who prompt them) on turning source material into a good Jackdaw pack. It assumes you know nothing about Jackdaw. The normative specification is [`README.md`](README.md); the machine-readable definition is [`jackdaw-pack.schema.json`](jackdaw-pack.schema.json).
 
 Jump to: [the 60-second version](#1-the-60-second-version) · [workflow](#2-workflow) · [choosing item types](#3-choosing-item-types) · [writing good items](#4-writing-good-items) · [ids](#5-ids) · [language packs](#6-language-learning-packs) · [size and structure](#7-size-and-structure) · [common mistakes](#8-common-mistakes) · [JSON pitfalls](#9-json-pitfalls) · [checking your work](#10-checking-your-work) · [notes for tool authors](#11-notes-for-tool-authors) · [**copy-paste prompt**](#12-copy-paste-prompt-for-any-chatbot)
 
@@ -8,11 +8,11 @@ Jump to: [the 60-second version](#1-the-60-second-version) · [workflow](#2-work
 
 ## 1. The 60-second version
 
-A pack is **one JSON file** (extension `.bueffel`). Minimal shape:
+A pack is **one JSON file** (extension `.jackdaw`). Minimal shape:
 
 ```json pack
 {
-  "format": "bueffel-pack",
+  "format": "jackdaw-pack",
   "version": 1,
   "id": "pack.capitals.9c41ab",
   "title": "Capitals",
@@ -214,7 +214,7 @@ Every item needs an `id`, and the pack needs one. Learning progress is stored pe
 
 Self-check before delivering:
 
-- [ ] Top level has `format` = `"bueffel-pack"`, `version` = `1`, `id`, `title`, `items` (non-empty).
+- [ ] Top level has `format` = `"jackdaw-pack"`, `version` = `1`, `id`, `title`, `items` (non-empty).
 - [ ] Every item has `id` (unique, `a-z 0-9 . _ -`) and a `type` from the seven.
 - [ ] `card`: `front` and `back`. `choice`: `question` and 2 or more `options`, at least one `"correct": true`. `text`: `question` and non-empty `answers`. `cloze`: `text` with at least one `{{gap}}`. `truefalse`: `statement` and boolean `answer`. `order`: `prompt` and `sequence` of 2 or more distinct entries in the **correct** order. `open`: `question`.
 - [ ] Every `section` value matches a declared section id.
@@ -225,17 +225,17 @@ Self-check before delivering:
 With a code runner, validate with [`validate.py`](validate.py) (needs `pip install jsonschema`, use a throwaway virtualenv):
 
 ```
-python3 validate.py my-pack.bueffel
+python3 validate.py my-pack.jackdaw
 ```
 
-It checks the [JSON Schema](bueffel-pack.schema.json) and the rules a schema cannot (unique ids, section references, at least one correct option, gaps in cloze texts) and prints warnings for suspicious content. When something fails, fix it and run again; pasting the validator's output back to a chatbot is a quick way to repair a pack.
+It checks the [JSON Schema](jackdaw-pack.schema.json) and the rules a schema cannot (unique ids, section references, at least one correct option, gaps in cloze texts) and prints warnings for suspicious content. When something fails, fix it and run again; pasting the validator's output back to a chatbot is a quick way to repair a pack.
 
 ## 11. Notes for tool authors
 
 - **Converting from other formats** (CSV, Anki, Quizlet, spreadsheets, Markdown notes): map a two-column list to `card` items; a question column plus several answer columns to `choice` or `text`; Anki "Cloze" notes (`{{c1::answer}}`) to `cloze` (one item per cloze number, written `{{answer}}`); question plus bullet answer to `open` with `keyPoints`. Convert HTML to the inline markup subset or strip it.
 - **Ids must be stable between runs.** Prefer a stable key from the source (row key, note id). Otherwise derive a slug from the content (lowercase, transliterate to ASCII, replace everything outside `a-z 0-9` by `-`, trim, at most 40 characters) and append `-2`, `-3` for duplicates. If the slug is derived from text that may be edited, remember that editing the text then changes the id and resets the learner's progress. Never use random ids that change per export.
 - **Updating**: keep the pack `id` and item ids; write the same content in the same order; increase `revision`; set `updated`.
-- **Output**: UTF-8 without BOM, LF newlines, two-space indentation is conventional. Key order is irrelevant. Do not write `null` for absent properties, omit them. Write `.bueffel` as the file extension.
+- **Output**: UTF-8 without BOM, LF newlines, two-space indentation is conventional. Key order is irrelevant. Do not write `null` for absent properties, omit them. Write `.jackdaw` as the file extension.
 - **Round-tripping**: put your own data into `x-` properties (`x-acme-note-id`). Readers ignore them, and the format will never use the prefix itself.
 - **Do not store progress** in packs. Export content only.
 - **Validate before you ship**, with the schema and [`validate.py`](validate.py), and keep to the size guidance (5,000 items, 5 MB).
@@ -246,25 +246,25 @@ It checks the [JSON Schema](bueffel-pack.schema.json) and the rules a schema can
 
 ## 12. Copy-paste prompt for any chatbot
 
-Paste the block below into any chatbot, replace the parts in `[square brackets]`, and send it. The block is the file [`prompt.txt`](prompt.txt) verbatim; the apps offer the same text under "Create with AI". The prompt contains the whole format, so the chatbot needs no other context. Save the answer (the JSON) as `something.bueffel` and import it into Büffel.
+Paste the block below into any chatbot, replace the parts in `[square brackets]`, and send it. The block is the file [`prompt.txt`](prompt.txt) verbatim; the apps offer the same text under "Create with AI". The prompt contains the whole format, so the chatbot needs no other context. Save the answer (the JSON) as `something.jackdaw` and import it into Jackdaw.
 
 Tips: paste your own notes or a text after the task line if you want the pack to be based on them; ask for fewer items first to check quality; if the app reports errors, paste them back into the chat and ask for a corrected file.
 
 ````text
-You are creating a learning pack for the app Büffel. Produce ONE JSON document in the "Büffel Pack" format described below. Output only that JSON, in a single ```json code block, with no text before or after it.
+You are creating a learning pack for the app Jackdaw. Produce ONE JSON document in the "Jackdaw Pack" format described below. Output only that JSON, in a single ```json code block, with no text before or after it.
 
 TASK
-Create a Büffel pack about: [TOPIC, or paste your notes / source text here]
+Create a Jackdaw pack about: [TOPIC, or paste your notes / source text here]
 Language of the content: [e.g. English. For a language course: the language being learned, plus the language the explanations are written in]
 Audience / level: [e.g. complete beginners, exam in June, software engineers preparing for interviews]
 Number of items: about [e.g. 40]
 Preferred item types: [e.g. mostly cards and a few multiple-choice questions, or: choose what fits best]
 Use only facts you are sure about. If you are unsure about something, leave it out.
 
-FORMAT (Büffel Pack, version 1)
+FORMAT (Jackdaw Pack, version 1)
 The file is one JSON object.
 Top level:
-- "format": "bueffel-pack"                      (required, always this string)
+- "format": "jackdaw-pack"                      (required, always this string)
 - "version": 1                                  (required, always the number 1)
 - "id": string                                  (required; only A-Z a-z 0-9 . _ - ; use "pack." + topic slug + "." + 6 random hex characters, e.g. "pack.roman-emperors.7f3a9c")
 - "title": string                               (required)
@@ -300,7 +300,7 @@ QUALITY RULES
 EXAMPLE of the expected output (content is only an illustration):
 ```json pack
 {
-  "format": "bueffel-pack",
+  "format": "jackdaw-pack",
   "version": 1,
   "id": "pack.solar-system.4f7a2c",
   "title": "The Solar System",
@@ -328,8 +328,8 @@ Before you answer, check silently: valid JSON; every id unique; every choice has
 
 ### Variants of the prompt
 
-- **Pack from your own notes:** replace the topic line by `Create a Büffel pack from the following notes. Use only information from the notes: [paste notes]`.
-- **Language course:** `Create a Büffel pack to learn Italian vocabulary for travel (restaurant, hotel, transport), explained in English, about 60 words, reversible cards, ignoreDiacritics true.`
-- **Exam preparation:** `Create a Büffel pack with exam questions on [subject, chapter]: mostly choice and text items, a few order and cloze items, with explanations.`
-- **Interview preparation:** `Create a Büffel pack for [role] interviews: mostly open questions with keyPoints, a few cards for key terms.`
+- **Pack from your own notes:** replace the topic line by `Create a Jackdaw pack from the following notes. Use only information from the notes: [paste notes]`.
+- **Language course:** `Create a Jackdaw pack to learn Italian vocabulary for travel (restaurant, hotel, transport), explained in English, about 60 words, reversible cards, ignoreDiacritics true.`
+- **Exam preparation:** `Create a Jackdaw pack with exam questions on [subject, chapter]: mostly choice and text items, a few order and cloze items, with explanations.`
+- **Interview preparation:** `Create a Jackdaw pack for [role] interviews: mostly open questions with keyPoints, a few cards for key terms.`
 - **Update an existing pack:** paste the existing JSON and ask `Add 20 more items about [topic] in the same style. Keep every existing id and pack id unchanged, add new items at the end, increase revision by 1.`

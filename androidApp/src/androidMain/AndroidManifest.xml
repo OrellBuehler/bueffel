@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <application
-        android:name=".BueffelApplication"
+        android:name=".JackdawApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:enableOnBackInvokedCallback="true"
@@ -13,7 +13,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Bueffel">
+        android:theme="@style/Theme.Jackdaw">
 
         <activity
             android:name=".MainActivity"
@@ -31,7 +31,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="content" />
                 <data android:scheme="file" />
-                <data android:mimeType="application/vnd.bueffel.pack+json" />
+                <data android:mimeType="application/vnd.jackdaw.pack+json" />
                 <data android:mimeType="application/json" />
                 <data android:mimeType="text/plain" />
             </intent-filter>
@@ -44,16 +44,16 @@
                 <data android:scheme="file" />
                 <data android:host="*" />
                 <data android:mimeType="*/*" />
-                <data android:pathPattern=".*\\.bueffel" />
-                <data android:pathPattern=".*\\..*\\.bueffel" />
-                <data android:pathPattern=".*\\..*\\..*\\.bueffel" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\.bueffel" />
+                <data android:pathPattern=".*\\.jackdaw" />
+                <data android:pathPattern=".*\\..*\\.jackdaw" />
+                <data android:pathPattern=".*\\..*\\..*\\.jackdaw" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.jackdaw" />
             </intent-filter>
 
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="application/vnd.bueffel.pack+json" />
+                <data android:mimeType="application/vnd.jackdaw.pack+json" />
                 <data android:mimeType="application/json" />
                 <data android:mimeType="text/plain" />
                 <data android:mimeType="application/octet-stream" />

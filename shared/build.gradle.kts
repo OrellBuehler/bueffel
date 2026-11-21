@@ -34,14 +34,14 @@ abstract class GenerateFormatResources : DefaultTask() {
             examplesDir
                 .get()
                 .asFile
-                .listFiles { f -> f.name.endsWith(".bueffel") }!!
+                .listFiles { f -> f.name.endsWith(".jackdaw") }!!
                 .sortedBy { it.name }
-        val main = File(mainOutput.get().asFile, "ch/orellbuehler/bueffel/samples/GeneratedSamples.kt")
+        val main = File(mainOutput.get().asFile, "ch/orellbuehler/jackdaw/samples/GeneratedSamples.kt")
         main.parentFile.mkdirs()
         main.writeText(
             buildString {
                 appendLine("// Generated from format/examples by the generateFormatResources Gradle task. Do not edit.")
-                appendLine("package ch.orellbuehler.bueffel.samples")
+                appendLine("package ch.orellbuehler.jackdaw.samples")
                 appendLine()
                 appendLine("internal val GENERATED_SAMPLE_PACKS: List<Pair<String, String>> =")
                 appendLine("    listOf(")
@@ -51,21 +51,21 @@ abstract class GenerateFormatResources : DefaultTask() {
         )
         val promptSource = promptFile.get().asFile
         val prompt = promptSource.readText().trim()
-        val authoring = File(mainOutput.get().asFile, "ch/orellbuehler/bueffel/GeneratedAuthoring.kt")
+        val authoring = File(mainOutput.get().asFile, "ch/orellbuehler/jackdaw/GeneratedAuthoring.kt")
         authoring.writeText(
             buildString {
                 appendLine("// Generated from format/prompt.txt by the generateFormatResources Gradle task. Do not edit.")
-                appendLine("package ch.orellbuehler.bueffel")
+                appendLine("package ch.orellbuehler.jackdaw")
                 appendLine()
                 appendLine("internal val GENERATED_AUTHORING_PROMPT: String = ${kotlinLiteral(prompt)}")
             },
         )
-        val test = File(testOutput.get().asFile, "ch/orellbuehler/bueffel/format/GeneratedVectors.kt")
+        val test = File(testOutput.get().asFile, "ch/orellbuehler/jackdaw/format/GeneratedVectors.kt")
         test.parentFile.mkdirs()
         test.writeText(
             buildString {
                 appendLine("// Generated from format/test-vectors.json by the generateFormatResources Gradle task. Do not edit.")
-                appendLine("package ch.orellbuehler.bueffel.format")
+                appendLine("package ch.orellbuehler.jackdaw.format")
                 appendLine()
                 appendLine("internal val GENERATED_TEST_VECTORS: String = ${kotlinLiteral(vectorsFile.get().asFile.readText())}")
             },
@@ -151,7 +151,7 @@ kotlin {
 }
 
 android {
-    namespace = "ch.orellbuehler.bueffel.shared"
+    namespace = "ch.orellbuehler.jackdaw.shared"
     compileSdk = 37
     defaultConfig {
         minSdk = 26
@@ -173,8 +173,8 @@ skie {
 
 sqldelight {
     databases {
-        create("BueffelDatabase") {
-            packageName.set("ch.orellbuehler.bueffel.db")
+        create("JackdawDatabase") {
+            packageName.set("ch.orellbuehler.jackdaw.db")
             srcDirs.setFrom("src/commonMain/sqldelight")
             schemaOutputDirectory.set(file("src/commonMain/sqldelight/databases"))
             verifyMigrations.set(true)

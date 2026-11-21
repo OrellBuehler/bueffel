@@ -11,7 +11,7 @@
 	     before export; export then re-signs the app with them. teamID is not
 	     stored here: the workflow injects it from the APPLE_TEAM_ID secret.
 	     The profile name below must match the name of the App Store
-	     provisioning profile created for ch.orellbuehler.bueffel in the Apple
+	     provisioning profile created for ch.orellbuehler.jackdaw in the Apple
 	     Developer portal (the profile stored in IOS_PROFILE_APP_BASE64). -->
 	<key>signingStyle</key>
 	<string>manual</string>
@@ -19,8 +19,8 @@
 	<string>Apple Distribution</string>
 	<key>provisioningProfiles</key>
 	<dict>
-		<key>ch.orellbuehler.bueffel</key>
-		<string>Bueffel App Store</string>
+		<key>ch.orellbuehler.jackdaw</key>
+		<string>Jackdaw App Store</string>
 	</dict>
 	<!-- The build number is set explicitly in CI (CURRENT_PROJECT_VERSION from
 	     the run number); don't let export rewrite it. -->

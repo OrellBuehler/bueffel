@@ -32,7 +32,7 @@
     public static <1> INSTANCE;
     kotlinx.serialization.KSerializer serializer(...);
 }
--keep,includedescriptorclasses class ch.orellbuehler.bueffel.**$$serializer { *; }
+-keep,includedescriptorclasses class ch.orellbuehler.jackdaw.**$$serializer { *; }
 -keepclassmembers class ** {
     @kotlinx.serialization.SerialName *;
     @kotlinx.serialization.Transient *;

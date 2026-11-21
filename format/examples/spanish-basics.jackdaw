@@ -1,0 +1,311 @@
+{
+  "$schema": "https://raw.githubusercontent.com/OrellBuehler/jackdaw/main/format/jackdaw-pack.schema.json",
+  "format": "jackdaw-pack",
+  "version": 1,
+  "id": "com.github.orellbuehler.jackdaw.examples.spanish-basics",
+  "title": "Spanish Basics",
+  "description": "About 40 essential Spanish words and phrases for travellers and beginners: greetings, numbers, food and drink, survival phrases and four false friends. Spanish on the front, the English meaning on the back; every card is also asked in reverse, and accents are optional when typing.",
+  "language": "es",
+  "author": "Jackdaw project",
+  "license": "CC0-1.0",
+  "source": "https://github.com/OrellBuehler/jackdaw",
+  "tags": ["spanish", "vocabulary", "beginner", "a1"],
+  "icon": "🇪🇸",
+  "color": "#C60B1E",
+  "revision": 1,
+  "created": "2026-11-20",
+  "updated": "2026-11-20",
+  "sections": [
+    {"id": "greetings", "title": "Greetings and politeness", "description": "Words for meeting, thanking and parting."},
+    {"id": "numbers", "title": "Numbers 1-10"},
+    {"id": "food", "title": "Food and drink", "description": "Nouns come with their article so you learn the gender along with the word."},
+    {"id": "survival", "title": "Survival phrases", "description": "Short sentences you will use on the first day of a trip."},
+    {"id": "false-friends", "title": "False friends", "description": "Words that look like English words but mean something else."}
+  ],
+  "study": {"order": "sequential", "newPerSession": 8, "reversible": true, "ignoreDiacritics": true, "exercises": {"card": ["flip", "choice", "type"]}},
+  "items": [
+    {
+      "id": "hola",
+      "type": "card",
+      "section": "greetings",
+      "front": "hola",
+      "back": "hello",
+      "alternatives": ["hi"],
+      "explanation": "The *h* is silent."
+    },
+    {
+      "id": "buenos-dias",
+      "type": "card",
+      "section": "greetings",
+      "front": "buenos días",
+      "back": "good morning",
+      "explanation": "Used until around noon. Literally \"good days\"."
+    },
+    {
+      "id": "buenas-tardes",
+      "type": "card",
+      "section": "greetings",
+      "front": "buenas tardes",
+      "back": "good afternoon",
+      "explanation": "Used from lunchtime until dark. Note the feminine plural: *la tarde*, *las tardes*."
+    },
+    {
+      "id": "buenas-noches",
+      "type": "card",
+      "section": "greetings",
+      "front": "buenas noches",
+      "back": "good night",
+      "alternatives": ["good evening"],
+      "explanation": "Works both as an evening greeting and as a farewell at bedtime."
+    },
+    {
+      "id": "adios",
+      "type": "card",
+      "section": "greetings",
+      "front": "adiós",
+      "back": "goodbye",
+      "alternatives": ["bye"],
+      "explanation": "Slightly more final than *hasta luego*."
+    },
+    {"id": "hasta-luego", "type": "card", "section": "greetings", "front": "hasta luego", "back": "see you later", "alternatives": ["see you"]},
+    {"id": "por-favor", "type": "card", "section": "greetings", "front": "por favor", "back": "please"},
+    {
+      "id": "gracias",
+      "type": "card",
+      "section": "greetings",
+      "front": "gracias",
+      "back": "thank you",
+      "alternatives": ["thanks"],
+      "explanation": "*Muchas gracias* means \"thank you very much\"."
+    },
+    {
+      "id": "de-nada",
+      "type": "card",
+      "section": "greetings",
+      "front": "de nada",
+      "back": "you're welcome",
+      "alternatives": ["you are welcome", "no problem", "don't mention it"],
+      "explanation": "Literally \"of nothing\"."
+    },
+    {
+      "id": "como-estas",
+      "type": "card",
+      "section": "greetings",
+      "front": "¿cómo estás?",
+      "back": "how are you?",
+      "explanation": "Informal, for friends and people your age. Formal: *¿cómo está usted?*"
+    },
+    {
+      "id": "uno",
+      "type": "card",
+      "section": "numbers",
+      "front": "uno",
+      "back": "one",
+      "alternatives": ["1"],
+      "explanation": "Before a masculine noun it shortens to *un* (*un libro*); before a feminine noun it becomes *una* (*una casa*)."
+    },
+    {"id": "dos", "type": "card", "section": "numbers", "front": "dos", "back": "two", "alternatives": ["2"]},
+    {"id": "tres", "type": "card", "section": "numbers", "front": "tres", "back": "three", "alternatives": ["3"]},
+    {"id": "cuatro", "type": "card", "section": "numbers", "front": "cuatro", "back": "four", "alternatives": ["4"]},
+    {"id": "cinco", "type": "card", "section": "numbers", "front": "cinco", "back": "five", "alternatives": ["5"]},
+    {"id": "seis", "type": "card", "section": "numbers", "front": "seis", "back": "six", "alternatives": ["6"]},
+    {"id": "siete", "type": "card", "section": "numbers", "front": "siete", "back": "seven", "alternatives": ["7"]},
+    {"id": "ocho", "type": "card", "section": "numbers", "front": "ocho", "back": "eight", "alternatives": ["8"]},
+    {"id": "nueve", "type": "card", "section": "numbers", "front": "nueve", "back": "nine", "alternatives": ["9"]},
+    {"id": "diez", "type": "card", "section": "numbers", "front": "diez", "back": "ten", "alternatives": ["10"]},
+    {
+      "id": "el-agua",
+      "type": "card",
+      "section": "food",
+      "front": "el agua",
+      "back": "water",
+      "alternatives": ["the water"],
+      "frontAlternatives": ["agua"],
+      "explanation": "*Agua* is feminine but takes *el* because it starts with a stressed *a*: *el agua fría* (cold water)."
+    },
+    {
+      "id": "el-pan",
+      "type": "card",
+      "section": "food",
+      "front": "el pan",
+      "back": "bread",
+      "alternatives": ["the bread"],
+      "frontAlternatives": ["pan"]
+    },
+    {
+      "id": "la-leche",
+      "type": "card",
+      "section": "food",
+      "front": "la leche",
+      "back": "milk",
+      "alternatives": ["the milk"],
+      "frontAlternatives": ["leche"]
+    },
+    {
+      "id": "el-queso",
+      "type": "card",
+      "section": "food",
+      "front": "el queso",
+      "back": "cheese",
+      "alternatives": ["the cheese"],
+      "frontAlternatives": ["queso"]
+    },
+    {
+      "id": "el-huevo",
+      "type": "card",
+      "section": "food",
+      "front": "el huevo",
+      "back": "egg",
+      "alternatives": ["the egg"],
+      "frontAlternatives": ["huevo"],
+      "explanation": "Plural: *los huevos*. The *h* is silent."
+    },
+    {
+      "id": "la-manzana",
+      "type": "card",
+      "section": "food",
+      "front": "la manzana",
+      "back": "apple",
+      "alternatives": ["the apple"],
+      "frontAlternatives": ["manzana"]
+    },
+    {
+      "id": "el-pollo",
+      "type": "card",
+      "section": "food",
+      "front": "el pollo",
+      "back": "chicken",
+      "alternatives": ["the chicken"],
+      "frontAlternatives": ["pollo"]
+    },
+    {
+      "id": "el-arroz",
+      "type": "card",
+      "section": "food",
+      "front": "el arroz",
+      "back": "rice",
+      "alternatives": ["the rice"],
+      "frontAlternatives": ["arroz"]
+    },
+    {
+      "id": "el-zumo",
+      "type": "card",
+      "section": "food",
+      "front": "el zumo",
+      "back": "juice",
+      "alternatives": ["the juice"],
+      "frontAlternatives": ["zumo", "el jugo", "jugo"],
+      "explanation": "*Zumo* is the usual word in Spain; in Latin America *jugo* is more common."
+    },
+    {
+      "id": "la-cerveza",
+      "type": "card",
+      "section": "food",
+      "front": "la cerveza",
+      "back": "beer",
+      "alternatives": ["the beer"],
+      "frontAlternatives": ["cerveza"]
+    },
+    {
+      "id": "si",
+      "type": "card",
+      "section": "survival",
+      "front": "sí",
+      "back": "yes",
+      "explanation": "With the accent it means \"yes\"; without it, *si* means \"if\"."
+    },
+    {
+      "id": "perdon",
+      "type": "card",
+      "section": "survival",
+      "front": "perdón",
+      "back": "excuse me",
+      "alternatives": ["pardon", "pardon me", "sorry"],
+      "explanation": "Use *perdón* to get attention or after a small bump. *Lo siento* expresses real regret."
+    },
+    {
+      "id": "lo-siento",
+      "type": "card",
+      "section": "survival",
+      "front": "lo siento",
+      "back": "I'm sorry",
+      "alternatives": ["i am sorry", "sorry"],
+      "explanation": "Literally \"I feel it\"."
+    },
+    {
+      "id": "mucho-gusto",
+      "type": "card",
+      "section": "survival",
+      "front": "mucho gusto",
+      "back": "nice to meet you",
+      "alternatives": ["pleased to meet you"],
+      "explanation": "Literally \"much pleasure\"."
+    },
+    {
+      "id": "no-entiendo",
+      "type": "card",
+      "section": "survival",
+      "front": "no entiendo",
+      "back": "I don't understand",
+      "alternatives": ["i do not understand"]
+    },
+    {
+      "id": "cuanto-cuesta",
+      "type": "card",
+      "section": "survival",
+      "front": "¿cuánto cuesta?",
+      "back": "how much does it cost?",
+      "alternatives": ["how much is it?", "how much is this?"]
+    },
+    {
+      "id": "donde-esta-el-bano",
+      "type": "card",
+      "section": "survival",
+      "front": "¿dónde está el baño?",
+      "back": "where is the bathroom?",
+      "alternatives": ["where is the toilet?", "where is the restroom?", "where's the bathroom?"]
+    },
+    {
+      "id": "embarazada",
+      "type": "card",
+      "section": "false-friends",
+      "front": "embarazada",
+      "back": "pregnant",
+      "distractors": ["embarrassed", "confused", "angry"],
+      "tags": ["false-friend"],
+      "hint": "It is not about feelings.",
+      "explanation": "*Embarazada* does NOT mean \"embarrassed\". For that, say *avergonzado* (or *avergonzada*)."
+    },
+    {
+      "id": "libreria",
+      "type": "card",
+      "section": "false-friends",
+      "front": "librería",
+      "back": "bookshop",
+      "alternatives": ["bookstore"],
+      "distractors": ["library", "reading room", "archive"],
+      "tags": ["false-friend"],
+      "explanation": "The word for \"library\" is *biblioteca*."
+    },
+    {
+      "id": "exito",
+      "type": "card",
+      "section": "false-friends",
+      "front": "éxito",
+      "back": "success",
+      "distractors": ["exit", "experiment", "excitement"],
+      "tags": ["false-friend"],
+      "explanation": "An \"exit\" in the sense of a way out is *la salida*."
+    },
+    {
+      "id": "sensible",
+      "type": "card",
+      "section": "false-friends",
+      "front": "sensible",
+      "back": "sensitive",
+      "distractors": ["sensible", "reasonable", "sensual"],
+      "tags": ["false-friend"],
+      "explanation": "English \"sensible\" (reasonable) is *sensato* in Spanish."
+    }
+  ]
+}

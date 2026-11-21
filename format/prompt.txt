@@ -1,17 +1,17 @@
-You are creating a learning pack for the app Büffel. Produce ONE JSON document in the "Büffel Pack" format described below. Output only that JSON, in a single ```json code block, with no text before or after it.
+You are creating a learning pack for the app Jackdaw. Produce ONE JSON document in the "Jackdaw Pack" format described below. Output only that JSON, in a single ```json code block, with no text before or after it.
 
 TASK
-Create a Büffel pack about: [TOPIC, or paste your notes / source text here]
+Create a Jackdaw pack about: [TOPIC, or paste your notes / source text here]
 Language of the content: [e.g. English. For a language course: the language being learned, plus the language the explanations are written in]
 Audience / level: [e.g. complete beginners, exam in June, software engineers preparing for interviews]
 Number of items: about [e.g. 40]
 Preferred item types: [e.g. mostly cards and a few multiple-choice questions, or: choose what fits best]
 Use only facts you are sure about. If you are unsure about something, leave it out.
 
-FORMAT (Büffel Pack, version 1)
+FORMAT (Jackdaw Pack, version 1)
 The file is one JSON object.
 Top level:
-- "format": "bueffel-pack"                      (required, always this string)
+- "format": "jackdaw-pack"                      (required, always this string)
 - "version": 1                                  (required, always the number 1)
 - "id": string                                  (required; only A-Z a-z 0-9 . _ - ; use "pack." + topic slug + "." + 6 random hex characters, e.g. "pack.roman-emperors.7f3a9c")
 - "title": string                               (required)
@@ -47,7 +47,7 @@ QUALITY RULES
 EXAMPLE of the expected output (content is only an illustration):
 ```json pack
 {
-  "format": "bueffel-pack",
+  "format": "jackdaw-pack",
   "version": 1,
   "id": "pack.solar-system.4f7a2c",
   "title": "The Solar System",

@@ -1,4 +1,4 @@
-name: Bueffel
+name: Jackdaw
 options:
   bundleIdPrefix: ch.orellbuehler
   developmentLanguage: en
@@ -19,18 +19,18 @@ settings:
     INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: 'YES'
     INFOPLIST_KEY_UILaunchScreen_Generation: 'YES'
     INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: 'UIInterfaceOrientationPortrait'
-    INFOPLIST_KEY_CFBundleDisplayName: Büffel
+    INFOPLIST_KEY_CFBundleDisplayName: Jackdaw
 
 targets:
-  Bueffel:
+  Jackdaw:
     type: application
     platform: iOS
     sources:
-      - path: Bueffel
+      - path: Jackdaw
     settings:
       base:
         TARGETED_DEVICE_FAMILY: '1'
-        PRODUCT_BUNDLE_IDENTIFIER: ch.orellbuehler.bueffel
+        PRODUCT_BUNDLE_IDENTIFIER: ch.orellbuehler.jackdaw
         # Link the KMP shared framework. Gradle builds it and stages it under
         # shared/build/xcode-frameworks/<configuration>/<sdk>/ (see the shared
         # iOS framework steps in ios.yml).
@@ -43,7 +43,7 @@ targets:
           # framework references libsqlite3 symbols the host app must resolve.
           - '-lsqlite3'
     info:
-      path: Bueffel/Info.plist
+      path: Jackdaw/Info.plist
       properties:
         # Only standard (exempt) encryption is used, so declare no non-exempt
         # encryption — TestFlight then skips the per-build export-compliance
@@ -52,16 +52,16 @@ targets:
         CFBundleLocalizations:
           - en
           - de
-        # `.bueffel` packs offer to open in Büffel from Files, Mail, Messages, …
+        # `.jackdaw` packs offer to open in Jackdaw from Files, Mail, Messages, …
         # `LSSupportsOpeningDocumentsInPlace: false` makes iOS hand over a copy,
         # so the import never touches the sender's file.
         LSSupportsOpeningDocumentsInPlace: false
         CFBundleDocumentTypes:
-          - CFBundleTypeName: Büffel pack
+          - CFBundleTypeName: Jackdaw pack
             CFBundleTypeRole: Viewer
             LSHandlerRank: Owner
             LSItemContentTypes:
-              - ch.orellbuehler.bueffel.pack
+              - ch.orellbuehler.jackdaw.pack
           # Packs are JSON and some apps hand a received attachment over as plain
           # JSON rather than by its file extension; the import tells the user
           # when a file is not a pack.
@@ -71,15 +71,15 @@ targets:
             LSItemContentTypes:
               - public.json
         UTExportedTypeDeclarations:
-          - UTTypeIdentifier: ch.orellbuehler.bueffel.pack
-            UTTypeDescription: Büffel pack
+          - UTTypeIdentifier: ch.orellbuehler.jackdaw.pack
+            UTTypeDescription: Jackdaw pack
             UTTypeConformsTo:
               - public.json
             UTTypeTagSpecification:
               public.filename-extension:
-                - bueffel
+                - jackdaw
               public.mime-type:
-                - application/vnd.bueffel.pack+json
+                - application/vnd.jackdaw.pack+json
     dependencies:
       - framework: '../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)/shared.framework'
         embed: false

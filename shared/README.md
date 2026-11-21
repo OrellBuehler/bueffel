@@ -1,12 +1,12 @@
-# shared: Büffel core
+# shared: Jackdaw core
 
-All app logic lives here (Kotlin Multiplatform, `commonMain`). The Compose and SwiftUI apps only render state and forward user input. The module reads and writes Büffel packs ([`format/README.md`](../format/README.md) is the normative spec), keeps all learning progress in SQLite (SQLDelight), schedules reviews and runs study sessions. There is no network code.
+All app logic lives here (Kotlin Multiplatform, `commonMain`). The Compose and SwiftUI apps only render state and forward user input. The module reads and writes Jackdaw packs ([`format/README.md`](../format/README.md) is the normative spec), keeps all learning progress in SQLite (SQLDelight), schedules reviews and runs study sessions. There is no network code.
 
-Package root `ch.orellbuehler.bueffel`. On iOS the module is the `shared` framework, consumed through SKIE.
+Package root `ch.orellbuehler.jackdaw`. On iOS the module is the `shared` framework, consumed through SKIE.
 
 | Package | Content |
 |---|---|
-| `BueffelSdk` | The one entry point (see below). |
+| `JackdawSdk` | The one entry point (see below). |
 | `db` | `DatabaseDriverFactory` (expect/actual), SQLDelight schema (`Pack.sq`, `Review.sq`, `Setting.sq`). |
 | `format` | Pack reader (tolerant, spec section 11), markup/cloze parsers, answer normalisation. Public: `RichText`, `TextSpan`, `ItemType`, `Import*` types. Everything else is `internal`. |
 | `study` | Scheduler, planner, exercise factory and the `StudySession` state machine. |
@@ -23,11 +23,11 @@ Package root `ch.orellbuehler.bueffel`. On iOS the module is the `shared` framew
 - Progress is tracked per **facet**: `Facet.FORWARD` and, for reversible cards, `Facet.REVERSE`. Everything else has only a forward facet. Counts in `PackSummary` are facet counts, `itemCount` is the number of items.
 - Public functions never throw for misuse. Wrong-state calls on a `StudySession` are ignored. Import problems are returned as values (`ImportResult.Failure`).
 
-## BueffelSdk
+## JackdawSdk
 
 ```kotlin
-val sdk = BueffelSdk(DatabaseDriverFactory(context))   // Android
-val sdk = BueffelSdk(driverFactory: DatabaseDriverFactory())  // iOS (Swift)
+val sdk = JackdawSdk(DatabaseDriverFactory(context))   // Android
+val sdk = JackdawSdk(driverFactory: DatabaseDriverFactory())  // iOS (Swift)
 ```
 
 Create exactly one instance per process and keep it alive (application scope). Opening the database is lazy and cheap.
@@ -75,7 +75,7 @@ Errors and warnings carry a stable `code` for localisation and an English `messa
 
 | `ImportErrorCode` | Meaning |
 |---|---|
-| `NOT_JSON`, `NOT_AN_OBJECT`, `NOT_A_PACK` | Not a Büffel file. |
+| `NOT_JSON`, `NOT_AN_OBJECT`, `NOT_A_PACK` | Not a Jackdaw file. |
 | `VERSION_INVALID`, `VERSION_TOO_NEW` | Format version unreadable / newer than supported: tell the user to update the app. |
 | `ID_INVALID`, `TITLE_INVALID`, `ITEMS_MISSING`, `NO_VALID_ITEMS` | Required pack properties missing or no item survived validation. |
 | `TOO_LARGE`, `TOO_MANY_ITEMS` | Over 25 MB / 50,000 items. |
@@ -207,7 +207,7 @@ The framework module is `shared`. With Swift 6 language mode add `@preconcurrenc
 ```swift
 @preconcurrency import shared
 
-let sdk = BueffelSdk(driverFactory: DatabaseDriverFactory())   // keep one instance for the app's lifetime
+let sdk = JackdawSdk(driverFactory: DatabaseDriverFactory())   // keep one instance for the app's lifetime
 
 // Flow -> AsyncSequence
 .task {
@@ -270,7 +270,7 @@ source ~/.sdkman/bin/sdkman-init.sh && export ANDROID_HOME=~/android-sdk
 ```
 
 - `commonTest` has the pure logic tests (reader, markup, normalisation, scheduler, planner, session engine, every vector of `format/test-vectors.json`) and runs on the JVM and on iOS. `androidUnitTest` has the database tests (in-memory JDBC SQLite, fake clock and time zone, seeded `Random`).
-- The sample packs and the test vectors are not copied anywhere: the `generateFormatResources` Gradle task turns `format/examples/*.bueffel`, `format/prompt.txt` and `format/test-vectors.json` into Kotlin string constants under `shared/build/generated/formatResources` (compiled for every target, ignored by ktlint).
-- The database schema is version 1. `src/commonMain/sqldelight/databases/1.db` is the schema snapshot used by `verifyCommonMainBueffelDatabaseMigration`. Until the first release, regenerate it after editing a `.sq` table (`./gradlew shared:generateCommonMainBueffelDatabaseSchema`); afterwards add `1.sqm` migrations instead.
+- The sample packs and the test vectors are not copied anywhere: the `generateFormatResources` Gradle task turns `format/examples/*.jackdaw`, `format/prompt.txt` and `format/test-vectors.json` into Kotlin string constants under `shared/build/generated/formatResources` (compiled for every target, ignored by ktlint).
+- The database schema is version 1. `src/commonMain/sqldelight/databases/1.db` is the schema snapshot used by `verifyCommonMainJackdawDatabaseMigration`. Until the first release, regenerate it after editing a `.sq` table (`./gradlew shared:generateCommonMainJackdawDatabaseSchema`); afterwards add `1.sqm` migrations instead.
 - Unicode NFC/NFD (needed for `ignoreDiacritics` and answer comparison) is an expect/actual: `java.text.Normalizer` on Android, `NSString` canonical mapping on iOS.
-- Test seams (all `internal`): `BueffelSdk(driver, clock, timeZone, random, dispatcher)` takes a SQLDelight driver, `kotlin.time.Clock`, a time zone provider, a `kotlin.random.Random` and the coroutine dispatcher for the database work.
+- Test seams (all `internal`): `JackdawSdk(driver, clock, timeZone, random, dispatcher)` takes a SQLDelight driver, `kotlin.time.Clock`, a time zone provider, a `kotlin.random.Random` and the coroutine dispatcher for the database work.

@@ -55,8 +55,8 @@ jobs:
           # runner is arm64, so build arm64-only — otherwise the generic
           # Simulator destination also builds x86_64 and can't find a slice.
           xcodebuild build \
-            -project Bueffel.xcodeproj \
-            -scheme Bueffel \
+            -project Jackdaw.xcodeproj \
+            -scheme Jackdaw \
             -destination 'generic/platform=iOS Simulator' \
             -configuration Debug \
             CODE_SIGNING_ALLOWED=NO \
