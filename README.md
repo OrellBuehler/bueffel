@@ -4,11 +4,11 @@
 
 <h1 align="center">Jackdaw</h1>
 
-<p align="center">Learn any dataset. Local-only, with an open pack format that people, scripts and chatbots can write.</p>
+<p align="center">Learn any dataset. Local-first, with an open pack format that people, scripts and chatbots can write.</p>
 
 Jackdaw is a spaced-repetition learning app for Android and iOS. You learn from **packs**: single JSON files that hold anything you can ask a question about, such as vocabulary, history facts, exam questions or interview preparation. Packs have an [open, documented format](format/README.md), so a chatbot can write one for you in a minute.
 
-Everything stays on the device: no account, no sync, no analytics, no network code in the shared core (the Android app does not even request the internet permission).
+Your data stays on your devices: no account of ours, no analytics, no servers, no network code in the shared core (the Android app does not even request the internet permission). The iOS app can sync through **your own private iCloud** (CloudKit private database, on by default, switch in Settings): packs, review history and the goal settings are then also stored there and shown on all your Apple devices. Only the owner of the iCloud account can read them, and nothing is ever sent anywhere else. Android is local-only.
 
 ## Features
 
@@ -17,6 +17,7 @@ Everything stays on the device: no account, no sync, no analytics, no network co
 - **Stats**: daily goal, streak, accuracy and an activity history.
 - **Easy to add content**: open a `.jackdaw` file (also from Files, Mail or a chat), paste text, pick from the bundled sample library, or use "Create with AI" to copy a ready-made chatbot prompt.
 - **Pack updates keep your progress**: importing a newer revision of a pack keeps the progress on items that still exist ([spec section 4.2](format/README.md#42-updating-a-pack)).
+- **iCloud sync on iOS**: the same packs, progress and goals on every device signed in to the same iCloud account. Two devices that study offline merge their reviews instead of overwriting each other ([how it works](shared/README.md#sync)).
 - **English and German**, light and dark theme.
 - **One core, two native UIs**: all logic lives in a Kotlin Multiplatform module; the apps are Jetpack Compose (Android) and SwiftUI (iOS).
 
@@ -66,10 +67,10 @@ To check a pack on a computer first: `pip install jsonschema`, then `python3 for
 |---|---|
 | `shared/` | Kotlin Multiplatform core: pack reader, scheduler, study sessions, SQLDelight storage. Entry point `JackdawSdk`; reference in [`shared/README.md`](shared/README.md). On iOS it is the `shared` framework (via SKIE). |
 | `androidApp/` | Android app: Jetpack Compose and Material 3. |
-| `iosApp/` | iOS app: SwiftUI. The Xcode project is generated from `project.yml` with XcodeGen. Only `iosApp/Jackdaw/SDK/` talks to `shared`. |
+| `iosApp/` | iOS app: SwiftUI. The Xcode project is generated from `project.yml` with XcodeGen. Only `iosApp/Jackdaw/SDK/` talks to `shared`; the CloudKit sync layer is `SDK/Sync/`, its schema `cloudkit/schema.ckdb`. |
 | `format/` | The pack format: specification, schema, validator, test vectors, authoring guide, examples. |
 | `brand/` | Logo and symbol (SVG). |
-| `scripts/ios/` | Helper for the iOS release job. |
+| `scripts/ios/` | Helpers for the iOS release job and the CloudKit schema check. |
 | `.github/` | CI and release workflows, the iOS runner setup action, Dependabot. |
 
 ## Build
@@ -112,12 +113,33 @@ xcodebuild build \
 
 `ARCHS=arm64` because the staged framework is the arm64 simulator slice. The Kotlin/Native tests of the shared module run with `./gradlew shared:iosSimulatorArm64Test`. To run the app, open `iosApp/Jackdaw.xcodeproj` after the steps above.
 
+## iCloud sync (iOS)
+
+The app syncs with a CKSyncEngine over one zone (`JackdawZone`) of the private CloudKit database of the container `iCloud.ch.orellbuehler.jackdaw`. There is no server of ours. The merge logic is in `shared/` ([`shared/README.md`](shared/README.md#sync)); the Swift side is a thin layer in `iosApp/Jackdaw/SDK/Sync/`.
+
+- **What is synced**: imported packs (including their content), the whole review history (schedules are rebuilt from it, so two devices that studied offline lose nothing), deleted packs (as tombstones, so another device cannot bring them back), the daily goal and the session size. **Stays on the device**: the theme and the welcome tour.
+- **Privacy**: the data goes into the user's private iCloud database, which only the account holder can read. It is not accessible to the developer, and nothing else leaves the device.
+- **Where the controls are**: Settings has an "iCloud sync" card with an on/off switch, the last sync time, why sync is unavailable (no account, restricted, account changed, ...), a "Sync now" button and the last error in full (CloudKit error code and message). The app keeps working offline and without iCloud; changes wait in a local queue.
+- **Simulator and CI**: sync is disabled on the simulator, in unit tests and in SwiftUI previews, because an unsigned build has no iCloud entitlement and touching CloudKit would trap. The entitlements (`iosApp/Jackdaw/Jackdaw.entitlements`) are applied to device builds only.
+
+### Deploy the CloudKit schema (once, and after every change to the records)
+
+TestFlight and App Store builds use the CloudKit **production** environment, where record types are not created on the fly. `iosApp/cloudkit/schema.ckdb` describes the three record types (`Pack`, `ReviewLog`, `Setting`). CI checks that it matches the code (`scripts/ios/check-cloudkit-schema.py`). To deploy it from a browser:
+
+1. Open the [CloudKit Console](https://icloud.developer.apple.com/dashboard/) and choose the container `iCloud.ch.orellbuehler.jackdaw`.
+2. Switch to the **Development** environment, open **Schema** and choose **Import Schema...**, then pick `iosApp/cloudkit/schema.ckdb`. Check that `Pack`, `ReviewLog` and `Setting` are listed under Record Types.
+3. Choose **Deploy Schema Changes...** (development to production) and confirm. Afterwards the same three record types must be visible in the **Production** environment.
+
+With a Mac, `xcrun cktool import-schema --team-id <TEAM_ID> --container-id iCloud.ch.orellbuehler.jackdaw --environment development --file iosApp/cloudkit/schema.ckdb` does step 2 (needs a CloudKit management token). Record types and fields cannot be removed or renamed in production, only added.
+
+Before the first sync build also make sure the App ID `ch.orellbuehler.jackdaw` has **iCloud (CloudKit)** with the container `iCloud.ch.orellbuehler.jackdaw` assigned, and **Push Notifications**, and that the App Store profile `Jackdaw App Store` was regenerated after that (the release job compares the profile with `Jackdaw.entitlements` and stops with a clear message otherwise).
+
 ## Continuous integration
 
 | Workflow | Runs on | What it does |
 |---|---|---|
 | `android.yml` | pull requests and pushes to `main`, manual | ktlint, shared module build, debug APK (uploaded as artifact), Android lint, shared and Android unit tests, informational Kover coverage. `android-gate` is the always-reporting required check. |
-| `ios.yml` | pull requests and pushes to `main`, manual | `ios-build` (shared framework and simulator app build, the fast compile signal), then `ios-tests` (Kotlin/Native tests of `shared`). `ios-gate` is the always-reporting required check. |
+| `ios.yml` | pull requests and pushes to `main`, manual | `ios-build` (CloudKit schema check, shared framework and simulator app build, the fast compile signal), then `ios-tests` (Kotlin/Native tests of `shared`). `ios-gate` is the always-reporting required check. |
 | `release.yml` | published GitHub release, manual dispatch | Signed release builds, see below. |
 
 The iOS jobs run on GitHub's `xcode-27` image with the Xcode 27.0 GM pinned and verified by `.github/actions/ios-setup`. Dependabot proposes weekly Gradle and GitHub Actions updates (Kotlin is bumped by hand together with SKIE).
@@ -128,7 +150,7 @@ Publishing a GitHub release (tag such as `v1.0.0`) runs `release.yml`. It can al
 
 - **Versions**: the tag without `v` is the Android `versionName` and the iOS `MARKETING_VERSION`. The workflow run number is the iOS build number and is folded into the Android `versionCode` (`(major*10000 + minor*100 + patch) * 1000 + run number`), so re-runs always increase.
 - **Android job**: builds a signed AAB and APK, uploads both as workflow artifacts, attaches them to the GitHub release as `jackdaw-<version>.apk` and `.aab`, and uploads the AAB to the Google Play internal testing track when `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` is set.
-- **iOS job**: checks the stored provisioning profile, builds the shared release framework, archives with App Store Connect API key cloud signing, removes the development certificates that cloud signing created, exports with manual signing (Apple Distribution certificate and the stored profile), verifies the signature and uploads to TestFlight. The IPA is kept as workflow artifact.
+- **iOS job**: checks the stored provisioning profile (including the iCloud container and production push), builds the shared release framework, archives with App Store Connect API key cloud signing, removes the development certificates that cloud signing created, exports with manual signing (Apple Distribution certificate and the stored profile), verifies the signature and the exported entitlements (iCloud, CloudKit, `aps-environment` = `production`) and uploads to TestFlight. The IPA is kept as workflow artifact.
 
 A job whose required secrets are missing fails in its first step and names them. No repository variables are used.
 
@@ -147,7 +169,7 @@ A job whose required secrets are missing fails in its first step and names them.
 | `IOS_DIST_CERT_PASSWORD` | iOS | Password of the `.p12` |
 | `IOS_PROFILE_APP_BASE64` | iOS | App Store provisioning profile for `ch.orellbuehler.jackdaw`, base64 on one line: `openssl base64 -A -in Jackdaw_App_Store.mobileprovision \| gh secret set IOS_PROFILE_APP_BASE64` |
 
-One-time iOS setup: register the App ID `ch.orellbuehler.jackdaw`, create the app in App Store Connect, and create the App Store provisioning profile with the exact name `Jackdaw App Store` (the name `iosApp/ExportOptions.plist` refers to). If the app gains capabilities later, regenerate the profile and update the secret.
+One-time iOS setup: register the App ID `ch.orellbuehler.jackdaw`, create the app in App Store Connect, and create the App Store provisioning profile with the exact name `Jackdaw App Store` (the name `iosApp/ExportOptions.plist` refers to). The profile must include iCloud (CloudKit) with the app's container and Push Notifications (see "iCloud sync"). If the app gains capabilities later, regenerate the profile and update the secret.
 
 ## Status
 

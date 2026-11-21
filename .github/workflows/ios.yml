@@ -31,6 +31,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
+      - name: Check the CloudKit schema matches the record code
+        run: python3 scripts/ios/check-cloudkit-schema.py
+
       - name: Set up the Xcode runner
         uses: ./.github/actions/ios-setup
 

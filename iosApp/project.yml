@@ -27,10 +27,15 @@ targets:
     platform: iOS
     sources:
       - path: Jackdaw
+        excludes:
+          - Jackdaw.entitlements
     settings:
       base:
         TARGETED_DEVICE_FAMILY: '1'
         PRODUCT_BUNDLE_IDENTIFIER: ch.orellbuehler.jackdaw
+        # iCloud (CloudKit) and push for sync. Device SDK only: the unsigned simulator build used by CI has no
+        # provisioning profile, and the app disables sync there (see CloudSync.isSupported).
+        'CODE_SIGN_ENTITLEMENTS[sdk=iphoneos*]': Jackdaw/Jackdaw.entitlements
         # Link the KMP shared framework. Gradle builds it and stages it under
         # shared/build/xcode-frameworks/<configuration>/<sdk>/ (see the shared
         # iOS framework steps in ios.yml).
@@ -49,6 +54,9 @@ targets:
         # encryption — TestFlight then skips the per-build export-compliance
         # prompt that would otherwise block each upload.
         ITSAppUsesNonExemptEncryption: false
+        # CloudKit pushes wake the app to fetch changes made on another device.
+        UIBackgroundModes:
+          - remote-notification
         CFBundleLocalizations:
           - en
           - de

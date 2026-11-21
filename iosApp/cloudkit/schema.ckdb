@@ -1,0 +1,54 @@
+DEFINE SCHEMA
+
+    // CloudKit schema of the private database, container iCloud.ch.orellbuehler.jackdaw.
+    // Keep in sync with iosApp/Jackdaw/SDK/Sync/CloudRecords.swift (record types and field names) and see the
+    // "iCloud sync" section of README.md for how to import and deploy it.
+    //
+    // All records live in the custom zone "JackdawZone". CKSyncEngine fetches by zone change token, so no field needs a
+    // queryable or sortable index. `___recordID` is queryable only so the CloudKit Console can list the records.
+
+    // One pack: its source JSON as an asset, plus the times that decide merges. A deleted pack stays as a tombstone
+    // (no `source`, `deletedAt` >= `contentAt`).
+    RECORD TYPE Pack (
+        "___recordID" REFERENCE QUERYABLE,
+        packId STRING,
+        source ASSET,
+        importedAt INT64,
+        contentAt INT64,
+        resetAt INT64,
+        deletedAt INT64,
+        GRANT WRITE TO "_creator",
+        GRANT CREATE TO "_icloud",
+        GRANT READ TO "_world"
+    );
+
+    // One first answer of a study session. Immutable. Times are milliseconds since 1970, `day` is the local epoch day.
+    RECORD TYPE ReviewLog (
+        "___recordID" REFERENCE QUERYABLE,
+        logId STRING,
+        ts INT64,
+        day INT64,
+        packId STRING,
+        itemId STRING,
+        facet INT64,
+        exercise INT64,
+        grade INT64,
+        correct INT64,
+        practice INT64,
+        reschedule INT64,
+        itemType STRING,
+        GRANT WRITE TO "_creator",
+        GRANT CREATE TO "_icloud",
+        GRANT READ TO "_world"
+    );
+
+    // A synced setting (daily goal, session size).
+    RECORD TYPE Setting (
+        "___recordID" REFERENCE QUERYABLE,
+        name STRING,
+        value STRING,
+        updatedAt INT64,
+        GRANT WRITE TO "_creator",
+        GRANT CREATE TO "_icloud",
+        GRANT READ TO "_world"
+    );

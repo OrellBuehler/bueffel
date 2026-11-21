@@ -291,6 +291,26 @@ jobs:
               echo "::error::Profile is missing entitlements: $(echo "$missing" | tr '\n' ' ')"
               failed=1
             fi
+
+            # Names alone are not enough for iCloud and push: the profile must
+            # grant the app's CloudKit container and the production push
+            # environment (an App Store profile always carries `production`).
+            container=$(/usr/libexec/PlistBuddy -c "Print :com.apple.developer.icloud-container-identifiers:0" "$ENTITLEMENTS")
+            granted_containers=$(/usr/libexec/PlistBuddy -c "Print :Entitlements:com.apple.developer.icloud-container-identifiers" "$plist" 2>/dev/null || true)
+            if ! echo "$granted_containers" | grep -qF "$container"; then
+              echo "::error::Profile does not grant the iCloud container $container. Add it to the App ID, then recreate the profile."
+              failed=1
+            fi
+            granted_services=$(/usr/libexec/PlistBuddy -c "Print :Entitlements:com.apple.developer.icloud-services" "$plist" 2>/dev/null || true)
+            if ! echo "$granted_services" | grep -qF CloudKit; then
+              echo "::error::Profile does not grant the CloudKit service."
+              failed=1
+            fi
+            profile_aps=$(/usr/libexec/PlistBuddy -c "Print :Entitlements:aps-environment" "$plist" 2>/dev/null || true)
+            if [ "$profile_aps" != "production" ]; then
+              echo "::error::Profile has aps-environment '$profile_aps', expected 'production'."
+              failed=1
+            fi
           fi
 
           if [ "$failed" -ne 0 ]; then
@@ -469,6 +489,40 @@ jobs:
             *"Apple Distribution"*) echo "OK: distribution-signed" ;;
             *) echo "::error::Exported app is not distribution-signed: ${AUTH:-<none>}"; exit 1 ;;
           esac
+
+          # The store build must carry the iCloud and push entitlements, with
+          # push on `production`. Xcode rewrites the `development` value from
+          # the source entitlements file while exporting; if it did not, push
+          # (and with it cross-device sync updates) is dead in TestFlight.
+          ENT="$RUNNER_TEMP/exported-entitlements.plist"
+          codesign -d --entitlements :- "$APP" > "$ENT" 2>/dev/null || true
+          if [ ! -s "$ENT" ]; then
+            echo "::error::Could not read the entitlements of the exported app."
+            exit 1
+          fi
+          plutil -p "$ENT" || true
+          failed=0
+          aps=$(/usr/libexec/PlistBuddy -c "Print :aps-environment" "$ENT" 2>/dev/null || true)
+          if [ "$aps" != "production" ]; then
+            echo "::error::Exported app has aps-environment '${aps:-<none>}', expected 'production'."
+            failed=1
+          fi
+          if ! /usr/libexec/PlistBuddy -c "Print :com.apple.developer.icloud-container-identifiers" "$ENT" 2>/dev/null | grep -qF "iCloud.ch.orellbuehler.jackdaw"; then
+            echo "::error::Exported app lacks the iCloud container iCloud.ch.orellbuehler.jackdaw."
+            failed=1
+          fi
+          if ! /usr/libexec/PlistBuddy -c "Print :com.apple.developer.icloud-services" "$ENT" 2>/dev/null | grep -qF "CloudKit"; then
+            echo "::error::Exported app lacks the CloudKit service entitlement."
+            failed=1
+          fi
+          # Present only for distribution exports; when present it must say Production.
+          env=$(/usr/libexec/PlistBuddy -c "Print :com.apple.developer.icloud-container-environment" "$ENT" 2>/dev/null || true)
+          if [ -n "$env" ] && [ "$env" != "Production" ]; then
+            echo "::error::Exported app has icloud-container-environment '$env', expected 'Production'."
+            failed=1
+          fi
+          [ "$failed" -eq 0 ] || exit 1
+          echo "OK: iCloud/CloudKit and production push entitlements present"
 
       - name: Upload to TestFlight
         env:
