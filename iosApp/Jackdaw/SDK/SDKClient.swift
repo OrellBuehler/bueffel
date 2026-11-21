@@ -5,9 +5,12 @@ final class SDKClient: @unchecked Sendable {
     static let shared = SDKClient()
 
     private let sdk: JackdawSdk
+    let syncBridge: SyncBridge
 
     private init() {
-        sdk = JackdawSdk(driverFactory: DatabaseDriverFactory())
+        let sdk = JackdawSdk(driverFactory: DatabaseDriverFactory())
+        self.sdk = sdk
+        syncBridge = SyncBridge(sync: sdk.sync)
     }
 
     func watchPacks(deliver: @MainActor @Sendable ([PackInfo]) -> Void) async {

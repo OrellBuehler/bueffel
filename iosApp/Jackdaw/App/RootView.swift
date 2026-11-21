@@ -30,6 +30,7 @@ struct RootView: View {
         .onChange(of: scenePhase) { _, phase in
             if phase == .active {
                 model.refresh()
+                model.sync.foreground()
             }
         }
     }

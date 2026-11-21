@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Source value only: exporting for the App Store re-signs with the distribution profile, which turns this into
+	     `production`. The release workflow fails if the exported app does not end up with `production`. -->
+	<key>aps-environment</key>
+	<string>development</string>
+	<key>com.apple.developer.icloud-container-identifiers</key>
+	<array>
+		<string>iCloud.ch.orellbuehler.jackdaw</string>
+	</array>
+	<key>com.apple.developer.icloud-services</key>
+	<array>
+		<string>CloudKit</string>
+	</array>
+</dict>
+</plist>

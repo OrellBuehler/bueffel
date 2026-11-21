@@ -9,6 +9,7 @@ struct SettingsView: View {
                 VStack(spacing: 16) {
                     StudySettingsCard(model: model)
                     AppearanceSettingsCard(model: model)
+                    SyncSettingsCard(sync: model.sync)
                     AboutCard()
                 }
                 .padding(.horizontal, 16)
@@ -59,6 +60,95 @@ private struct AppearanceSettingsCard: View {
                 Text("settings.theme.dark").tag(ThemeChoice.dark)
             }
             .pickerStyle(.segmented)
+        }
+        .padding(18)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .card(radius: 24)
+    }
+}
+
+private struct SyncSettingsCard: View {
+    @Bindable var sync: SyncModel
+
+    private var status: SyncStatus { sync.status }
+
+    private var isUsable: Bool {
+        status.isEnabled && status.availability == .available
+    }
+
+    private var stateKey: String {
+        switch status.availability {
+        case .unsupported: return "sync.state.unsupported"
+        case .accountChanged: return "sync.state.accountChanged"
+        default: break
+        }
+        if !status.isEnabled { return "sync.state.off" }
+        switch status.availability {
+        case .checking: return "sync.state.checking"
+        case .available: return status.isSyncing ? "sync.state.syncing" : "sync.state.on"
+        case .noAccount: return "sync.state.noAccount"
+        case .restricted: return "sync.state.restricted"
+        case .temporarilyUnavailable: return "sync.state.temporary"
+        case .couldNotDetermine: return "sync.state.undetermined"
+        case .notAuthorized: return "sync.state.notAuthorized"
+        case .unsupported, .accountChanged: return "sync.state.unsupported"
+        }
+    }
+
+    private var lastSyncedText: String {
+        let value = status.lastSyncedAt.map { $0.formatted(date: .abbreviated, time: .shortened) } ?? L10n.tr("sync.never")
+        return L10n.format("sync.last", value)
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            SettingsHeader(symbol: "icloud.fill", tint: Brand.accent, key: "sync.title")
+            Toggle(isOn: $sync.isEnabled) {
+                Text("sync.toggle")
+                    .font(.brand(.body, weight: .medium))
+                    .foregroundStyle(Brand.text)
+            }
+            .disabled(status.availability == .unsupported)
+            Text(L10n.tr(stateKey))
+                .font(.brand(.subheadline, weight: .semibold))
+                .foregroundStyle(isUsable ? Brand.accent : Brand.textSecondary)
+            if isUsable {
+                Text(lastSyncedText)
+                    .font(.brand(.footnote))
+                    .foregroundStyle(Brand.textSecondary)
+                if status.pendingCount > 0 {
+                    Text(L10n.plural("sync.pending", status.pendingCount))
+                        .font(.brand(.footnote))
+                        .foregroundStyle(Brand.textSecondary)
+                }
+                Button {
+                    sync.syncNow()
+                } label: {
+                    HStack(spacing: 8) {
+                        if status.isSyncing {
+                            ProgressView()
+                        }
+                        Text("sync.now")
+                    }
+                }
+                .buttonStyle(.bordered)
+                .disabled(status.isSyncing)
+            }
+            if let error = status.lastError {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("sync.error.title")
+                        .font(.brand(.footnote, weight: .bold))
+                        .foregroundStyle(Brand.text)
+                    Text(error)
+                        .font(.system(.caption, design: .monospaced))
+                        .foregroundStyle(Brand.textSecondary)
+                        .textSelection(.enabled)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+            }
+            Text("sync.footer")
+                .font(.brand(.footnote))
+                .foregroundStyle(Brand.textSecondary)
         }
         .padding(18)
         .frame(maxWidth: .infinity, alignment: .leading)

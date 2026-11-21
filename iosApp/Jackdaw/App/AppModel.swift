@@ -33,6 +33,8 @@ final class AppModel {
     private(set) var settingsLoaded = false
     private(set) var samples: [SamplePackInfo] = []
 
+    let sync = SyncModel()
+
     var selectedTab: AppTab = .library
     var studyRequest: StudyRequest?
     var addPackRoute: AddPackRoute?
@@ -100,6 +102,7 @@ final class AppModel {
             }
         }
         watchers = [packsTask, statsTask, settingsTask]
+        sync.start()
     }
 
     func refresh() {
