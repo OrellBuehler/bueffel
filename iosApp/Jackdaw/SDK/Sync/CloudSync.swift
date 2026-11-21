@@ -570,8 +570,17 @@ actor CloudSync: CKSyncEngineDelegate {
                     if outcome.needsUpload.contains(name) {
                         retry.append(.saveRecord(id))
                     } else {
+                        // The server already has everything this device has. `version` is 0 when the app restarted
+                        // between sending and hearing back; the record is then clean at its current version.
                         let tag = CloudRecords.keepsSystemFields(server.recordType) ? CloudRecords.encodeSystemFields(server) : nil
-                        try await bridge.markSent(name, version: version, systemFields: tag)
+                        if version > 0 {
+                            try await bridge.markSent(name, version: version, systemFields: tag)
+                        } else {
+                            if let tag {
+                                try await bridge.setSystemFields(name, tag)
+                            }
+                            try await bridge.discard(name)
+                        }
                     }
                     for other in outcome.needsUpload where other != name {
                         retry.append(.saveRecord(CloudRecords.recordID(other)))
@@ -671,8 +680,14 @@ actor CloudSync: CKSyncEngineDelegate {
             status.lastError = text
             try? await bridge.setMeta(Meta.lastError, text)
         }
+        let clean = cycleErrors.isEmpty
         cycleErrors = []
         await refreshPendingCount()
+        if clean, !blocked.isEmpty {
+            // Records that failed earlier get another try now that a whole cycle went through.
+            blocked = []
+            await reconcilePending()
+        }
     }
 
     private func setLastError(_ text: String) async {
